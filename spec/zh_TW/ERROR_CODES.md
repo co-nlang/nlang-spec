@@ -1,0 +1,85 @@
+# n/ Language Specification - 錯誤代碼與診斷指南 (Error Codes & Diagnostics)
+
+## 1. 錯誤標籤索引
+
+以下是根據 `%cause.%val` 分類的標準標籤及其對應的修復方向。
+
+### 1.1 格論衝突 (Lattice Conflicts)
+
+| 標籤 | 說明 | 修復建議 |
+| :--- | :--- | :--- |
+| **`#conflict`** | 靜態邏輯不相容 | 檢查合併的兩個值或型別是否互斥（如 `1 & 2`）。建議使用更寬鬆的型別約束，或使用聯集（`|`）而非交集（`&`）。 |
+| **`#arithmetic_on_anchor`** | 錨點算術非法 | 對序位錨點（如 `#_\|_` 或 `#_`）觀測了非法算術運算。錨點代表序位的極值，其算術行為受格論約束。 |
+| **`#numerical_error`** | 數值運算異常 | 發生除以零、溢出或無效浮點數運算。請檢查態射輸入域或增加邊界檢查。 |
+| **`#divergent`** | 動態非終止（無限遞迴） | 檢測到循環定義。請檢查是否存在終止條件，或增加基底案例以確保收斂到不動點。 |
+| **`#incomplete`** | 視界內無法完全收斂 | 在目前的計算視界內結果仍具有歧義。建議增加 `%fuel` 配置，或優化邏輯以減少不確定性。 |
+| **`#tropical_approximation_failed`** | 熱帶近似失敗 | 使用熱帶幾何進行優化加速時發生異常（見 **[APP_01](./APP_01_Tropical_Geometry.md)**）。建議回歸精確格論觀測。 |
+
+### 1.2 視界與資源邊界 (Horizon Boundaries)
+
+| 標籤 | 說明 | 修復建議 |
+| :--- | :--- | :--- |
+| **`#fuel_exhausted`** | 觀測燃料耗盡 | 運算步數超過限制。請在環境中增加 `%fuel` 配額，或簡化計算邏輯。 |
+| **`#timeout`** | 運算時間超標 | 運算耗時超過 `%timeout`。請優化性能、減少嵌套，或放寬時間限制。 |
+| **`#max_nodes_exceeded`** | 模式匹配節點數超標 | 模式過於複雜。建議簡化模式匹配邏輯，或增加 `%max_pattern_nodes` 上限。 |
+| **`#max_depth_exceeded`** | 統一化深度超標 | 結構嵌套過深。請嘗試扁平化數據結構，或增加 `%max_unification_depth`。 |
+| **`#max_lifting_exceeded`** | 態射升寫深度超標 | 管道 `|>` 遞迴升寫層數過深。建議手動展開部分結構，或增加 `%max_lifting_depth`。 |
+| **`#max_branches_exceeded`** | 聯集分支數超標 | 聯集產生的可能性過多。建議減少不確定的聯集路徑，或增加 `%max_branches`。 |
+| **`#no_matching_branch`** | 模式匹配無匹配分支 | 在態射分派或條件收斂中，輸入值不符合任何定義的分支條件。請檢查 `@Type` 約束或增加 `_` 預設分支。 |
+| **`#out_of_horizon`** | 視界過度穿透 | 路徑導航符號 `^` 超出了實際的嵌套層級。請檢查 `details.requested_depth` 與 `details.actual_depth` 以對齊結構。 |
+
+### 1.3 發現與內容驗證 (Discovery & Verification)
+
+| 標籤 | 說明 | 修復建議 |
+| :--- | :--- | :--- |
+| **`#not_found`** | 發現失敗 | 找不到指定的 CAID 或資源。請確保資源已發佈到宇宙中，並檢查路徑或雜湊值是否正確。 |
+| **`#caid_mismatch`** | 內容與 CAID 不符 | 取得的內容雜湊與請求的不一致。請檢查傳輸過程是否損壞，或內容是否已被篡改。 |
+| **`#compat_conflict`** | 版本相容性失敗 | `%compat` 宣告與當前環境不符。請更新版本宣告，或更換相容的庫版本。 |
+| **`#unsupported_ca_algo`** | 雜湊演算法不支援 | 引擎無法解析該 CAID 使用的雜湊演算法。請升級引擎或使用相容的雜湊標準。 |
+| **`#unsupported_fmt_version`** | 規格版本不支援 | CAID 所使用的 `v<fmt_version>` 超出當前引擎的解析能力。請升級 Ouroboros 引擎或將該內容遷移至新版本格式。 |
+| **`#ambiguous_refinement`** | 精煉歧義 | 發現多個相互衝突的精確 Commit 試圖精煉同一個模糊節點（`#blur`）。請顯式指定首選的 Commit CAID。 |
+| **`#refine_authority_missing`** | 精煉授權缺失 | `#refine` 操作缺少有效的治理權威簽署。請確保該 Commit 來自受信任的架構師。 |
+| **`#refine_authority_invalid`** | 精煉簽署無效 | `#refine` Commit 的數位簽署驗證失敗（金鑰不匹配或已撤銷）。 |
+| **`#refine_signer_unknown`** | 未知簽署者 | 簽署者不在委員會名單中。請檢查 `%authority.signer` 欄位。 |
+| **`#refine_source_unverifiable`** | 精煉來源不可驗證 | 引擎無法驗證 `#refine` 定義中的原始 CAID（通常因演算法版本過舊）。 |
+| **`#verification_failed`** | 證明/測試驗證失敗 | 邏輯節點不滿足指定的 `%termination_proof` 或 `%contract` 約束。請修正邏輯或更新證明。 |
+
+### 1.4 幾何與存取違規 (Geometric & Access Violations)
+
+| 標籤 | 說明 | 修復建議 |
+| :--- | :--- | :--- |
+| **`#private_access_violation`** | 跨邊界私有存取 | 嘗試從外部存取以 `~` 標記的私有欄位。請改為存取公開欄位，或在合法的封裝邊界內存取。 |
+| **`#blocking`** | 合規性阻擋 | 套件內容違反了當前環境的強制性合規性規範（詳見 **[REAL_05](./REAL_05_Compliance_and_MVP.md)**）。 |
+| **`#missing_key`** | 封閉世界合併違規 | 向 **Cocoon `{{}}`** 進行合併時，對方帶有 Cocoon 未宣告的額外欄位。請檢查合併對象的完整性，或將 Cocoon 轉換為開放的 Combo。 |
+| **`#lifting_failed`** | 態射升寫失敗 | 在管道 (`|>`) 演化過程中，容器內的元素不符合態射的型別約束。請檢查容器內容或態射輸入域。 |
+| **`#effect_violation`** | 純粹性違規 | 在 `#pure` 環境中執行了副作用操作（如 `#io`）。請移除副作用操作，或將環境標記為相應的效應標籤。 |
+| **`#type_mismatch`** | 型別不匹配 | 值不符合其型別約束。請確保輸入數據符合 `@Type` 定義，或更新型別約束以適應數據。 |
+
+### 1.5 系統與特權操作 (System & Privileged Operations)
+
+| 標籤 | 說明 | 修復建議 |
+| :--- | :--- | :--- |
+| **`#invalid_target`** | 無效的作業目標 | 系統操作（如 `rollback`）指向了不存在的目標。請檢查 Commit ID 或路徑是否正確。 |
+| **`#already_exists`** | 目標已存在 | 試圖建立重複命名的資源。請更換名稱或刪除舊資源。 |
+| **`#nothing_to_undo`** | 無可撤銷的操作 | `~%repl./undo` 被呼叫，但當前工作階段沒有可回退的演化歷史。 |
+| **`#privileged_required`** | 需要特權模式 | 進行了受限操作（如 `#pin`）。請在啟動引擎時開啟特權模式或提供有效的 Token。 |
+| **`#blocked_by_policy`** | 被策略黑名單阻擋 | 套件或來源被當前環境的信任鏈策略阻擋。請檢查 **[REAL_01](./REAL_01_Ouroboros_Engineering.md)** 中的信任配置。 |
+| **`#ffi_panic`** | 外部函數崩潰 | 外部函數執行過程中發生崩潰 (Panic)。請檢查 FFI 實作的穩定性。 |
+| **`#ffi_malformed`** | 外部回傳格式錯誤 | FFI 回傳的數據結構不符合 `n/` 的物理規範。請確保外部映射邏輯正確。 |
+
+---
+
+## 2. 診斷流程建議
+
+當觀測到 `%cause` 時，建議遵循以下步驟進行偵錯：
+
+1.  **檢查 `%val`**：確定衝突的本體論分類。
+2.  **觀測 `path`**：定位衝突發生的精確幾何位置。
+3.  **分析 `parent`**：追蹤因果鏈，判斷是直接衝突還是由底層合併引發的連鎖反應。
+4.  **利用 `details`**：獲取標籤特定的診斷數據（如 `#conflict` 的左/右運算元）。
+
+---
+
+> [!NOTE]:
+> - **[SPEC_08: 計算視界與運行時](./SPEC_08_Meta_and_Runtime.md)**
+> - **[REAL_04: 因果結構](./REAL_04_Causal_Chain_Protocol.md)**

@@ -6,9 +6,9 @@
 
 `n/` (n-slash 或 n-lang) 是一個以「數據為中心 (Data-centric)」的幾何宣告式語言。它的設計並非基於傳統的指令執行，而是基於 **格論 (Lattice Theory)** 的收斂規律。
 
-*   **收斂性 (Convergence)**：所有的運算皆是集合的合併，直到坍縮成唯一的原子。
+*   **收斂性 (Convergence)**：所有的運算皆是集合的合併，直到坍縮成唯一的原子（Atom）。
 *   **同構性 (Isomorphism)**：Data, Type, Logic 在幾何結構上是統一的 Combo。
-*   **演化觀 (Evolution)**：宇宙是 Commit 的離散序列，觀測引發坍縮，演化推進時間。
+*   **演化觀 (Evolution)**：宇宙是 Commit 的離散序列。觀測引發坍縮，演化推進邏輯時間。真理不是被計算出來的，而是透過不斷增加的約束被「觀測」出來的。
 
 ---
 
@@ -23,13 +23,13 @@
 
 ---
 
-## 3. 三位一體視界 (The Trinity Horizons)
+## 3. 三位一體邊界 (The Trinity Boundaries)
 
-為了精確描述觀測行為的邊界，法典區分以下三種「視界」範疇：
+為了精確描述觀測行為的極限，法典區分以下三種「邊界」範疇：
 
-1.  **詞法視界 (Lexical Horizon)**：由 Combo 嵌套結構定義的名稱可見性空間。決定「當前座標能看見哪些欄位」。詳見 **[SPEC_04](./SPEC_04_Navigation_and_Duality.md)**。
-2.  **計算視界 (Computational Horizon)**：由資源限制（燃料與時間）定義的收斂深度。決定「觀測者能透視多深的真理」。詳見 **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)**。
-3.  **時間視界 (Temporal Horizon)**：由 Commit 序列定義的狀態變遷邊界。決定「哪些事實已固化，哪些仍處於疊加態」。詳見 **[SPEC_10](./SPEC_10_Evolution_and_Commit.md)**。
+1.  **詞法作用域 (Lexical Scope)**：由 Combo 嵌套結構定義的名稱可見性空間。決定「當前座標能看見哪些欄位」。詳見 **[SPEC_04](./SPEC_04_Navigation_and_Duality.md)**。
+2.  **計算視界 (Computational Horizon)**：由資源限制（燃料與能量測度）定義的收斂深度。決定「觀測者能透視多深的真理」。詳見 **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)**。
+3.  **因果邊界 (Causal Boundary)**：由 Commit 序列定義的狀態固化邊界。決定「哪些事實已進入歷史，哪些仍處於疊加態」。詳見 **[SPEC_10](./SPEC_10_Evolution_and_Commit.md)**。
 
 ---
 
@@ -48,8 +48,34 @@
 *   **Layer 4 — 網路與發現層**：全球共識（CAID、發現協定、NDP）。
 *   **Layer 5 — 社會與信任層**：人類協作（別名映射、信任鏈）。
 
-### 4.2 規格與格式版本映射 (Version Mapping)
+### 4.2 規格根架構 (@n_spec)
 
+為了實現規格的自我驗證（Self-hosting），`n/` 定義了標準的規格根結構。任何符合規格的引擎，其內建的 `@n_spec` 節點必須滿足下列幾何約束：
+
+```nlang
+@n_spec: {
+    %kind: #type
+    version: @str & regex r"v\d+\.\d+\.\d+(-[a-z0-9.]+)?$"
+
+    ;; 規格分層
+    layers: {
+        @L0: @Combo, @L1: @Combo, @L2: @Combo,
+        @L3: @Combo, @L4: @Combo, @L5: @Combo
+    }
+
+    ;; 法典索引：標示各 SPEC 文件的權威 CAID
+    codex: {
+        @SPEC: [@hash]  ;; 18 個核心章節
+        @REAL: [@hash]  ;; 物理具現標準
+        @ORDER: [@hash] ;; 治理秩序
+    }
+
+    ;; 語義校驗態射
+    /validate: (instance: @Combo) -> @bool | _|_
+}
+```
+
+### 4.3 規格與格式版本映射 (Version Mapping)
 為了確保內容定址 (CAID) 的穩定性，語言版本與物理格式版本的映射關係如下：
 
 | 語言版本 (Spec) | 預設格式版本 (fmt) | 支援範圍 | 變更說明 |
@@ -77,11 +103,11 @@
 以下公設定義了 `n/` 宇宙的「物理定律」。任何實作若違反下列不變性，即被視為邏輯崩潰。
 
 ### 🔒 Invariant 1 — 收斂決定論 (Convergence Determinism)
-*   **意義**：這是 **CAID (內容定址)** 的物理基礎。
+*   **意義**：這是 **CAID (內容定址)** 的物理基礎。確保了相同幾何結構在宇宙任何角落皆具備唯一且永恆的身分。
 *   **規範化要求**：計算雜湊前必須進行語義等價的格式化處理（見 **[REAL_03](./REAL_03_CAID_Protocol.md)**）。
 
 ### 🔒 Invariant 2 — 資訊單調性 (Monotonic Knowledge)
-*   **意義**：宇宙的資訊量隨時間單調遞增。任何修改在本質上都是新的「精煉」。
+*   **意義**：宇宙的資訊量隨時間單調遞增。知識一旦坍縮即不可逆，演化本質上是幾何空間的持續精煉。
 
 ### 🔒 Invariant 3 — 觀測純粹性 (Observation Purity)
 *   **意義**：確保了平行觀測的安全性與等價性。
@@ -96,7 +122,7 @@
 
 ## 6. 規格書導航 (The Code of n/)
 
-本法典分為五卷，描述了宇宙從格論到網路的完整規律。關於各章節的 **當前狀態與開發目標**，請參閱 **[法典狀態追蹤表 (SPEC_STATUS)](./SPEC_STATUS.md)**。
+本法典分為五卷，描述了宇宙從格論到網路的完整規律。關於各章節的 **當前狀態與開發目標**，請參閱 **[README §4：待辦事項與優先順序](./README.md)**。
 
 ### 卷一：公設 (The Axioms) —— 宇宙的理
 1.  **[SPEC_01: 格論公設](./SPEC_01_Foundation_and_Lattice.md)**
@@ -104,7 +130,7 @@
 3.  **[SPEC_03: 複合結構](./SPEC_03_Combo_System.md)**
 
 ### 卷二：流轉 (The Dynamics) —— 宇宙的氣
-4.  **[SPEC_04: 導航與詞法視界](./SPEC_04_Navigation_and_Duality.md)**
+4.  **[SPEC_04: 導航與詞法作用域](./SPEC_04_Navigation_and_Duality.md)**
 5.  **[SPEC_05: 三位一體同構](./SPEC_05_The_Trinity_Isomorphism.md)**
 6.  **[SPEC_06: 統一化邏輯](./SPEC_06_Unification_Logic.md)**
 7.  **[SPEC_07: 態射與管道](./SPEC_07_Logic_and_Pipe.md)**
@@ -112,7 +138,7 @@
 ### 卷三：法度 (The System) —— 宇宙的格論
 8.  **[SPEC_08: 運行時與計算視界](./SPEC_08_Meta_and_Runtime.md)**
 9.  **[SPEC_09: 代數憲法與標準庫](./SPEC_09_Standard_Library.md)**
-10. **[SPEC_10: 演化與時間視界](./SPEC_10_Evolution_and_Commit.md)**
+10. **[SPEC_10: 演化與因果邊界](./SPEC_10_Evolution_and_Commit.md)**
 11. **[SPEC_11: 反映與合成](./SPEC_11_Reflection_and_Synthesis.md)**
 
 ### 卷四：體系 (The Architecture) —— 宇宙的網
@@ -139,4 +165,9 @@
 - **[APP_01: 熱帶幾何擴展](./APP_01_Tropical_Geometry.md)**
 - **[APP_02: 形式化驗證](./APP_02_Formal_Verification.md)**
 - **[APP_03: 範式比較與遷移](./APP_03_Paradigm_Comparison.md)**
+- **[APP_04: 數學基礎](./APP_04_Mathematical_Foundations.md)**
+- **[APP_05: 全球邏輯格與 LADD](./APP_05_LADD_Global_Logic_Lattice.md)**
 - **[GUIDE_01: 排版風格指南](./GUIDE_01_Style_and_Formatting.md)**
+- **[GUIDE_02: 引擎優化指南](./GUIDE_02_Engine_Optimization.md)**
+- **[GUIDE_03: 增量收斂引擎設計](./GUIDE_03_Incremental_Convergence.md)**
+- **[COSMOLOGY: 數位宇宙學 (附錄系列)](./COSMOLOGY/00_COSMOLOGY_Overview.md)**

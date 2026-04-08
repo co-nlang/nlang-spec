@@ -10,46 +10,50 @@
 
 ## 🌌 The Trinity Isomorphism
 
-`n/` erases the boundaries between Data, Type, and Logic. In the `n/` universe, all three are merely different observational aspects of the same geometric object: the **Combo**.
+`n/` eliminates the boundaries between Data, Type, and Logic. In the world of `n/`, all three are merely different faces of the same geometric object, the **Combo**, seen through different observational dimensions.
 
-**Example: Type as Data, Merge as Validation**
+**Example: Type as Data, Merge as Verification**
 ```nlang
 ;; 1. Define a "Type" (Boundary)
 @Adult: {{
     age: @int & >= 18
 }}
 
-;; 2. Get some "Data" (Existence)
+;; 2. Acquire "Data" (Existence)
 ~payload: { name: "Alice", age: 25 }
 
-;; 3. Perform a "Merge" (Observation)
-;; In n/, validation is not an action, but a convergence in lattice space.
+;; 3. Execute "Merge" (Observation)
+;; In n/, verification is not an action, but a convergence in geometric space.
 user: ~payload & @Adult
 
-;; If age doesn't match, 'user' collapses to _|_ (Bottom) with causal info.
+;; If age doesn't match, 'user' immediately collapses to _|_ (Bottom) with causal tags.
 ```
 
 ---
 
 ## 📚 Specification Structure
 
-The specification consists of core documents, order of evolution, and engineering realization.
+The code consists of 18 core specs, orders of evolution, realization standards, and the digital cosmology appendices.
 
 ### Core Specifications
-| Volume | Focus | Core Documents (zh_TW) |
+| Volume | Theme | Summary |
 | :--- | :--- | :--- |
-| **Vol I: The Axioms** | Math & Lexical | [Lattice](spec/zh_TW/SPEC_01_Foundation_and_Lattice.md), [Lexical](spec/zh_TW/SPEC_02_Lexical_Structure.md), [Combo](spec/zh_TW/SPEC_03_Combo_System.md) |
-| **Vol II: The Dynamics** | Navigation & Logic | [Navigation](spec/zh_TW/SPEC_04_Navigation_and_Duality.md), [Trinity](spec/zh_TW/SPEC_05_The_Trinity_Isomorphism.md), [Unification](spec/zh_TW/SPEC_06_Unification_Logic.md), [Morphism](spec/zh_TW/SPEC_07_Logic_and_Pipe.md) |
-| **Vol III: The Order** | Governance & Evolution | [Interim Constitution](spec/zh_TW/ORDER_00_Interim_Constitution.md), [Evolution (Draft)](spec/zh_TW/ORDER_01_Evolution_and_Governance.md) |
-| **Vol IV: The System** | Runtime & Commit | [Runtime](spec/zh_TW/SPEC_08_Meta_and_Runtime.md), [StdLib](spec/zh_TW/SPEC_09_Standard_Library.md), [Commit](spec/zh_TW/SPEC_10_Evolution_and_Commit.md), [Reflection](spec/zh_TW/SPEC_11_Reflection_and_Synthesis.md) |
-| **Vol V: The Architecture** | Logic & Network | [Recursion](spec/zh_TW/SPEC_12_Logic_Validation_and_Recursion.md), [Discovery](spec/zh_TW/SPEC_13_Discovery_and_Package.md), [Grammar](spec/zh_TW/SPEC_14_Formal_Grammar.md), [Anti-Patterns](spec/zh_TW/SPEC_15_Anti_Patterns.md) |
-| **Vol VI: The Echo** | Proof & Self-Evolution | [Testing](spec/zh_TW/SPEC_16_Testing_and_Proof.md), [Self-Evolution](spec/zh_TW/SPEC_17_Self_Evolution.md), [Echo](spec/zh_TW/SPEC_18_The_Echo.md) |
+| **Vol I: Axioms** | Foundations | [Lattice (01)](spec/zh_TW/SPEC_01_Foundation_and_Lattice.md), [Lexical (02)](spec/zh_TW/SPEC_02_Lexical_Structure.md), [Structure (03)](spec/zh_TW/SPEC_03_Combo_System.md) |
+| **Vol II: Flow** | Navigation & Logic | [Navigation (04)](spec/zh_TW/SPEC_04_Navigation_and_Duality.md), [Trinity (05)](spec/zh_TW/SPEC_05_The_Trinity_Isomorphism.md), [Unification (06)](spec/zh_TW/SPEC_06_Unification_Logic.md), [Morphism (07)](spec/zh_TW/SPEC_07_Logic_and_Pipe.md) |
+| **Vol III: Order** | Governance | [Interim Constitution](spec/zh_TW/ORDER_00_Interim_Constitution.md), [Governance](spec/zh_TW/ORDER_01_Evolution_and_Governance.md) |
+| **Vol IV: System** | Runtime & Commit | [Runtime (08)](spec/zh_TW/SPEC_08_Meta_and_Runtime.md), [StdLib (09)](spec/zh_TW/SPEC_09_Standard_Library.md), [Commit (10)](spec/zh_TW/SPEC_10_Evolution_and_Commit.md), [Reflection (11)](spec/zh_TW/SPEC_11_Reflection_and_Synthesis.md) |
+| **Vol V: Network** | Discovery & Validation | [Recursion (12)](spec/zh_TW/SPEC_12_Logic_Validation_and_Recursion.md), [Discovery (13)](spec/zh_TW/SPEC_13_Discovery_and_Package.md), [Grammar (14)](spec/zh_TW/SPEC_14_Formal_Grammar.md), [Anti-Patterns (15)](spec/zh_TW/SPEC_15_Anti_Patterns.md) |
+| **Vol VI: Echo** | Proof & Evolution | [Testing (16)](spec/zh_TW/SPEC_16_Testing_and_Proof.md), [Self-Evolution (17)](spec/zh_TW/SPEC_17_Self_Evolution.md), [The Echo (18)](spec/zh_TW/SPEC_18_The_Echo.md) |
 
-### Realization & Practical Guides
-- **Implementation**: [Engineering (REAL_01)](spec/zh_TW/REAL_01_Ouroboros_Engineering.md), [Protocols (REAL_02)](spec/zh_TW/REAL_02_Ouroboros_Protocols.md), [CAID (REAL_03)](spec/zh_TW/REAL_03_CAID_Protocol.md).
-- **Diagnostics**: [ERROR_CODES](spec/zh_TW/ERROR_CODES.md), [Causal Chain (REAL_04)](spec/zh_TW/REAL_04_Causal_Chain_Protocol.md), [Compliance (REAL_05)](spec/zh_TW/REAL_05_Compliance_and_MVP.md).
-- **Practical**: [Formatting (GUIDE_01)](spec/zh_TW/GUIDE_01_Style_and_Formatting.md), [Optimization (GUIDE_02)](spec/zh_TW/GUIDE_02_Engine_Optimization.md).
-- **Research**: [Tropical Geometry (APP_01)](spec/zh_TW/APP_01_Tropical_Geometry.md), [Formal Verification (APP_02)](spec/zh_TW/APP_02_Formal_Verification.md), [Paradigms (APP_03)](spec/zh_TW/APP_03_Paradigm_Comparison.md).
+### Digital Cosmology (Appendix Series)
+A deep dive into the dynamics of `n/` from physical and topological perspectives.
+*   **[Overview & Index](spec/zh_TW/COSMOLOGY/00_COSMOLOGY_Overview.md)**: 15 chapters covering $E=mc^2$, semantic gravity, quantum collapse, and topos theory.
+
+### Standards & Guides
+- **Realization**: [Engineering (REAL_01)](spec/zh_TW/REAL_01_Ouroboros_Engineering.md), [Protocols (REAL_02)](spec/zh_TW/REAL_02_Ouroboros_Protocols.md), [CAID (REAL_03)](spec/zh_TW/REAL_03_CAID_Protocol.md), [Causal Chain (REAL_04)](spec/zh_TW/REAL_04_Causal_Chain_Protocol.md).
+- **Diagnostics**: [Error Codes (ERROR_CODES)](spec/zh_TW/ERROR_CODES.md), [Compliance (REAL_05)](spec/zh_TW/REAL_05_Compliance_and_MVP.md).
+- **Guides**: [Style (GUIDE_01)](spec/zh_TW/GUIDE_01_Style_and_Formatting.md), [Optimization (GUIDE_02)](spec/zh_TW/GUIDE_02_Engine_Optimization.md), [Incremental (GUIDE_03)](spec/zh_TW/GUIDE_03_Incremental_Convergence.md).
+- **Theory**: [Tropical (APP_01)](spec/zh_TW/APP_01_Tropical_Geometry.md), [Formal Proof (APP_02)](spec/zh_TW/APP_02_Formal_Verification.md), [Paradigms (APP_03)](spec/zh_TW/APP_03_Paradigm_Comparison.md), [Math (APP_04)](spec/zh_TW/APP_04_Mathematical_Foundations.md), [LADD (APP_05)](spec/zh_TW/APP_05_LADD_Global_Logic_Lattice.md).
 
 > **Note**: Currently, **Traditional Chinese (`zh_TW`)** is the primary reference. English and Japanese translations are in progress.
 
@@ -63,7 +67,7 @@ To understand `n/`, we recommend following this sequence:
 2.  **[GLOSSARY](spec/zh_TW/GLOSSARY.md)**: Unified terminology.
 3.  **[QUICK_REFERENCE](spec/zh_TW/QUICK_REFERENCE.md)**: Syntax at a glance.
 4.  **[SPEC_00 Introduction](spec/zh_TW/SPEC_00_Introduction.md)**: Global architecture overview and versioning.
-5.  **[SPEC_STATUS](spec/zh_TW/SPEC_STATUS.md)**: Current development progress.
+5.  **[COSMOLOGY](spec/zh_TW/COSMOLOGY/00_COSMOLOGY_Overview.md)**： Gain a deeper understanding of the isomorphism between lattice theory and physics.
 
 ---
 

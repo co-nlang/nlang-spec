@@ -1,4 +1,5 @@
 # n/ Language Specification - 代數憲法與標準庫 (Algebraic Constitution)
+
 本章節定義 `n/` 預設提供的代數結構、型別、標籤與元資訊行為。
 `n/` 的標準庫並非隨意的態射集合，而是建立在 **範疇論 (Category Theory)** 之上的純粹模型。
 
@@ -135,6 +136,29 @@
 | **`~%Str`** | 字串處理（split, join, matches 等）。 |
 | **`~%Option`** | 選項處理。 |
 | **`~%Result`** | 結果處理。 |
+| **`~%Math`** | 核心數值運算與數學函數（add, sub, sin, random 等）。 |
+
+### 5.2 數值工具：數學 (`~%Math`)
+
+`~%Math` 提供了一組純粹的數值態射。其中大部分態射與二元運算子（如 `+`, `-`）具備 1:1 的映射關係。
+
+| 態射 (Morphism) | 參數型別 | 說明 |
+| :--- | :--- | :--- |
+| **`/add`** | `x y: @num` | 數值加法。等價於 `x + y`。 |
+| **`/sub`** | `x y: @num` | 數值減法。等價於 `x - y`。 |
+| **`/mul`** | `x y: @num` | 數值乘法。等價於 `x * y` |
+| **`/div`** | `x y: @num` | 數值除法。等價於 `x / y` |
+| **`/rem`** | `x y: @num` | 取餘數。等價於 `x % y` |
+| **`/abs`** | `x: @num` | 絕對值。 |
+| **`/pow`** | `x y: @num` | 次方運算。 |
+| **`/sqrt`** | `x: @num` | 平方根。 |
+| **`/bitAnd`** | `x y: @int` | 位元「與」運算。 |
+| **`/bitOr`** | `x y: @int` | 位元「或」運算。 |
+| **`/bitXor`** | `x y: @int` | 位元「異或」運算。 |
+| **`/bitNot`** | `x: @int` | 位元「非」運算。 |
+| **`/shl`** | `x n: @int` | 位元左移。 |
+| **`/shr`** | `x n: @int` | 位元右移。 |
+| **`/random`** | `(): @unit` | **[#nondet]** 產生 [0, 1) 之間的隨機浮點數。需傳入 Unit 觸發。 |
 
 ---
 
@@ -146,32 +170,31 @@
 
 ## 7. 系統元資訊索引 (%Meta)
 
-這些欄位是 Ouroboros 引擎自省宇宙的標準字典。
+這些欄位是 Ouroboros 引擎自省宇宙的標準字典。為了確保跨引擎的 CAID 決定論，影響觀測中斷的核心參數具備全域統一的 **創世預設值**。
 
-| 欄位 | 型別 | 說明 |
-| :--- | :--- | :--- |
-| **`%id`** | `@str` | 節點的內容雜湊（Content Identity）。 |
-| **`%external`** | `@bool` | 標示態射是否由外部程式實作。 |
-| **`%len`** | `@int` | 容器長度或字串字元數。 |
-| **`%branches`** | `@int` | 聯集中的分支數量。 |
-| **`%kind`** | `#Tag` | 本體論角色（`#data`, `#type`, `#logic` 等）。 |
-| **`%cause`** | `#Tag` | 收斂至 `_\|_` 時的因果標籤。詳見 **[REAL_04](./REAL_04_Causal_Chain_Protocol.md)**。 |
-| **`%strategy`** | `#Tag` | 計算視界邊緣的收斂策略（`#blur`, `#strict`）。 |
-| **`%fuel`** | `@int` | 觀測視界的空間配額。 |
-| **`%timeout`** | `@int` | 單次收斂允許的最大時間（預設為 CPU 時間）。 |
-| **`%max_branches`** | `@int` | 單一節點允許的最大聯集分支數（預設 `64`）。 |
-| **`%max_unification_depth`** | `@int` | 限制遞迴 Combo 合併的最大深度（預設 `256`）。 |
-| **`%max_pattern_nodes`** | `@int` | 限制模式匹配涉及的最大節點數（預設 `1024`）。 |
-| **`%fmap`** | `@morphism` | 函子態射介面。 |
-| **`%fold`** | `@morphism` | 容器折疊介面。 |
-| **`%empty`** | `@any` | 幺半群單位元。 |
-| **`%concat`** | `@morphism` | 幺半群合併操作。 |
-| **`%bind`** | `@morphism` | 單子鏈式組合介面。 |
-| **`%compat`** | `@list \| @str` | 語言規格或套件的相容性宣告。 |
-| **`%effect`** | `#Tag` | 標示運算或態射的副作用型別（如 `#io`），預設為 `#pure`。 |
-| **`%termination_proof`** | `#Tag \| @morphism` | 手動提供遞迴終止證明。詳見 **[APP_02](./APP_02_Formal_Verification.md)**。 |
-| **`%migration`** | `@morphism` | 結構演化時的自動遷移態射。 |
-| **`%privilege_token`** | `@str` | 特權模式訪問令牌。 |
+| 欄位 | 型別 | 創世預設值 | 說明 |
+| :--- | :--- | :--- | :--- |
+| **`%id`** | `@str` | N/A | 節點的內容雜湊（Content Identity）。 |
+| **`%kind`** | `#Tag` | `#combo` | 本體論角色（`#data`, `#type`, `#logic` 等）。 |
+| **`%strategy`** | `#Tag` | **`#blur`** | 計算視界邊緣的收斂策略。 |
+| **`%fuel`** | `@int` | `10000` | 計算視界的空間配額（MBU）。 |
+| **`%max_branches`** | `@int` | **`64`** | 單一節點允許的最大聯集分支數。 |
+| **`%max_unification_depth`** | `@int` | **`256`** | 限制遞迴 Combo 合併的最大深度。 |
+| **`%max_lifting_depth`** | `@int` | **`32`** | 限制管道 `|>` 遞迴升寫深度。 |
+| **`%max_pattern_nodes`** | `@int` | **`1024`** | 限制模式匹配涉及的最大節點數。 |
+| **`%timeout`** | `@int` | `1000` | 單次收斂允許的最大時間（毫秒，不參與 CAID）。 |
+| **`%len`** | `@int` | N/A | 容器長度或字串字元數。 |
+
+| **`%fmap`** | `@morphism` | N/A | 函子態射介面。 |
+| **`%fold`** | `@morphism` | N/A | 容器折疊介面。 |
+| **`%empty`** | `@any` | N/A | 幺半群單位元。 |
+| **`%concat`** | `@morphism` | N/A | 幺半群合併操作。 |
+| **`%bind`** | `@morphism` | N/A | 單子鏈式組合介面。 |
+| **`%compat`** | `@list \| @str` | N/A | 語言規格或套件的相容性宣告。 |
+| **`%effect`** | `#Tag` | **`#pure`** | 標示運算或態射的副作用型別（如 `#io`）。 |
+| **`%termination_proof`** | `#Tag \| @morphism` | N/A | 手動提供遞迴終止證明。詳見 **[APP_02](./APP_02_Formal_Verification.md)**。 |
+| **`%migration`** | `@morphism` | N/A | 結構演化時的自動遷移態射。 |
+| **`%privilege_token`** | `@str` | N/A | 特權模式訪問憑證。詳見 **[SPEC_08](./SPEC_08_Meta_and_Runtime.md) §5**。 |
 
 ## 8. 與其他章節的關係
 

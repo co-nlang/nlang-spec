@@ -60,7 +60,7 @@
 ```nlang
 {{
     %op:   #discover
-    %hash: "sha256:9f86d081..."
+    %hash: "hash:sha256:v1:9f86d081..."
 }}
 ```
 
@@ -264,6 +264,7 @@ Phase 1 先實作 SHA-256，但型別定義現在就要為未來預留空間：
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ContentHash {
     pub algorithm: HashAlgorithm,
+    pub fmt_version: u32,
     pub digest: Vec<u8>,
 }
 
@@ -298,7 +299,6 @@ impl ContentHash {
         };
         format!("hash:{}:v{}:{}", algo, self.fmt_version, hex::encode(&self.digest))
     }
-}
 
     /// 物件儲存的目錄路徑
     /// 回傳 (演算法目錄, 前兩碼子目錄, 剩餘檔名)

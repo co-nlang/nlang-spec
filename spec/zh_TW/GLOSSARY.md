@@ -31,8 +31,9 @@ All SPEC documents should use these translations consistently.
 | Atom | 原子 | 原子 | Indivisible value |
 | Tag | 標籤 | タグ | `#label` |
 | Path | 路徑 | パス | Navigation expression |
-| Scope | 作用域 | スコープ | Lexical scope |
-| Horizon | 視界 | 視界 | 觀測與解析的邊界。依語境分為三類：<br>1. **Lexical Horizon (詞法視界)**: 詳見 **[SPEC_04](./SPEC_04_Navigation_and_Duality.md)**，符號解析與名稱查找的範圍（由 `$` 與 `^` 定位）。<br>2. **Computational Horizon (計算視界)**: 詳見 **[SPEC_08](./SPEC_08_Meta_and_Runtime.md) §4**，物理資源的限制邊界（由 `%fuel` 與 `%timeout` 決定）。<br>3. **Observation Horizon (觀測視界)**: 詳見 **[SPEC_13](./SPEC_13_Discovery_and_Package.md) §5**，資訊坍縮的狀態範圍（由 `#blur` 與 `#exact` 標識）。 |
+| Scope | 作用域 | スコープ | 名稱的可見性範圍。在此指 **Lexical Scope (詞法作用域)**，詳見 **[SPEC_04](./SPEC_04_Navigation_and_Duality.md)**。 |
+| Horizon | 視界 | 視界 (ホライズン) | 觀測與收斂的物理邊界。在此指 **Computational Horizon (計算視界)**，由燃料（%fuel）與測不準原理定義，詳見 **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)**。 |
+| Causal Boundary | 因果邊界 | 因果境界 (コーズ・バウンダリ) | Commit 序列定義的固化邊界。區分了「已確定的歷史」與「未發生的可能性」。詳見 **[SPEC_10](./SPEC_10_Evolution_and_Commit.md)**。 |
 
 ---
 
@@ -44,6 +45,7 @@ All SPEC documents should use these translations consistently.
 | **Ouroboros Engine** | **銜尾蛇引擎** | 實現收斂與演化邏輯的具體計算核心實作（如 `oo`）。 |
 | **Ouroboros Protocol** | **銜尾蛇協定** | 節點間發現、交換 CAID 與特權管理的工作協議（NDP）。 |
 | **Ouroboros Symbol** | **銜尾蛇符號** | 專指 `%` 元資訊前綴，象徵系統的自我意識與自省。 |
+| **Spec Promoter** | **規格啟動子** | 專指 `%promoter` 欄位。用於在規格演化時，引導舊版引擎如何正確升壓至新語義環境的邏輯。 |
 
 ---
 
@@ -103,8 +105,9 @@ All SPEC documents should use these translations consistently.
 
 | English | Traditional Chinese | Tag | Notes |
 | :--- | :--- | :--- | :--- |
-| Lazy | 未觀測 | `#lazy` | Defined but not yet accessed |
-| Incomplete | 不完全 | `#incomplete` | Halted by horizon limits |
+| Lazy | 未觀測 | `#lazy` | 節點已定義但尚未被任何路徑抵達 (**[SPEC_08](./SPEC_08_Meta_and_Runtime.md)**) |
+| Recursive Lazy | 結構遞迴 | `#recursive_lazy` | 具備合法無限結構遞迴的節點 (**[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)**) |
+| Incomplete | 不完全 | `#incomplete` | 觸及視界限制而中斷觀測 |
 | Blur | 模糊 | `#blur` | Deterministic incomplete state with CAID |
 | Exact | 精確 | `#exact` | Fully converged stable state |
 | Conflict | 衝突 | `_\|_` | Lattice inconsistency |
@@ -155,7 +158,34 @@ All SPEC documents should use these translations consistently.
 
 ---
 
-## 11. Revision History
+## 11. Proof & Security (證明與安全)
+
+| English | Traditional Chinese | Meaning |
+| :--- | :--- | :--- |
+| **GPP** | **幾何機率證明** | **Geometric Probabilistic Proof**。基於 Bloom Filter 或幾何投影的快速邊界證明。用於 LADD 路由預過濾，證明節點「不處於某個補集空間」。 |
+| **CIP** | **因果完整性證明** | **Causal Integrity Proof**。基於 ZKP 技術（如 STARK）證明格論收斂結果（$A \sqcap B = C$）嚴格遵循公設的完整性證明。 |
+
+---
+
+## 12. Discovery & Network (發現與網路)
+
+| English | Traditional Chinese | Meaning |
+| :--- | :--- | :--- |
+| **LADD** | **LADD 協議** | **Lattice-Aware Distributed Discovery**。基於幾何引力的分散式發現與路由協議。 |
+| **Service Geometry** | **服務幾何** | 節點宣告其能提供收斂服務的型別邊界。 |
+| **Geometric Bounding Box** | **幾何包圍盒 (GBB)** | 服務幾何的物理邊界描述結構。 |
+| **Lattice Distance ($d_L$)** | **格論距離** | 兩幾何物件間的資訊熵差。 |
+| **Geodesics** | **測地線** | 語義空間中跨度最短、引力最強的路徑。 |
+| **Geometric Mass ($m$)** | **幾何質量** | 物件的資訊量與約束密度總和。 |
+| **Horizon Oscillation** | **視界震盪** | 為了防禦語義黑洞，在轉發時採用的隨機跳躍機制。 |
+| **Geometric Erasure Coding** | **幾何糾刪碼 (GEC)** | 利用格論包含關係實現的分散式數據冗餘技術。 |
+| **Geometric Shards** | **幾何碎片** | Combo 被切分後的幾何單元。 |
+| **Perspective Ablation** | **視角消融** | 根據信任格論消除聯集態歧義的過程。 |
+| **Geometric Oracle** | **幾何預言機** | 提供高效能合併運算與 CIP 證明的委託節點。 |
+
+---
+
+## 13. Revision History
 
 | Date | Change | Author |
 | :--- | :--- | :--- |

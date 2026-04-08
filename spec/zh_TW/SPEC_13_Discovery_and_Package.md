@@ -37,12 +37,12 @@ deps: {
 引擎透過搜尋萬有集合，找到符合此 CAID 的節點並將其坍縮至該路徑。若找不到或內容衝突，則收斂為 `_|_`。
 
 ### 2.2 內容驗證與介面合約 (Contract Verification)
-由於發現本質上是 **`&` (合併)** 運算，觀測者可以在定位 CAID 的同時，對其內容施加額外的幾何約束（介面合約）：
+由於發現本質上是 **`&` (合併)** 運算，觀測者可以在定位 CAID 的同時，對其內容施加額外的幾幾何約束（介面合約）：
 
 ```nlang
 deps: {
     ;; 發現該 CAID，且強制驗證其必須具備特定的 Logic 介面與型別
-    @db.driver: "commit:7f8a..." & {
+    @db.driver: "hash:sha256:v1:7f8a..." & {
         /connect: @morphism     ;; 驗證必須具備連線態射
         /query:   @morphism     ;; 驗證必須具備查詢態射
         %version: >= "v2.0"     ;; 驗證元資訊版本
@@ -108,7 +108,7 @@ CAID 字串是一個**自描述的幾何封套 (Self-describing Envelope)**。�
 
 ## 5. 漸進式真理與精煉共識
 
-`n/` 承認觀測視界（Horizon）的局限性。真理不是一次性的坍縮，而是沿著格不斷深化的過程。
+`n/` 承認**觀測視域 (Observational Perspective)** 的局限性。真理不是一次性的坍縮，而是沿著格不斷深化的過程。
 
 ### 5.1 身份分類與生命週期
 
@@ -134,8 +134,29 @@ CAID 字串是一個**自描述的幾何封套 (Self-describing Envelope)**。�
         - **嚴禁範圍**：對於已固化的 **歷史 Commit**，引擎 **嚴禁** 觀測隱性重定向。已寫入歷史的 `CAID_blur` 必須保持其原始語義，以防止「歷史回溯性坍縮」與內容定址漂移。
 
 ### 5.2.1 跨演算法透明度 (Cross-Algorithm Transparency)
-4.  **影子精煉 (Shadow Refinement)**：
+ 
+精煉機制支援**跨雜湊演算法**與**跨格式版本**的自動重定向：
+
+1.  **不透明目標**：當 `CAID_source` 指向 `CAID_target` 且兩者使用不同雜湊演算法時：
+    - 引擎只需驗證 `CAID_source` 的計算正確性。
+    - `CAID_target` 被視為**不透明字串**，其正確性由 #refine Commit 的簽署權威背書。
+2.  **格式版本隔離**：
+    - 若 `CAID_source` 使用 `fmt_version: v1`，`CAID_target` 使用 `fmt_version: v2`：
+    - 舊引擎（僅支援 v1）仍可解析 #refine Commit，因為其外層封套使用 v1 語法。
+    - 新引擎（支援 v2）可進一步驗證 `CAID_target` 的內容正確性。
+3.  **信任鏈傳遞**：
+    - 若 A #refine 到 B，且 B #refine 到 C，則 A 自動重定向到 C。
+    - 信任鏈的有效性取決於所有中間 #refine Commit 的簽署權威。
+4.  **循環阻斷 (Cycle Prevention)**：
+    - 引擎必須確保 `#refine` 重定向鏈不形成循環（如 A->B->A）。
+    - **重定向深度限制**：為了防止分散式環境下的無限查詢，引擎在追蹤重定向鏈時，必須設定 **「最大跳轉次數 (Max Redirection Hops)」**（創世預設值：16 次）。
+    - 若偵測到循環或超過深度限制，受影響的重定向路徑自動失效，觀測該 CAID 將返回 `_|_` (%cause: #refinement_cycle)。
+5.  **目標多重性 (Target Multiplicity)**：
+    - `target_caids` 允許定義為聯集態（如 `ID_new_A | ID_new_B`）。這支援了規格演化中的「幾何拆分」（Splitting）或「多重等價表示」。
+    - **消融規則**：引擎在解析重定向時，應嘗試對所有目標分支進行觀測。若多個目標中僅有一個能與當前**計算視界 (Computational Horizon)** 的約束收斂，引擎應自動坍縮至該分支；若仍具備歧義，則維持聯集態。
+6.  **影子精煉 (Shadow Refinement)**：
     當歷史 Commit $C$ 引用了已被精煉的 $B$ 時，引擎可選地在背景觀測「影子測試」：
+    - **資源限制**：影子測試受 `~%Engine.shadow_fuel` 物理限制，且嚴禁阻塞主觀測路徑。
     - 若 $E$ 與 $C$ 的現有約束不衝突，則向觀測者發出 **「演化建議 (Evolution Hint)」**。
     - 若 $E$ 會導致 $C$ 坍縮為 `_|_`，則標記為 **「真相衝突 (Refinement Conflict)」**，要求人工或代理發起顯式的遷移 Commit。
 
@@ -145,7 +166,9 @@ CAID 字串是一個**自描述的幾何封套 (Self-describing Envelope)**。�
 
 1.  **聯集坍縮 (Union Collapse)**：
     若來源 A 提供 `pkg: ID_1`，來源 B 提供 `pkg: ID_2`，且兩者互不相容 ($ID_1 \sqcap ID_2 = \bot$)，則該別名的觀測結果為 **`ID_1 | ID_2` (聯集態)**。
-2.  **自動消融 (Auto-Ablation)**：
+2.  **精煉優先 (Refinement Overrule)**：
+    若疊加態中的 `ID_1` 具備有效的 `#refine` 證明指向 `ID_2`（或其後繼者），引擎應自動坍縮至 `ID_2` 並移除 `ID_1` 的影子。精煉證明具備「邏輯時間優先性」。
+3.  **自動消融 (Auto-Ablation)**：
     當疊加態的別名參與後續的格論運算（如 `pkg & @SpecificType`）時，不符合型別約束的分支會自動收斂至 `_|_` 並從聯集中移除。
     *   **語義效果**：這實現了「基於需求的衝突解決」。宇宙不需要知道哪個 `pkg` 是「正確」的，它只需要知道哪個 `pkg` 能滿足當前的幾何約束。
 3.  **歧義殘留 (#ambiguous_alias)**：
@@ -167,13 +190,22 @@ CAID 字串是一個**自描述的幾何封套 (Self-describing Envelope)**。�
 
 ### 6.2 幾何發現原語 (Geometric Discovery Primitives)
 
-不同於傳統的名稱查詢，`n/` 支援基於「幾何特徵」的搜尋。
+不同於傳統的名稱查詢，`n/` 支援基於「幾何特徵」的搜尋。這本質上是在語義空間中進行 **幾何場導航 (Geometric Field Navigation)**。
 
-#### `./find <pattern>` (反向觀測)
+#### 1. 服務幾何 (Service Geometry)
+節點可向網路宣告其具備的 **服務幾何**（一個 Combo），代表其能提供的幾何約束承諾。
+
+#### 2. `./find <pattern>` (引力導航)
 *   **輸入**：一個型別約束 `@Type` 或幾何模式。
-*   **語義**：在目前已知的全域宇宙（Global Lattice）中，搜尋所有滿足 $Node \sqsubseteq Pattern$ 的節點。
+*   **語義**：在全域邏輯格中，沿著幾何重力（型別交集路徑）導航至所有滿足 $Node \sqsubseteq Pattern$ 的節點。
 *   **結果**：回傳一個包含所有匹配節點的聯集態。
-*   **用途**：插件系統發現。例如 `~%Discovery./find @Plugin./Interface` 可尋找所有實作了特定介面的擴充功能。
+*   **用途**：插件系統發現。例如 `~%Discovery./find @Plugin./Interface` 尋找所有實作了特定邊界的擴充功能。
+
+### 6.3 LADD 協議規範
+全域規模的發現行為應遵循 **LADD (Lattice-Aware Distributed Discovery)** 協議規範（詳見 **[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)**）。
+
+*   **物理實踐**：LADD 將發現過程定義為「幾何精煉路徑的自動選擇」。查詢請求天然向幾何質量重、約束具體的節點坍縮。
+*   **效能保證**：**[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)** 是全域邏輯格進行收斂的物理實踐標準，所有符合規格的引擎必須確保其路由行為與格論距離 $d_L$ 一致。
 
 ---
 
@@ -186,20 +218,28 @@ CAID 字串是一個**自描述的幾何封套 (Self-describing Envelope)**。�
 
 1.  **信任排序**：觀測者維護一個偏序集 $T$。當別名衝突發生時，引擎依照 $T$ 中的順序進行篩選。
 2.  **極小元素優先**：若 $T$ 中定義了 `official > community`，則引擎優先坍縮至 `official` 提供的 CAID。
-3.  **權威隔離**：不同的視界（Horizon）可以具備不同的信任格。這允許在同一個宇宙中，局部地使用未經社群審核的實驗性分支，而不影響全域的穩定性。
+3.  **權威隔離**：不同的**觀測視域 (Observational Perspective)** 可以具備不同的信任格。這允許在同一個宇宙中，局部地使用未經社群審核的實驗性分支，而不影響全域的穩定性。
+
+### 7.2 視界震盪與交叉觀測 (Horizon Oscillation)
+為了防禦 **語義日蝕攻擊 (Semantic Eclipse Attack)** —— 即惡意節點群組提供一組自洽但與全域格論隔離的偽造權威與內容 —— 引擎 **必須** 實作視界震盪防禦機制：
+
+1.  **隨機跳出 (Stochastic Jump)**：引擎在進行 `./fetch` 或引力導航時，必須以一定比例（創世預設值：1/64 MBU 觀測量）在當前「信任格」之外隨機選取節點進行交叉觀測。
+2.  **幾何連續性驗證**：若不同信任路徑下的精煉結果在同一座標產生絕對衝突（`_|_`），引擎必須計算兩者的 **「幾何張力 (Geometric Tension)」**。
+3.  **語義隔離警告 (#semantic_isolation)**：若偵測到系統性的幾何不連續（即多個不相關座標同時發生跨信任衝突），引擎必須向觀測者發出 `#semantic_isolation` 警告，並強制暫停自動重定向功能，直至觀測者手動進行視域校準。
+4.  **因果溯源**：在警告狀態下，引擎應優先顯示引發衝突的鄰居節點 `node_id`，協助定位潛在的攻擊來源。
 
 ---
 
 ## 8. 與其他章節的關係
-
 | 章節 | 關聯 |
 | :--- | :--- |
 | **[SPEC_01](./SPEC_01_Foundation_and_Lattice.md)** | 萬有集合 `_` 是發現機制的源頭。 |
-| **[SPEC_06](./SPEC_06_Unification_Logic.md)** | 發現行為中的 CAID 匹配遵循統一化算法的極小元素規則。 |
+| **[SPEC_06](./SPEC_06_Unification_Logic.md)** | 發現行為中的 CAID 匹配遵循統一化演算法的極小元素規則。 |
 | **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** | 定義了影響 `CAID_blur` 的計算視界參數。 |
-| **[SPEC_09](./SPEC_09_Standard_Library.md)** | `%id` 元資訊即是節點的 CAID。 |
 | **[SPEC_10](./SPEC_10_Evolution_and_Commit.md)** | 定義了驅動精煉變遷的 `#refine` 操作。 |
-| **[REAL_01](./REAL_01_Ouroboros_Engineering.md)** | 討論傳輸層協議（NDP）如何實際定位這些幾何特徵。 |
+| **[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)** | LADD 協議的詳細理論框架與路由演算法。 |
+| **[REAL_03](./REAL_03_CAID_Protocol.md)** | 討論傳輸層協議（NDP）如何實際定位這些幾何特徵。 |
+| **[COSMOLOGY/05](./COSMOLOGY/05_PHYSICS_Semantic_Gravity.md)** | 發現機制的數位物理學基礎：語義重力場。 |
 
 ---
 

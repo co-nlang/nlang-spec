@@ -1,16 +1,27 @@
 # n/ Language Specification - 運行時與計算視界 (Runtime & Computational Horizon)
+
 本章節定義 Ouroboros 引擎的核心行為：虛擬欄位機制、錯誤處理，以及由物理資源限制所定義的**計算視界 (Computational Horizon)** 的收斂策略。
 
 ---
 
 ## 1. 虛擬欄位機制 (Virtual Fields %)
 
-使用 `%` 前綴的欄位由 Ouroboros 引擎動態提供，不對應任何使用者定義的節點。
+使用 `%` 前綴的欄位代表節點的 **元幾何特徵 (Meta Geometry)**。為了確保實作一致性，規格將其分為兩類：
 
-*   **意象**：`%` 象徵 Ouroboros 纏繞在一根權杖（Staff）上，代表系統的最高權威、元資訊與深層的自我意識。
-*   **機制**：元資訊是關於節點本身的「自省（Introspection）」，由引擎在觀測時即時計算。
-*   **不可變性**：在單次收斂觀測中，元資訊是唯讀的。使用者無法對 `%` 欄位進行賦值，除非透過特權操作 `#pin`（見§5）。
-*   **完整字典**：請見 **[SPEC_09](./SPEC_09_Standard_Library.md)**。
+### 1.1 自省屬性 (Reflection - 唯讀)
+這些欄位由 Ouroboros 引擎在觀測時即時計算，反映節點的物理與邏輯狀態。使用者**嚴禁**對其進行賦值。
+- **範例**：`%id` (內容雜湊), `%len` (容器長度), `%cause` (衝突因果)。
+- **行為**：任何試圖對其賦值的行為，在收斂時會被引擎忽略或判定為 `#privileged_required`。
+
+### 1.2 特徵屬性 (Trait - 可宣告)
+這些欄位定義了節點的代數行為與本體論角色。使用者**可以**顯式宣告這些欄位，以覆蓋引擎的預設推斷。
+- **範例**：`%kind` (強制角色轉化), `%fmap` (定義函子行為), `%bind` (定義單子行為), `%termination_proof` (手動終止證明)。
+- **行為**：引擎在執行態射應用或管道演化時，會優先查詢這些 Trait 欄位。
+
+### 1.3 字典與授權
+元資訊的完整字典與創世預設值請見 **[SPEC_09](./SPEC_09_Standard_Library.md)**。
+*   **意象**：`%` 象徵 Ouroboros 纏繞在權杖上，代表系統的自省與自省後的自我轉化。
+*   **特權介入**：在 `#pin` 模式下，特權觀測者可強制修改特定的自省屬性（詳見 §5）。
 
 ---
 ## 2. 錯誤處理：邏輯防火牆 (Non-strict Error Handling)
@@ -23,6 +34,7 @@
     - **`#conflict`**：因合併不同原子或不相交型別產生的邏輯衝突。
     - **`#missing_key`**：存取封閉結構中不存在的欄位。
     - **`#caid_mismatch`**：發現過程中的內容驗證失敗。
+    - **`#blocking`**：違反系統級合規性或安全性限制（見 **[REAL_05](./REAL_05_Compliance_and_MVP.md)**）。
 - **不可恢復範圍 (Unrecoverable Physical Limits)**：
     - **`#divergent`**：因偵測到發散而觸發的保護。
     - **`#fuel_exhausted` / `#timeout`**：因觸及物理視界而導致的觀測中斷。
@@ -55,6 +67,8 @@ safe_val: (input & @int <= _|_ ) ? 0 : input
 
 引擎遵循由元資訊定義的物理限制，這被視為觀測者的「視界半徑」。規格層僅定義元欄位的 **語義功能**，不強制要求統一的物理單位或預設值。
 
+> **視界本質**：在 `n/` 宇宙中，視界是 **觀測精度的對價**。燃料的消耗量與目標幾何物件的 **結構複雜度** 成正比。觀測者必須投入與其 **幾何厚度** 相對應的能量，才能將其坍縮為確定的原子。詳見 **[COSMOLOGY/06](./COSMOLOGY/06_PHYSICS_Horizons_and_Uncertainty.md)**。
+
 | 元欄位 | 語義定義 |
 | :--- | :--- |
 | **`%fuel`** | **空間資源控制**：限制單次收斂觀測涉及的節點展開與遞迴總量。 |
@@ -65,6 +79,9 @@ safe_val: (input & @int <= _|_ ) ? 0 : input
 | **`%max_pattern_nodes`** | **複雜度限制 (匹配)**：限制單次模式匹配涉及的 AST 節點總量。 |
 
 **規格義務 (Specification Obligations)**：
+*   **優先級判定 (Priority Axiom)**：
+    - **`%fuel` 優先**：若觀測因耗盡燃料而中斷，引擎 **可以** 根據策略回傳具備決定論 CAID 的 `#blur` 快照。
+    - **`%timeout` 降級**：若觀測因物理超時而中斷，引擎 **嚴禁** 回傳 `#blur` 狀態，必須回傳無 CAID 的 `#incomplete` 暫態。這確保了不同運算速率的硬體對同一路徑的觀測事實保持一致。
 *   **一致性要求**：在相同的視界參數輸入下，引擎產生的 `#blur` CAID **必須**具備決定論（詳見 **[SPEC_13](./SPEC_13_Discovery_and_Package.md)**）。
 *   **規範化計費 (Standardized Billing)**：為了確保跨引擎的 CAID 決定論，實作者**必須**遵循 **[REAL_01](./REAL_01_Ouroboros_Engineering.md) §10** 定義的最小計費單位 (MBU) 進行 `%fuel` 扣除。
 *   **配額異常處理 (Quota Validation)**：
@@ -81,14 +98,16 @@ safe_val: (input & @int <= _|_ ) ? 0 : input
 | **未觀測 (Lazy)** | 潛在 (Potential) | 節點已定義但尚未被任何路徑抵達。不消耗燃料。 |
 | **已收斂 (Converged)** | 穩定 (Stable) | 運算已終止，結果為原子、Combo 或 Cocoon。具備唯一 CAID。 |
 | **衝突 (Conflict / `_\|_` )** | 終態 (Terminal) | 偵測到邏輯不相容或發散。具備帶有因果鏈的穩定 CAID。 |
-| **不完全 (#incomplete)** | 掛起 (Suspended) | 觸及視界邊限但尚未坍縮。**不具備**唯一 CAID。 |
+| **不完全 (#incomplete)** | **暫態 (Transient)** | 觀測中斷。**不具備** CAID，嚴禁提交 (Commit)。 |
+| **模糊 (#blur)** | **快照 (Snapshot)** | 視界截面。**具備決定論 CAID**，可參與發現與提交。 |
 
-*註：當 `#incomplete` 被標記為可傳遞的 `#blur` 狀態時，它獲得一個基於當前視界參數的決定論 CAID。若後續演化提供了滿足 $Exact \sqsubseteq Blur$ 的精確值，引擎將進行自動重定向（見下節）。*
+*註：`#incomplete` 僅存在於主動觀測的內存中。若引擎根據 `%strategy: #blur` 決定將中斷點轉化為可傳遞狀態，則該節點從 `#incomplete` 提升（Lift）為 `#blur`。*
 
-#### 4.2.1 `#incomplete` 的語義邊界
-*   **非終態性質**：`#incomplete` 不是一種值，而是一種**觀測的中斷標記**。它代表目前的坍縮結果受限於當前的視界半徑（`%fuel`, `%timeout`）。
-*   **增量收斂 (Incremental Resumption)**：若後續觀測提供了更多燃料，引擎**必須**能從該掛起態繼續運算。
-*   **不穩定性警告**：由於 `#incomplete` 的結果取決於物理環境，因此嚴禁將包含 `#incomplete` 的結果固化為正式的 Commit 或計算最終 CAID。任何試圖提交 `#incomplete` 狀態的行為都應被攔截（坍縮為 `_|_`）。
+#### 4.2.1 語義邊界：暫態與快照
+*   **#incomplete (不完全)**：代表觀測精度的「掛起」。它不是一種數據，而是一種「計算請求的餘額」。由於其結果隨時會隨燃料增加而變動，因此不具備內容定址的合法性。任何將 `#incomplete` 標記為 Commit 內容的行為都必須導致 `#privileged_commit` 權限校驗或直接坍縮為 `_|_`。
+*   **#blur (模糊)**：代表觀測精度的「凍結」。它是對「當前視界參數 + 局部收斂結果」的內容雜湊。在 LADD 協議中，`#blur` 扮演了真理的預留空間。
+    - **CAID 計算義務**：`#blur` 的 CAID **必須**包含序列化後的視界參數（%fuel 等，見 **[REAL_03](./REAL_03_CAID_Protocol.md)**）。
+    - **穩定性承諾**：一旦固化為 `#blur` 的 Commit，其語義不再隨物理環境變動。它代表「在特定限制下的觀測事實」。
 
 #### 4.2.2 觀測狀態遷移邏輯 (Transition Logic)
 
@@ -105,14 +124,26 @@ safe_val: (input & @int <= _|_ ) ? 0 : input
 - **快取一致性**：`Exact` 結果的優先權永遠高於 `Blur` 與 `Incomplete`。
 - **固化隔離 (Commit Isolation)**：自動重定向**嚴禁**影響已固化歷史 Commit 中的節點語義。精煉僅作為一種「建議」，必須透過顯式的演化管道進入歷史。
 
+#### 4.2.3 觀測視窗與重定向邊界 (Observation Window)
+
+為了平衡「開發時的靈活性」與「歷史的不可變性」，引擎必須明確界定 **觀測視窗** 的生命週期：
+
+*   **開啟時機 (Window Open)**：
+    1.  進入演化管道 (`|>`) 的求值過程。
+    2.  執行系統原語 `~%Engine./observe` 或 `~%Discovery./fetch`。
+    3.  處於 REPL 的互動式暫存區 (Staged Area)。
+*   **重定向特權**：在視窗開啟期間，引擎獲取 **「幾何重定向特權」**。若觀測到 $ID_{blur}$ 且系統已知其對應的 $ID_{exact}$，則在內存中執行靜默替換。這確保了觀測者總是能看到當前燃料下最精確的真實。
+*   **關閉時機 (Window Close)**：
+    1.  觀測結果被寫入 **Commit (固化)**。一旦寫入歷史，該節點的 CAID 即被凍結，不再受後續精煉影響。
+    2.  觀測結果被返回給外部系統（如 FFI 或 CLI 輸出）。
+*   **語義隔離義務**：引擎必須確保關閉後的靜態數據 **嚴禁** 發生追溯性的重定向。這保護了內容定址宇宙的因果一致性。
+
 ### 4.3 視界邊緣的狀態坍縮 (Strategy)
 當運算觸及視界邊緣時，節點會根據 `%strategy` 進行語義選擇：
 *   **`#blur` (預設)**：容許 `#incomplete` 作為有效狀態傳遞，讓宇宙維持在「部分觀測」的聯集狀態。
 *   **`#strict`**：任何觸及視界邊緣的運算立即判定為衝突 `_|_`，確保宇宙的絕對清晰度。
-*   **`#approximate` (近似收斂)**：當觸及 `%max_branches` 或 `%max_pattern_nodes` 等複雜度邊界時，允許引擎切換至啟發式收斂（如蒙特卡羅採樣、提早截斷或放棄次要分支的匹配），以犧牲部分精確度換取在有限時間內的近似解答。
-    *   **決定論義務 (Determinism Obligation)**：任何涉及隨機性的近似演算法（如蒙特卡羅）**必須**使用與目前路徑及其輸入 CAID 相關聯的**確定性種子 (Deterministic Seed)**。演算法定義為：`seed = hash(CurrentPath + InputCAID + HorizonParams)`。嚴禁使用基於系統時間、硬體雜湊或外部熵池的隨機來源。
-    *   **版本化約束 (Algorithm Versioning)**：為了確保幾何一致性，引擎在計算涉及近似收斂結果的 CAID 時，**必須**將所使用的「近似演算法名稱與版本號」納入雜湊輸入。這確保了當引擎升級其啟發式策略時，舊有的模糊觀測結果不會與新結果產生 CAID 碰撞。
-    *   **優化指引 (Heuristics)**：關於如何利用熱帶幾何進行高效的近似收斂，請參閱 **[GUIDE_02: 引擎優化指南](./GUIDE_02_Engine_Optimization.md)**。
+*   **`#approximate` (近似收斂)**：允許引擎在資源不足或分支過多時，切換至啟發式收斂策略，以犧牲部分幾何精確度換取在有限資源內的近似解答。
+    *   **實作義務**：近似算法的具體細節（如隨機性種子與版本化）由環境層定義，詳見 **[GUIDE_02: 引擎優化指南](./GUIDE_02_Engine_Optimization.md)**。
 
 ### 4.4 增量收斂與視界快取
 
@@ -139,12 +170,14 @@ Ouroboros 維護有向無環圖（DAG）來追蹤視界內的依賴關係。
 | & | #pure | #io | #nondet | #state | #cached |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **#pure** | #pure | #io | #nondet | #state | #cached |
-| **#io** | #io | #io | #io \| #nondet | #io \| #state | #io |
-| **#nondet** | #nondet | #io \| #nondet | #nondet | #nondet \| #state | #nondet |
-| **#state** | #state | #io \| #state | #nondet \| #state | #state | #state |
-| **#cached** | #cached | #io | #nondet | #state | #cached |
+| **#io** | #io | #io | #io \| #nondet | #io \| #state | **#io \| #cached** |
+| **#nondet** | #nondet | #io \| #nondet | #nondet | #nondet \| #state | **#nondet \| #cached** |
+| **#state** | #state | #io \| #state | #nondet \| #state | #state | **#state \| #cached** |
+| **#cached** | #cached | #io \| #cached | #nondet \| #cached | #state \| #cached | #cached |
 
-*註：`#io` 與 `#nondet` 具備強傳染性。`#cached` 僅在與 `#pure` 組合時維持其狀態，一旦與任何具備活動副作用（Active Effects）的標籤組合，系統預設回歸最保守的安全估計（即丟棄 #cached 標籤）。*
+*註：`#io` 與 `#nondet` 為「活動副作用 (Active Effects)」，代表尚待物理執行的不確定性。`#cached` 為「固化副作用 (Solidified Effects)」，代表其歷史因果雖包含 IO，但結果已錨定於穩定 CAID。兩者組合時應並行標註，以利於引擎執行部分快取重用與增量收斂。*
+
+*   **效果冪等律 (Effect Idempotency)**：效果標籤的組合遵循格論聯集性質。在任何觀測路徑下，$E \mid E = E$。引擎在合成 `%effect` 欄位時，必須對標籤集合進行去重化簡，嚴禁產生如 `#io | #io` 的冗餘描述。
 
 *   **CAID 參與義務**：`%effect` 欄位被視為節點幾何本體的一部分，**必須**參與 CAID 的規範化計算。這確保了語義上不純的程式無法透過偽裝為 `#pure` 來獲取相同的內容標識。
 *   **自訂效果標籤 (`#ext:`)**：為了支援特定實作或領域的需求，開發者可定義自訂標籤。
@@ -159,8 +192,13 @@ Ouroboros 維護有向無環圖（DAG）來追蹤視界內的依賴關係。
 
 #### 4.6.3 傳染與傳播規則 (Propagation)
 1.  **結構傳染**：若 Combo 的任一欄位具備效果 $E$，則該 Combo 自身的 `%effect = parent.%effect | E`。這確保了外部觀測者在接觸容器時就能預知其內部的潛在副作用。
+    *   **Cocoon 隔離例外**：若容器為 **Cocoon `{{ }}`**，則上述傳染規則在 Cocoon 邊界停止。Cocoon 自身的 `%effect` 保持為 `#pure` (或其定義層級的效果)，內部的副作用被「封印」在視界內。
 2.  **態射傳染**：態射 $f$ 應用於 $x$ 時，結果的效果為 $Effect(f) | Effect(x)$。這防止了純態射在處理不純輸入時遺失效果標記。
-3.  **停止邊界**：效果傳播在觸及 **「創世 Commit」** 或 **「穩定 CAID」** 時停止。一旦數據被坍縮並獲得 CAID，其生成過程中的歷史副作用被視為已固化（Neutralized）。
+3.  **解封傳染 (Unboxing)**：使用 `...` 運算子展開一個具色 Cocoon 時，其內部的效果標籤將立即污染目標作用域。
+4.  **停止邊界與固化 (Solidification)**：
+    - **轉化規則**：一旦數據被坍縮並獲得穩定 CAID，其 `%effect` 欄位中的 **活動標籤 (#io, #nondet, #state)** 必須在觀測結果中被轉化（固化）為 **#cached** 標籤。
+    - **語義**：這象徵著該資訊的「不確定性」已被歷史固化。
+    - **重新激活**：若一個 `#cached` 節點參與了新的態射運算，且該態射本身具備活動副作用，則結果將重新獲得活動標籤（見 §4.6.1 組合矩陣）。
 
 #### 4.6.4 效果遮蔽與處理 (Masking / Handlers)
 為了讓帶副作用的程式碼能在純粹語境下安全運行，`n/` 提供以下機制：
@@ -215,7 +253,7 @@ Ouroboros 維護有向無環圖（DAG）來追蹤視界內的依賴關係。
 *   **CAID 一致性**：特權操作產生的節點與 Commit，其內容雜湊（`%id`）依然基於其最終的物理結構計算。特權操作改變的是「收斂過程」，而非「幾何指紋」。
 *   **透明度**：由特權操作產生的 Commit 必須在元資訊中標註其干預性質，以便下游觀測者進行信任評估。
 
-### 5.2 設計理由
+### 5.3 設計理由
 
 特權模式的存在不是鼓勵繞過格論，而是承認現實：有時開發者需要強制修復一個引擎無法自動解決的邏輯衝突，或對已知正確的值進行直接注入（如從數據庫載入的快取）。
 
@@ -228,13 +266,10 @@ Ouroboros 維護有向無環圖（DAG）來追蹤視界內的依賴關係。
 | 章節 | 關聯 |
 | :--- | :--- |
 | **[SPEC_01](./SPEC_01_Foundation_and_Lattice.md)** | 視界邊界（Top/Bottom）的格論基礎。 |
-| **[SPEC_03](./SPEC_03_Combo_System.md)** | 元資訊欄位 `%` 是 Combo 結構的一部分。 |
-| **[SPEC_07](./SPEC_07_Logic_and_Pipe.md)** | 管道演化的計算視界限制與錯誤傳播。 |
-| **[SPEC_09](./SPEC_09_Standard_Library.md)** | 元資訊欄位字典（`%fuel`, `%timeout`, `%fmap` 等）。 |
-| **[SPEC_10](./SPEC_10_Evolution_and_Commit.md)** | Commit 模型與演化操作的物理實現。 |
-| **[SPEC_11](./SPEC_11_Reflection_and_Synthesis.md)** | `~%repl` 系統物件的反映機制。 |
-| **[SPEC_15](./SPEC_15_Anti_Patterns.md)** | 違反觀測純粹性與資訊單調性的反模式。 |
-| **[REAL_02](./REAL_02_Ouroboros_Protocols.md)** | 特權模式的安全管理與協議實作。 |
+| **[GUIDE_02](./GUIDE_02_Engine_Optimization.md)** | 近似收斂算法、熱帶剪枝與性能優化建議。 |
+| **[REAL_01](./REAL_01_Ouroboros_Engineering.md)** | MBU 計費模型的實體定義與沙箱義務。 |
+| **[COSMOLOGY/01](./COSMOLOGY/01_PHYSICS_Unified_Field_Theory.md)** | 計算視界的物理基礎：質能等價定律 $E=mc^2$。 |
+| **[COSMOLOGY/06](./COSMOLOGY/06_PHYSICS_Horizons_and_Uncertainty.md)** | 測不準原理：精度與燃料的權衡關係。 |
 
 ---
 

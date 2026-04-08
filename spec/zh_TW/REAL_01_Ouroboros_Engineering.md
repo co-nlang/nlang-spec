@@ -173,11 +173,15 @@ oo service [--socket <path>] [--host <h>] [--port <p>] [--privileged-token <t>]
 
 | n/ 型別 | Rust (建議) | C (ABI) | JavaScript |
 | :--- | :--- | :--- | :--- |
+| **`@bool`** | `bool` | `bool` / `int8_t` | `Boolean` |
 | **`@int`** | `i64` / `num_bigint` | `int64_t` | `BigInt` |
 | **`@float`** | `f64` | `double` | `Number` |
 | **`@str`** | `String` / `&str` | `const char*` | `String` |
 | **`@list`** | `Vec<Value>` | `Value**` | `Array` |
 | **`@combo`** | `IndexMap<String, Value>` | `struct Map*` | `Object` |
+| **`@morphism`** | `Box<dyn Fn(Value) -> Value>` | 函數指標或閉包結構 | `Function` |
+| **`@option`** | `Option<Value>` | `Value*` (NULL 可表 None) | `null \| Value` |
+| **`@result`** | `Result<Value, Cause>` | `Result { Value* val; Cause* err; }` | `{ ok?, val?, err? }` |
 | **`_\|_` (Bottom)** | `Err(Cause)` | `NULL` | `undefined` / `Error` |
 | **`_` (Top)** | `Value::Top` | `void*` | `null` |
 
@@ -213,7 +217,7 @@ oo service [--socket <path>] [--host <h>] [--port <p>] [--privileged-token <t>]
 
 ---
 
-## 7. 格式化工具 (oo fmt) 的建議算法 **[Reference Recommendation]**
+## 7. 格式化工具 (oo fmt) 的建議演算法 **[Reference Recommendation]**
 
 1. **AST 解析**：將 `.n` 檔案解析為抽象語法樹。
 2. **語義縮排**：根據 Combo 嵌套層級增加縮排（建議 4 空格）。
@@ -301,7 +305,7 @@ oo service [--socket <path>] [--host <h>] [--port <p>] [--privileged-token <t>]
 *   **空間覆蓋報告**：不僅報告測試通過與否，還應視覺化地展示態射輸入域的「覆蓋地圖」，標示哪些子空間尚未經過觀測驗證。
 
 ### 9.6 啟發式型別推導與靜態分析 (Type Inference)
-由於 `n/` 的型別亦是動態收斂的 Combo，LSP 應採用啟發式算法（Heuristics）來提供即時回饋：
+由於 `n/` 的型別亦是動態收斂的 Combo，LSP 應採用啟發式演算法（Heuristics）來提供即時回饋：
 
 1.  **局部局部收斂 (Partial Convergence)**：IDE 不應等待全域收斂，而應在有限的 `%fuel` 限制下對當前視界進行「嘗試性坍縮」。
 2.  **結構化提示**：若型別尚未坍縮為原子標籤，IDE 應展示其具備的結構特徵（如 `→ { name: @str, ... }`）。
@@ -330,8 +334,10 @@ oo service [--socket <path>] [--host <h>] [--port <p>] [--privileged-token <t>]
 
 ## 10. 規範化計費模型 (Standardized Billing Model) **[Core Requirement]**
 
-為了確保跨引擎實作在觸及計算視界邊緣時能產生一致的 `#blur` CAID，所有符合 Ouroboros 規範的引擎**必須**遵循下列最小計費單位（Minimum Billing Units, MBU）。
+為了確保跨引擎實作在觸及計算視界邊緣時能產生一致的 `#blur` CAID，所有符合 Ouroboros 規範的引擎**必須**遵循下列規範：
 
+1.  **創世預設值 (Genesis Defaults)**：引擎若未獲取觀測者顯式的元資訊配置（如 `%fuel`），**必須**採用 **[SPEC_09](./SPEC_09_Standard_Library.md) §7** 定義的創世預設值進行計算。
+2.  **計費能階 (MBU)**：引擎**必須**遵循下列最小計費單位（Minimum Billing Units）進行資源扣除。
 ### 10.1 核心操作計費表
 
 | 操作型別 | 單位消耗 (MBU) | 說明 |
@@ -340,9 +346,17 @@ oo service [--socket <path>] [--host <h>] [--port <p>] [--privileged-token <t>]
 | **態射應用 (Morphism App)** | 10 | 執行一次 `/` 態射呼叫（包含參數綁定）。 |
 | **格論合併 (Lattice Merge)** | 5 | 執行一次兩個非原子節點的 `&` 或 `\|` 合併運算。 |
 | **模式匹配 (Pattern Match)** | 2 | 匹配一個 AST 節點（按匹配路徑深度計費）。 |
+| **態射升寫 (Lifting)** | 5 + $E_{inner}$ | 管道 `\|>` 穿透容器時的額外管理能耗。 |
 | **外部調用 (FFI Call)** | 50+ | 基本消耗 50，其餘依實作提供的複雜度宣告計費。 |
 
-### 10.2 計費不變性
+### 10.2 遞迴累計與複合公式 (Composite Billing)
+為了確保計費的決定論，複合操作遵循 **「深度優先累計原則」**：
+
+1.  **管道鏈計費**：對於 `x \|> f \|> g`，總消耗為 $E(x) + E(f(x)) + E(g(f(x)))$。每一級管道的輸出作為下一級的輸入，能量消耗隨邏輯流傳導。
+2.  **升寫遞迴 (Recursive Lifting)**：當態射應用於嵌套容器（如 `[[1]]`）時，每一層升寫扣除 5 MBU 的管理能耗，並遞迴累加內層元素的處理成本。
+3.  **短路權益**：若合併運算因型別不相交（$A \sqcap B = \bot$）而提前終止，引擎應僅扣除至衝突點為止的能耗，不計入未展開分支的預估質量。
+
+### 10.3 計費不變性
 *   **與效能無關**：MBU 描述的是「邏輯步數」而非「物理 CPU 週期」。一個優化良好的引擎可以用 1ms 跑完 1000 MBU，而慢速引擎需要 10ms，但兩者**必須**在消耗相同數額時停止觀測。
 *   **遞迴計費**：所有嵌套的操作必須累加計費。
 *   **CAID 參與義務**：當產生 `#blur` 狀態時，剩餘的 `%fuel` 數值**不得**納入 CAID 計算（因為它受觀測者起始燃料影響），但所採用的計費模型版本號**必須**納入雜湊。
@@ -376,6 +390,3 @@ oo service [--socket <path>] [--host <h>] [--port <p>] [--privileged-token <t>]
 當一個模糊節點（`#blur`）被精確節點（`Exact`）自動重定向後：
 *   引擎應將原本指向 `BlurCAID` 的依賴更新為 `ExactCAID`。
 *   若 `BlurCAID` 對應的實體物件已無其他邏輯引用，則其佔用的空間應被標記為可回收。
-
----
-

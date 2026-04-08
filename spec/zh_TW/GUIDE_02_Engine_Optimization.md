@@ -1,4 +1,4 @@
-# n/ Engine Optimization Guide - 熱帶優化與啟發式策略 (Optimization & Heuristics)
+# GUIDE_02：熱帶優化與啟發式策略 (Optimization & Heuristics)
 
 > [!NOTE]: [Standard / 非規範性建議]  
 > [!NOTE]: 本指南提供 Ouroboros 引擎實作者進階的優化建議與啟發式策略。這些機制並非規格書的強制要求，但能顯著提升在複雜邏輯宇宙中的收斂效能。
@@ -56,14 +56,46 @@
 
 ---
 
-## 4. 參考指標 (Metrics)
+## 4. 近似收斂策略 (#approximate)
+
+當觀測觸及物理極限時，引擎可採用啟發式策略以獲取「統計上的真實」。
+
+### 4.1 決定論種子 (Deterministic Seeding)
+為了確保跨引擎的 CAID 決定論，任何涉及隨機性的近似演算法（如蒙特卡羅採樣）**必須**使用與路徑相關聯的確定性種子：
+*   **公式**：`seed = hash(CurrentPath + InputCAID + HorizonParams)`
+*   **禁止**：嚴禁使用基於系統時間或硬體隨機數產生的種子。
+
+### 4.2 版本化約束
+引擎在計算涉及近似收斂結果的 CAID 時，**必須**將所使用的「近似演算法名稱與版本號」納入雜湊輸入。這確保了當優化策略升級時，舊有的模糊觀測不會與新結果產生 CAID 碰撞。
+
+---
+
+## 5. 物理參數調校 (Physical Parameters)
+
+根據 **[COSMOLOGY/01](./COSMOLOGY/01_PHYSICS_Unified_Field_Theory.md)** 推導出的物理定律，建議引擎預設以下參數：
+
+### 5.1 臨界密度平衡 ($\rho$)
+*   **目標**：$\rho = \frac{|\text{Meet}|}{|\text{Join}|} \approx 1.5 \sim 3.0$。
+*   **調校**：若專案掃描結果 $\rho < 1.0$，代表邏輯過於通脹，應提示開發者加強型別約束。
+
+### 5.2 語義引力常數 ($G_s$)
+*   **預設值**：在 LADD 路由中，建議 $G_s$ 設為該區域網路「連結豐度」的倒數，以補償網路稀疏度對引力的衰減。
+
+### 5.3 幾何熱度衰減 ($\gamma$)
+*   **建議值**：$\gamma = 0.001 \text{ unit/sec}$。這確保了長久未被精煉的「冷資料」能被平滑地蒸發出記憶體。
+
+---
+
+## 6. 參考指標 (Metrics)
 
 建議引擎提供效能分析指標（Profile Metrics）：
 *   **`%optimization_gain`**：反映熱帶剪枝減少的節點展開總量。
 *   **`%cache_hit_ratio`**：反映 CAID 重定向與熱帶指紋的命中率。
+*   **`%geometric_mass_dist`**：透過 `oo profile --mass` 顯示各區域的幾何質量分布。
 
 ---
 
 ### 相關文獻與理論背景
 *   參閱 **[APP_01: 熱帶幾何理論](./APP_01_Tropical_Geometry.md)** 了解背後的代數幾何公設。
 *   參閱 **[REAL_01: 工程指南](./REAL_01_Ouroboros_Engineering.md) §10** 了解規範化計費單位。
+*   參閱 **[COSMOLOGY: 數位宇宙學](./COSMOLOGY/00_COSMOLOGY_Overview.md)** 了解基礎物理常數的推導。

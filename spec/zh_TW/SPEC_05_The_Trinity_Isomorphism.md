@@ -1,5 +1,9 @@
 # n/ Language Specification - 三位一體同構 (Trinity Isomorphism)
-本章節定義 `n/` 的核心統一場論：**三位一體同構 (The Trinity Isomorphism)**。在「萬物皆 Combo」原則下，Data、Type 與 Logic 僅是同一底層幾何結構在不同觀測維度下的展現。
+
+本章節定義 `n/` 的核心統一場論：**三位一體同構 (The Trinity Isomorphism)**。
+
+> [!NOTE]
+> 本章旨在揭示節點的內在本質。讀者應先熟悉 **[SPEC_04: 導航與視界](./SPEC_04_Navigation_and_Duality.md)** 中定義的路徑定位規則，以便更好地理解本體面相如何在座標空間中進行切換。
 
 ---
 
@@ -47,8 +51,10 @@ Type 的核心在於其對 CAID 集合的**判定邏輯 (Predicate)**。
 *   **`%predicate`**：一個態射清單。當新節點與該 Type 進行 `&` 時，引擎驗證其是否滿足清單中的幾何約束。
 
 ### 3.3 Logic 面相 (%kind: #logic)
-Logic 的核心在於其**座標變換表 (Morphism Table)**。
-*   **`%rules`**：一個特殊的 Combo，Key 是輸入約束，Value 是輸出結果。
+Logic 的核心在於其**座標變換表 (Morphism Table)** 與 **環境捕獲 (Environment Capture)**。
+
+*   **`%rules`**：一個特殊的 Combo，Key 是輸入約束的 **規範化幾何投影 (Normalized Projection)**，Value 是輸出結果。這確保了跨引擎的 CAID 決定論。
+*   **`%closure`**：一個 Combo，存儲態射定義時捕獲的外部作用域快照。這讓態射具備了跨節點傳輸並保持語義一致的能力。
 *   **`%morphism`**：標記該節點具備「可執行性」。
 
 ---
@@ -76,13 +82,14 @@ Logic 的核心在於其**座標變換表 (Morphism Table)**。
 
 ```nlang
 ;; 1. 定義帶參數的幾何型別 (@Box)
+;; 建議：型別參數使用私有前綴 ~@ 以防止具現化後的殘留污染
 @Box: {
-    @T: @any        ;; 泛型參數，預設為萬有集合
-    value: @T       ;; 約束內部的數據
+    ~@T: @any       ;; 泛型參數，預設為萬有集合
+    value: ~@T      ;; 約束內部的數據
 }
 
 ;; 2. 透過合併進行具現化 (Specialization)
-@IntBox: @Box & { @T: @int }
+@IntBox: @Box & { ~@T: @int }
 
 ;; 3. 驗證
 instance: { value: 42 }
@@ -91,6 +98,8 @@ result: instance & @IntBox  ;; 成功，收斂為 { @T: @int, value: 42 }
 invalid: { value: "hi" }
 error: invalid & @IntBox    ;; 衝突，收斂為 _|_
 ```
+
+**語義建議**：引擎應將具現化後的參數欄位視為 **「捲縮維度 (Extra Dimensions)」**。根據 **[COSMOLOGY/04](./COSMOLOGY/04_PHYSICS_Deep_Fields.md)** 的定義，這些維度捲縮在幾何結構的內部流形中，雖然它們在反射觀測下可見，但在普通的路徑索引與合併運算中不應主動參與，以維持泛型結構的封裝性。
 
 ### 5.2 參數的協變與逆變
 由於 `&` 與 `|` 遵循格論的單調性，`n/` 的泛型天然支援**結構協變**。若 `@A <= @B`，則 `@Box & { @T: @A } <= @Box & { @T: @B }` 永遠成立。

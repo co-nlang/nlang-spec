@@ -13,6 +13,8 @@
 | **`#numerical_error`** | 數值運算異常 | 發生除以零、溢出或無效浮點數運算。請檢查態射輸入域或增加邊界檢查。 |
 | **`#divergent`** | 動態非終止（無限遞迴） | 檢測到循環定義。請檢查是否存在終止條件，或增加基底案例以確保收斂到不動點。 |
 | **`#incomplete`** | 視界內無法完全收斂 | 在目前的計算視界內結果仍具有歧義。建議增加 `%fuel` 配置，或優化邏輯以減少不確定性。 |
+| **`#partial_geometry`** | 幾何內容缺失 | 因網路斷線或資料未發現導致的局部不完全觀測。對應 LADD 協議中的幾何冗餘保護。 |
+| **`#recursive_lazy`** | 結構遞迴標籤 | 表示該節點具備合法的無限結構遞迴定義，僅在顯式觀測路徑抵達時展開。 |
 | **`#tropical_approximation_failed`** | 熱帶近似失敗 | 使用熱帶幾何進行優化加速時發生異常（見 **[APP_01](./APP_01_Tropical_Geometry.md)**）。建議回歸精確格論觀測。 |
 
 ### 1.2 視界與資源邊界 (Horizon Boundaries)
@@ -42,6 +44,8 @@
 | **`#refine_authority_invalid`** | 精煉簽署無效 | `#refine` Commit 的數位簽署驗證失敗（金鑰不匹配或已撤銷）。 |
 | **`#refine_signer_unknown`** | 未知簽署者 | 簽署者不在委員會名單中。請檢查 `%authority.signer` 欄位。 |
 | **`#refine_source_unverifiable`** | 精煉來源不可驗證 | 引擎無法驗證 `#refine` 定義中的原始 CAID（通常因演算法版本過舊）。 |
+| **`#refinement_cycle`** | 精煉重定向循環 | 偵測到 `#refine` 宣告形成了因果循環（如 A->B->A）。受影響的路徑自動失效。 |
+| **`#semantic_isolation`** | 語義隔離警告 | 檢測到不同信任路徑下的觀測結果存在幾何不連續性，疑似遭受語義日蝕攻擊。 |
 | **`#verification_failed`** | 證明/測試驗證失敗 | 邏輯節點不滿足指定的 `%termination_proof` 或 `%contract` 約束。請修正邏輯或更新證明。 |
 
 ### 1.4 幾何與存取違規 (Geometric & Access Violations)
@@ -49,7 +53,8 @@
 | 標籤 | 說明 | 修復建議 |
 | :--- | :--- | :--- |
 | **`#private_access_violation`** | 跨邊界私有存取 | 嘗試從外部存取以 `~` 標記的私有欄位。請改為存取公開欄位，或在合法的封裝邊界內存取。 |
-| **`#blocking`** | 合規性阻擋 | 套件內容違反了當前環境的強制性合規性規範（詳見 **[REAL_05](./REAL_05_Compliance_and_MVP.md)**）。 |
+| **`#cocoon_isolation_violation`** | Cocoon 隔離違規 | 試圖透過管道 `|>` 將態射升寫穿透至雙大括號 `{{}}` 隔離的封閉結構內部。 |
+| **`#blocking`** | 合規性阻擋 | 套件內容違反了當前環境的強制性合規性規範。 |
 | **`#missing_key`** | 封閉世界合併違規 | 向 **Cocoon `{{}}`** 進行合併時，對方帶有 Cocoon 未宣告的額外欄位。請檢查合併對象的完整性，或將 Cocoon 轉換為開放的 Combo。 |
 | **`#lifting_failed`** | 態射升寫失敗 | 在管道 (`|>`) 演化過程中，容器內的元素不符合態射的型別約束。請檢查容器內容或態射輸入域。 |
 | **`#effect_violation`** | 純粹性違規 | 在 `#pure` 環境中執行了副作用操作（如 `#io`）。請移除副作用操作，或將環境標記為相應的效應標籤。 |

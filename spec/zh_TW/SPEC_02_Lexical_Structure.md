@@ -1,4 +1,5 @@
 # n/ Language Specification - 詞法結構與原子 (Lexical Structure)
+
 本章節定義 `n/` 的語意前綴與基本字面量語法。
 
 ---
@@ -78,7 +79,9 @@
 
 ## 5. 運算子結合優先序 (Operator Precedence)
 
-為了保證不同實作產生一致的 AST，`n/` 定義了嚴格的優先序（依據 **[SPEC_14: 正式語法](./SPEC_14_Formal_Grammar.md)** 為最終權威）：
+為了保證不同實作產生一致的 AST，`n/` 定義了嚴格的優先序。
+完整優先級表格請參閱 **[SPEC_14](./SPEC_14_Formal_Grammar.md)** **§2.3**（最終權威）。
+下表為快速參考：
 
 **規則**：層級數值**越小**，結合越緊密（優先權越高）。
 

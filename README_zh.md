@@ -31,23 +31,26 @@ user: ~payload & @Adult
 
 ## 📚 規格書架構 (Specification Structure)
 
-本法典由 18 份核心規格、演化秩序與具現標準組成。
+本法典由 18 份核心規格、演化秩序、具現標準與數位宇宙學附錄組成。
 
 ### 核心規格 (The Core Specs)
 | 卷別 | 主題 | 內容摘要 |
 | :--- | :--- | :--- |
-| **卷一：公設** | 數學基礎與詞法 | [格論 (SPEC_01)](spec/zh_TW/SPEC_01_Foundation_and_Lattice.md), [詞法 (SPEC_02)](spec/zh_TW/SPEC_02_Lexical_Structure.md), [結構 (SPEC_03)](spec/zh_TW/SPEC_03_Combo_System.md) |
-| **卷二：流轉** | 導航與邏輯 | [導航 (SPEC_04)](spec/zh_TW/SPEC_04_Navigation_and_Duality.md), [三位一體 (SPEC_05)](spec/zh_TW/SPEC_05_The_Trinity_Isomorphism.md), [統一化 (SPEC_06)](spec/zh_TW/SPEC_06_Unification_Logic.md), [態射 (SPEC_07)](spec/zh_TW/SPEC_07_Logic_and_Pipe.md) |
-| **卷三：秩序** | 治理與演化 | [臨時憲法 (ORDER_00)](spec/zh_TW/ORDER_00_Interim_Constitution.md), [正式治理 (ORDER_01)](spec/zh_TW/ORDER_01_Evolution_and_Governance.md) |
-| **卷四：系統** | 運行時與提交 | [運行時 (SPEC_08)](spec/zh_TW/SPEC_08_Meta_and_Runtime.md), [標準庫 (SPEC_09)](spec/zh_TW/SPEC_09_Standard_Library.md), [提交 (SPEC_10)](spec/zh_TW/SPEC_10_Evolution_and_Commit.md), [反映 (SPEC_11)](spec/zh_TW/SPEC_11_Reflection_and_Synthesis.md) |
-| **卷五：體系** | 驗證與網路 | [遞迴 (SPEC_12)](spec/zh_TW/SPEC_12_Logic_Validation_and_Recursion.md), [發現 (SPEC_13)](spec/zh_TW/SPEC_13_Discovery_and_Package.md), [語法 (SPEC_14)](spec/zh_TW/SPEC_14_Formal_Grammar.md), [反模式 (SPEC_15)](spec/zh_TW/SPEC_15_Anti_Patterns.md) |
-| **卷六：餘韻** | 證明與演化 | [測試 (SPEC_16)](spec/zh_TW/SPEC_16_Testing_and_Proof.md), [自我演化 (SPEC_17)](spec/zh_TW/SPEC_17_Self_Evolution.md), [餘韻 (SPEC_18)](spec/zh_TW/SPEC_18_The_Echo.md) |
+| **卷一：公設** | 數學基礎與詞法 | [格論 (01)](spec/zh_TW/SPEC_01_Foundation_and_Lattice.md), [詞法 (02)](spec/zh_TW/SPEC_02_Lexical_Structure.md), [結構 (03)](spec/zh_TW/SPEC_03_Combo_System.md) |
+| **卷二：流轉** | 導航與邏輯 | [導航 (04)](spec/zh_TW/SPEC_04_Navigation_and_Duality.md), [三位一體 (05)](spec/zh_TW/SPEC_05_The_Trinity_Isomorphism.md), [統一化 (06)](spec/zh_TW/SPEC_06_Unification_Logic.md), [態射 (07)](spec/zh_TW/SPEC_07_Logic_and_Pipe.md) |
+| **卷三：秩序** | 治理與演化 | [臨時憲法](spec/zh_TW/ORDER_00_Interim_Constitution.md), [正式治理](spec/zh_TW/ORDER_01_Evolution_and_Governance.md) |
+| **卷四：系統** | 運行時與提交 | [運行時 (08)](spec/zh_TW/SPEC_08_Meta_and_Runtime.md), [標準庫 (09)](spec/zh_TW/SPEC_09_Standard_Library.md), [提交 (10)](spec/zh_TW/SPEC_10_Evolution_and_Commit.md), [反映 (11)](spec/zh_TW/SPEC_11_Reflection_and_Synthesis.md) |
+| **卷五：體系** | 驗證與網路 | [遞迴 (12)](spec/zh_TW/SPEC_12_Logic_Validation_and_Recursion.md), [發現 (13)](spec/zh_TW/SPEC_13_Discovery_and_Package.md), [語法 (14)](spec/zh_TW/SPEC_14_Formal_Grammar.md), [反模式 (15)](spec/zh_TW/SPEC_15_Anti_Patterns.md) |
+| **卷六：餘韻** | 證明與演化 | [測試 (16)](spec/zh_TW/SPEC_16_Testing_and_Proof.md), [自我演化 (17)](spec/zh_TW/SPEC_17_Self_Evolution.md), [餘韻 (18)](spec/zh_TW/SPEC_18_The_Echo.md) |
+
+### 數位宇宙學 (Cosmology - 附錄系列)
+這是一套從物理與拓撲角度解釋 `n/` 動力學的深度附錄。
+*   **[總論與索引](spec/zh_TW/COSMOLOGY/00_COSMOLOGY_Overview.md)**：包含 $E=mc^2$、語義引力、量子坍縮與層論等 15 章理論精華。
 
 ### 具現標準與實務指南
-- **具現標準**：[工程實作 (REAL_01)](spec/zh_TW/REAL_01_Ouroboros_Engineering.md)、[通訊協議 (REAL_02)](spec/zh_TW/REAL_02_Ouroboros_Protocols.md)、[CAID 物理協議 (REAL_03)](spec/zh_TW/REAL_03_CAID_Protocol.md)。
-- **診斷工具**：[錯誤代碼 (ERROR_CODES)](spec/zh_TW/ERROR_CODES.md)、[因果結構 (REAL_04)](spec/zh_TW/REAL_04_Causal_Chain_Protocol.md)、[合規性測試 (REAL_05)](spec/zh_TW/REAL_05_Compliance_and_MVP.md)。
-- **實務指南**：[風格指南 (GUIDE_01)](spec/zh_TW/GUIDE_01_Style_and_Formatting.md)、[引擎優化 (GUIDE_02)](spec/zh_TW/GUIDE_02_Engine_Optimization.md)。
-- **理論擴展**：[熱帶幾何 (APP_01)](spec/zh_TW/APP_01_Tropical_Geometry.md)、[形式證明 (APP_02)](spec/zh_TW/APP_02_Formal_Verification.md)、[範式比較 (APP_03)](spec/zh_TW/APP_03_Paradigm_Comparison.md)。
+- **具現標準**：[工程實作 (REAL_01)](spec/zh_TW/REAL_01_Ouroboros_Engineering.md)、[通訊協議 (REAL_02)](spec/zh_TW/REAL_02_Ouroboros_Protocols.md)、[CAID 物理協議 (REAL_03)](spec/zh_TW/REAL_03_CAID_Protocol.md)、[因果鏈協議 (REAL_04)](spec/zh_TW/REAL_04_Causal_Chain_Protocol.md)。
+- **實務指南**：[排版風格 (GUIDE_01)](spec/zh_TW/GUIDE_01_Style_and_Formatting.md)、[引擎優化 (GUIDE_02)](spec/zh_TW/GUIDE_02_Engine_Optimization.md)、[增量收斂 (GUIDE_03)](spec/zh_TW/GUIDE_03_Incremental_Convergence.md)。
+- **理論附錄**：[熱帶幾何 (APP_01)](spec/zh_TW/APP_01_Tropical_Geometry.md)、[形式證明 (APP_02)](spec/zh_TW/APP_02_Formal_Verification.md)、[範式比較 (APP_03)](spec/zh_TW/APP_03_Paradigm_Comparison.md)、[數學基礎 (APP_04)](spec/zh_TW/APP_04_Mathematical_Foundations.md)、[LADD 全球格論 (APP_05)](spec/zh_TW/APP_05_LADD_Global_Logic_Lattice.md)。
 
 ---
 
@@ -59,7 +62,7 @@ user: ~payload & @Adult
 2.  **[GLOSSARY (術語表)](spec/zh_TW/GLOSSARY.md)**：統一名詞定義。
 3.  **[QUICK_REFERENCE (快速參考)](spec/zh_TW/QUICK_REFERENCE.md)**：語法速查。
 4.  **[SPEC_00 (緒論)](spec/zh_TW/SPEC_00_Introduction.md)**：全域架構導覽。
-5.  **[SPEC_STATUS (法典狀態)](spec/zh_TW/SPEC_STATUS.md)**：開發進度追蹤。
+5.  **[COSMOLOGY (宇宙學)](spec/zh_TW/COSMOLOGY/00_COSMOLOGY_Overview.md)**：深入了解格論與物理的同構性。
 
 ---
 

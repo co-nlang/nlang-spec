@@ -1,18 +1,19 @@
 # n/ Language Specification - 違規範例與語義判定 (Anti-Patterns)
+
 本章節定義 `n/` 宇宙中被嚴格禁止的語義行為。任何實作若容許以下行為，均被視為背離了 `n/` 的核心守恆定律（見 **[SPEC_00](./SPEC_00_Introduction.md)** §7）。
 
 ---
 
 ## 1. 破壞收斂決定論 (Non-determinism)
 
-態射與收斂結果原則上必須是純粹的幾何態射。但在明確宣告效果的情況下，非決定性行為可被容許（詳見 **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** §4.5）。
+態射與收斂結果原則上必須是純粹的幾何態射。但在明確宣告效果的情況下，非決定性行為可被容許（詳見 **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** §4.6）。
 
 *   **❌ 錯誤：隱性隨機性注入**
     ```nlang
-    /bad_logic: x -> x + ~%Math./random()  ;; 禁止！未宣告 %effect 的隨機性
+    /bad_logic: x -> x + ~%Math./random ()  ;; 禁止！未宣告 %effect 的隨機性
     ```
     *   **判定**：收斂必須具備等價性。未宣告效果的隨機數會破壞 CAID 的唯一性與可重複性。
-    *   **✅ 合法**：若顯式標記 `%effect: #nondet`，則非決定性行為可被追蹤與隔離（見 **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** §4.5）。
+    *   **✅ 合法**：若顯式標記 `%effect: #nondet`，則非決定性行為可被追蹤與隔離（見 **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** §4.6）。
 
 *   **❌ 錯誤：隱性環境依賴**
     ```nlang
@@ -99,6 +100,7 @@
     result: (A1 | A2 | ... | An) & (B1 | B2 | ... | Bm)
     ```
     *   **判定**：應優先使用型別約束（`@`）或 Cocoon 邊界來縮小搜索空間，而非在開放空間進行大規模聯集比對。
+    *   **規格化建議 (Self-hosting Tip)**：在將規格書轉化為 Combo 時，應避免將每一章節定義為平行的聯集分支。建議使用**路徑分層 (Path Partitioning)**，利用 `codex.**[SPEC_01](./SPEC_01_Foundation_and_Lattice.md)**` 這樣的具體座標來隔離不同的幾何物件，以維持收斂的高效性。
 *   **❌ 錯誤：深層遞迴展開 (Deep Recursive Spread)**
     ```nlang
     A: { ...B }, B: { ...C }, C: { ...A } ;; 循環展開 -> #divergent

@@ -1,17 +1,18 @@
 # n/ Language Specification - 正式語法 (Formal Grammar)
-本章節提供 `n/` 語言的規範語法定義 (Canonical Grammar)，並詳細說明解析器中的「視界邊界保護」機制。本規格基於 PEG (Parsing Expression Grammar) 範式描述。
+
+本章節提供 `n/` 語言的規範語法定義 (Canonical Grammar)，並詳細說明解析器中的「欄位邊界保護」機制。本規格基於 PEG (Parsing Expression Grammar) 範式描述。
 
 ---
 
-## 1. 視界邊界保護 (Horizon Boundary Protection)
+## 1. 欄位邊界保護 (Field Boundary Protection)
 
-在 `n/` 中，空白（Whitespace）是態射應用的運算子。為了在沒有強制分隔符（如逗號）的情況下，精確區分「運算式的延續」與「新視界的啟動」，`n/` 引入了**邊界保護斷言 (`!field_start`)**。
+在 `n/` 中，空白（Whitespace）是態射應用的運算子。為了在沒有強制分隔符（如逗號）的情況下，精確區分「運算式的延續」與「新欄位的啟動」，`n/` 引入了**邊界保護斷言 (`!field_start`)**。
 
 ### 1.1 `field_start` 斷言
 任何在語法上構成「欄位定義起點」的模式，都稱為 `field_start`。
 *   **定義**：`field_start = { field_key ~ ":" }`
 *   **作用範疇**：
-    *   **層級局部性 (Local Scoping)**：斷言僅針對**當前視界層級**。嵌套在括號（`()`）、列表（`[]`）或內部 Combo（`{}`）中的 `:` 不會觸發當前層級表達式的終止。
+    *   **層級局部性 (Local Scoping)**：斷言僅針對**當前作用域層級**。嵌套在括號（`()`）、列表（`[]`）或內部 Combo（`{}`）中的 `:` 不會觸發當前層級表達式的終止。
     *   **跨行斷言與單行鍵限制 (Single-line Key Constraint)**：
         - **規則**：為了確保解析的決定論並防止回溯爆炸，**`field_key` 及其對應的 `:` 必須位於同一詞法行內**。
         - **行為**：斷言的觸發可以跨越換行符（探測下一行是否為新欄位），但在匹配單個 `field_start` 的過程中，若在 `:` 出現前遇到換行，則該斷言立即失效。
@@ -28,7 +29,7 @@
 
 *   **邊界案例**：
     ```nlang
-    val: /f { sub_key: 1 }  ;; 內部的 : 不觸發終止，因為它在 {} 視界內
+    val: /f { sub_key: 1 }  ;; 內部的 : 不觸發終止，因為它在 {} 作用域內
     next: 2                 ;; 觸發終止，因為它與 val 處於同一層級
     ```
 
@@ -60,21 +61,17 @@ numeric    = @{ ASCII_DIGIT+ }
 *註：`n/` 採用 `XID_START` 與 `XID_CONTINUE` 標準，確保中文、日文、韓文等非拉丁字元皆可作為合法的座標名稱。*
 
 ```ebnf
-prefix_type    = @{ "@" }
-prefix_logic   = @{ "/" }
-prefix_meta    = @{ "%" }
-prefix_system  = @{ "~%" }
-prefix_local   = @{ "~" }
+prefix         = @{ (prefix_system | prefix_local | prefix_meta | prefix_type | prefix_logic)+ }
+prefix_type    = { "@" }
+prefix_logic   = { "/" }
+prefix_meta    = { "%" }
+prefix_system  = { "~%" }
+prefix_local   = { "~" }
 
-;; 命名鍵：包含前綴的識別碼，或純數字鍵（用於 List 同構）
+;; 命名鍵：包含可組合前綴的識別碼，或純數字鍵
 numeric_key = @{ numeric }
 named_key = @{
-    (prefix_system ~ ident)
-    | (prefix_local ~ ident)
-    | (prefix_meta ~ ident)
-    | (prefix_type ~ ident)
-    | (prefix_logic ~ ident)
-    | ident
+    (prefix? ~ ident)
     | numeric_key
 }
 
@@ -258,7 +255,7 @@ next_key: 100
 
 任何符合 `n/` 規格的解析器實作必須保證：
 1.  **冪等格式化**：解析後再經由規範化表示態射（`oo fmt`）輸出，內容雜湊（CAID）必須不變。
-2.  **視界隔離**：嚴格執行 `!field_start` 斷言，確保長鏈表達式不會越過欄位邊界。
+2.  **欄位邊界隔離**：嚴格執行 `!field_start` 斷言，確保長鏈表達式不會越過欄位邊界。
     *   *實作建議*：為了優化效能，建議實作者採用「兩階段解析」或「明確的狀態機」來處理邊界探測，而非單純依賴 PEG 的遞迴先行斷言。
 3.  **UTF-8 支援**：所有字串與標籤必須完整支援萬國碼。
 
@@ -269,7 +266,7 @@ next_key: 100
 | 章節 | 關聯 |
 | :--- | :--- |
 | **[SPEC_02](./SPEC_02_Lexical_Structure.md)** | 詞法原子是文法解析的終點幾何。 |
-| **[SPEC_04](./SPEC_04_Navigation_and_Duality.md)** | 導航與視界解析規則決定了 `path` 的解析邏輯。 |
+| **[SPEC_04](./SPEC_04_Navigation_and_Duality.md)** | 導航與作用域解析規則決定了 `path` 的解析邏輯。 |
 | **[SPEC_11](./SPEC_11_Reflection_and_Synthesis.md)** | `oo fmt` 的實作基礎即是本章定義的規範文法。 |
 | **[REAL_02](./REAL_02_Ouroboros_Protocols.md)** | 討論具體解析器如何處理語法錯誤與恢復。 |
 

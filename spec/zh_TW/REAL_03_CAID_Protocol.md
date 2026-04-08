@@ -42,6 +42,12 @@
 2.  按 **CAID 字符串之字典序** 對分支進行升序排列。
 3.  對排列後的序列進行冪等化簡（移除重複 CAID）。
 
+### 2.4 態射規則排序 (Morphism Rule Sorting)
+當一個態射具備多個分支規則（存儲於 `%rules` 元欄位）時：
+1.  **投影轉換**：將每個分支的「輸入模式 (Input Pattern)」序列化為 **規範化投影字串**（遵循本章 §2.1 之 NFC 與空白移除規則）。
+2.  **字典序排列**：按輸入模式的投影字串之 **Unicode 代碼點** 進行遞增排序。
+3.  **序列化**：依排序後的順序將分支規則（Pattern + Body）傳入雜湊更新器。
+
 ---
 
 ## 3. 引擎實作建議
@@ -60,6 +66,7 @@
 1.  **強制納入參數**：`[%fuel, %strategy, %max_branches, %max_unification_depth, %max_pattern_nodes]`。
 2.  **嚴禁納入參數**：`%timeout`（物理時間不穩定）與任何非標準的 `#ext:` 標籤。
 3.  **序列化格式**：`node_content + "#horizon:" + canonical_json([params])`。
+
 ---
 
 ## 4. 跨實作驗證
@@ -87,3 +94,14 @@
 | **`#unsupported_ca_algo`** | 引擎不支援該 CAID 使用的雜湊演算法或格式版本。 |
 | **`#refine_authority_missing`** | `#refine` Commit 缺少有效的治理權威簽署。 |
 | **`#refine_source_unverifiable`** | `#refine` Commit 的 `source_caids` 無法在當前引擎下驗證。 |
+
+---
+
+## 6. 未來展望：格論感知定址 (CAID-v2)
+
+為了支撐 **[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)** 定義的全球幾何引力路由，CAID 體系預計將演進至 **v2 版本**。
+
+*   **核心目標**：解決 CAID-v1 雪崩效應導致的「語義盲目」問題。
+*   **技術方向**：引入 **雙組件 CAID** 結構，在保留碰撞抗性的同時，內建幾何特徵摘要（Lattice Sketch），實現無須下載完整內容的語義過濾。
+*   **預研記錄**：關於 CAID-v2 的詳細設計方向與熱帶多項式指紋的討論，請參閱 **[nlang-docs/insights/insight_caid_v2_design.md](../../nlang-docs/insights/insight_caid_v2_design.md)**。
+

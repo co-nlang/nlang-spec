@@ -64,6 +64,7 @@
 ### 4.1 演練類別 (Drill Categories)
 *   **`#drill_refine`**：測試跨演算法的精煉宣告與自動重定向語義。
 *   **`#drill_sign`**：測試治理 Commit 的 Ed25519 簽署與 `%authority` 驗證。
+    - **效力聲明**：在引導期（Epoch < 0），`#drill_sign` 產生的簽署僅用於**技術驗證**，不具備法典層級的終效約束力。
 *   **`#drill_conflict`**：故意製造語義衝突，測試 `%cause` 結構的精確度。
 *   **`#drill_horizon`**：測試計算視界邊界觸發與 `#blur` 狀態的決定論。
 
@@ -84,7 +85,9 @@
 
 ### 5.2 啟動程序 (Launch Procedure)
 1.  **物理公告**：由委員會共同簽署 Epoch 0 啟動宣告。
-2.  **歷史精煉 (The Final Pruning)**：執行全域重構與 `#refine` 啟用，將引導期的實驗性歷史固化為 Epoch 0 的創世 Commit ($C_0$)。
+2.  **歷史精煉 (The Final Pruning)**：
+    - 委員會產出一份 **「創世精煉清單 (Genesis Refinement List)」**，將引導期產生之重要 CAID 映射至 Epoch 0 之創世身分。
+    - 此清單將 **硬編碼** 於 `oo v1.0.0` 引擎內，作為所有後續 `%authority` 驗證的幾何原點（即不需驗證其舊簽名）。
 3.  **正式治理啟用**：正式將權限移交予 **[ORDER_01](./ORDER_01_Evolution_and_Governance.md)**。
 
 ---

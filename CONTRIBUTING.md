@@ -177,7 +177,6 @@ During the Interim Phase (**ORDER_00**), the **Council of Four** (SPEC Guardians
 - Reviewing PRs within their respective domains.
 - Verifying Digital Assistant assertions. Overriding an AI assertion requires an explicit justification in the commit metadata.
 - Merging when consensus is reached (3/5 for general, 2/2 for core SPEC).
-- Updating the `SPEC_STATUS.md` tracker.
 
 ---
 

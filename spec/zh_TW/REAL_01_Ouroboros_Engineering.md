@@ -3,12 +3,7 @@
 > [!NOTE]: [Standard / 混合規範性]  
 > [!NOTE]: 本規範定義 Ouroboros 引擎在物理世界的實作標準、工作區結構與 CLI 行為。
 
-> [!IMPORTANT]
-> [!NOTE]：
-> - **[Core Requirement]**：為了確保全域邏輯格論的統一與網路連通性，實作者**必須**遵循的規範。其地位等同於法典之延伸。
-> - **[Reference Recommendation]**：為了與官方工具鏈相容，**建議**實作者採用的最佳實踐。
-
-本文件是 **[SPEC_10](./SPEC_10_Evolution_and_Commit.md)** 與 **[SPEC_11](./SPEC_11_Reflection_and_Synthesis.md)** 的工程實作配套。
+本文件將工程實作與 **[APP_04](./APP_04_Mathematical_Foundations.md)** 定義的量子化數學模型對齊，確立物理引擎如何在有限資源下執行子空間投影。
 
 ---
 
@@ -18,375 +13,1073 @@
 
 ### 1.1 One-shot 模式 (`oo run`)
 ```bash
-# 基本語法
 oo run --observe <path> [--commit] [--format json|n] [--load <file>]
 ```
-- **實作建議**：引擎應在記憶體中建立臨時宇宙，完成收斂後立即釋放。若帶有 `--commit`，則需更新本地 `.oo/` 狀態。
 
-### 1.2 REPL 模式 (`oo repl`)
+### 1.2 Service 模式 (`oo service`)
+*   **宇宙節點 (Universe Node)**：承載特定視角內的子空間狀態，並透過標準協議暴露「投影與演化」能力。
 ```bash
-# 基本語法
-oo repl [--privileged] [--load <file>] [--empty]
-```
-- **特權模式**：需檢查啟動環境是否具備權限。
-- **Auto-commit**：建議預設開啟，以提升互動體驗。
-
-### 1.3 Service 模式 (`oo service`)
-```bash
-# 基本語法
 oo service [--socket <path>] [--host <h>] [--port <p>] [--privileged-token <t>]
 ```
-- **宇宙節點 (Universe Node)**：在此模式下，Ouroboros 不僅是工具，而是一個**語義運算節點**。它承載了一個特定視界內的宇宙狀態，並透過標準協議向全球邏輯格論暴露其「觀測與演化」能力。
 
 ---
 
 ## 2. Ouroboros Protocol (JSON-RPC 封裝)
 
-雖然規格書定義 Request/Response 為 n/ Combo，但實際傳輸時建議使用 JSON 序列化。RPC 的 `%op` 欄位應直接對應到 **[SPEC_10](./SPEC_10_Evolution_and_Commit.md)** 中定義的系統態射路徑。
+`oo service` 啟動的 Service 節點透過 **JSON-RPC 2.0** 協議暴露 API。JSON 僅作為 `n/` 宇宙在特定時刻的 **物理投影快照 (Transport Snapshot)**，而非語義本體。
 
-### 2.1 Request 序列化範例 (JSON)
+### 2.1 協議基礎
+
+**傳輸層**：
+*   **Unix Domain Socket** (預設): `~/.oo/service.sock`
+*   **TCP**: 監聽 `localhost` 或網路介面
+*   **WebSocket**: 用於瀏覽器客戶端連接
+*   **標準輸入輸出 (stdio)**: 用於 Language Server Protocol (LSP)
+
+**訊息格式**：
 ```json
 {
-  "jsonrpc": "2.0",
-  "method": "oo.request",
-  "params": {
-    "%op": "~%Engine./observe",
-    "%path": "_.user.profile",
-    "%session": "session-id-123"
-  },
-  "id": 1
+    "jsonrpc": "2.0",
+    "id": 1,                    // 請求 ID，通知可為 null
+    "method": "nlang/observe",  // 方法名
+    "params": { ... }           // 參數對象
 }
 ```
 
-### 2.2 Response 序列化範例 (JSON)
+### 2.2 核心 API 端點
+
+#### `nlang/observe` - 觀測子空間
+
+請求觀測特定路徑的收斂結果。
+
+**Request**:
 ```json
 {
-  "jsonrpc": "2.0",
-  "result": {
-    "%status": "#success",
-    "%result": { "name": "Alice", "age": 30 },
-    "%commit": "sha256:7f8a9b2c..."
-  },
-  "id": 1
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "nlang/observe",
+    "params": {
+        "path": "_.config.port",
+        "fuel": 10000,
+        "timeout": 5000,
+        "strategy": "blur",
+        "format": "json"        // "json" | "n" | "canonical"
+    }
 }
 ```
 
-### 2.3 型別對映表與 IO 狀態處理
-為了避免與使用者定義的欄位衝突，特殊的格論極值建議使用特殊的 `$kind` 標籤。
+**Response**:
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "caid": "hash:sha256:v1:abc123...",
+        "value": {"$kind": "data", "val": 8080},
+        "fuel_consumed": 150,
+        "effect": "#pure",
+        "strategy_applied": "blur"
+    }
+}
+```
 
-> [!WARNING] **有損傳輸預警**
-> JSON 僅作為 `n/` 宇宙在特定時刻的 **物理傳輸快照 (Transport Snapshot)**。
-> 由於 JSON 缺乏表達「疊加態 (Union)」與「格論約束 (Constraint)」的能力，當宇宙尚未完全坍縮時，態射至 JSON 的行為將是 **有損的 (Lossy)**。建議僅在節點已收斂為原子或純 Cocoon 時才進行 JSON 導出。
+**Error Response**:
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "error": {
+        "code": -32001,
+        "message": "Fuel exhausted",
+        "data": {
+            "cause": "#fuel_exhausted",
+            "fuel_requested": 100,
+            "fuel_consumed": 100,
+            "partial_result": { ... }
+        }
+    }
+}
+```
 
-#### 非原子態映射規則：
-*   **Pending (待定)**：代表觀測已發起但尚未返回結果（如非同步 IO）。在傳輸層，應映射為 `{"$kind": "pending", "request_id": "..."}`。這與 `_` (Top) 不同，`_` 代表「所有可能性」，而 `pending` 代表「正在確定中的單一可能性」。
-*   **Union (聯集)**：映射為 `{"$kind": "union", "branches": [...]}`。
+#### `nlang/commit` - 提交演化
 
-| n/ 型別 | JSON 序列化表示 |
-| :--- | :--- |
-| `_` (Top) | `{"$kind": "top"}` |
-| `_\|_` (Bottom) | `{"$kind": "bottom", "cause": "..."}` |
-| `#tag` | `{"$kind": "tag", "name": "tag"}` |
-| `p"..."` (Path) | `{"$kind": "path", "value": "..."}` |
-| Combo `{}` | JSON Object |
-| List `[]` | JSON Array |
+將 Staged 區的變更固化為新的 Commit。
+
+**Request**:
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "nlang/commit",
+    "params": {
+        "message": "更新端口配置",
+        "author": "developer@example.com",
+        "parents": ["hash:sha256:v1:parent..."],
+        "sign": true,             // 使用 GPG/SSH 簽名
+        "allow_conflict": false   // 是否允許提交含有 _|_ 的內容
+    }
+}
+```
+
+**Response**:
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 2,
+    "result": {
+        "commit_caid": "hash:sha256:v1:commit123...",
+        "root_caid": "hash:sha256:v1:root456...",
+        "timestamp": 1704067200,
+        "affected_paths": ["_.config.port", "_.config.host"]
+    }
+}
+```
+
+#### `nlang/query` - 內容查詢
+
+透過 CAID 查詢節點內容（需節點已於本地存在或可從遠端獲取）。
+
+**Request**:
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 3,
+    "method": "nlang/query",
+    "params": {
+        "caid": "hash:sha256:v1:abc123...",
+        "depth": 3,               // 解析深度，0 僅返回元資訊
+        "include_meta": true      // 是否包含 % 欄位
+    }
+}
+```
+
+#### `nlang/morph` - 態射應用
+
+應用特定態射於輸入節點。
+
+**Request**:
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 4,
+    "method": "nlang/morph",
+    "params": {
+        "input_caid": "hash:sha256:v1:target...",
+        "morphism_caid": "hash:sha256:v1:morph...",
+        "args": [
+            {"$kind": "number", "val": 42}
+        ],
+        "fuel": 5000
+    }
+}
+```
+
+#### `nlang/subscribe` / `nlang/unsubscribe` - 訂閱變更
+
+訂閱特定路徑的觀測結果變更（基於 DAG 的響應式更新）。
+
+**Request**:
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 5,
+    "method": "nlang/subscribe",
+    "params": {
+        "path": "_.ui.components.*",
+        "event_types": ["converged", "conflict", "refined"]
+    }
+}
+```
+
+**Notification** (當路徑變更時推送):
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "nlang/notify",
+    "params": {
+        "subscription_id": "sub123",
+        "event": {
+            "type": "converged",
+            "path": "_.ui.components.header",
+            "old_caid": "hash:sha256:v1:old...",
+            "new_caid": "hash:sha256:v1:new...",
+            "fuel_consumed": 230
+        }
+    }
+}
+```
+
+#### `nlang/discover` - LADD 發現
+
+執行格論感知的分散式發現。
+
+**Request**:
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 6,
+    "method": "nlang/discover",
+    "params": {
+        "pattern": {
+            "$kind": "type_constraint",
+            "type": "@Database./Connection"
+        },
+        "horizon": {
+            "max_hops": 3,
+            "min_trust": 0.5
+        }
+    }
+}
+```
+
+### 2.3 批次與管線請求
+
+**批次請求 (Batch Request)**：
+```json
+[
+    {"jsonrpc": "2.0", "id": 1, "method": "nlang/observe", "params": {...}},
+    {"jsonrpc": "2.0", "id": 2, "method": "nlang/observe", "params": {...}},
+    {"jsonrpc": "2.0", "id": 3, "method": "nlang/commit", "params": {...}}
+]
+```
+
+引擎**不保證**批次內請求的執行順序，除非使用 `depends_on` 顯式聲明依賴：
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 3,
+    "method": "nlang/commit",
+    "params": { ... },
+    "depends_on": [1, 2]    // 等待 id 1 和 2 完成後才執行
+}
+```
+
+**管線請求 (Pipeline Request)**：
+類似 GraphQL 的連續投影：
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 7,
+    "method": "nlang/pipeline",
+    "params": {
+        "steps": [
+            {"op": "observe", "path": "_.data.users"},
+            {"op": "morph", "morphism": "~%List./filter", "args": [{"age": "> 18"}]},
+            {"op": "morph", "morphism": "~%List./map", "args": [{"select": ["name", "email"]}]}
+        ],
+        "global_fuel": 10000
+    }
+}
+```
+
+### 2.4 錯誤碼規範 **[Core Requirement]**
+
+| 錯誼碼 | 名稱 | 說明 |
+| :--- | :--- | :--- |
+| `-32700` | `Parse error` | JSON 解析失敗 |
+| `-32600` | `Invalid Request` | 非法的 JSON-RPC 請求結構 |
+| `-32601` | `Method not found` | 不存在的方法 |
+| `-32602` | `Invalid params` | 參數型別或數量錯誤 |
+| `-32603` | `Internal error` | 引擎內部錯誤 |
+| `-32001` | `Fuel exhausted` | 燃料耗盡 |
+| `-32002` | `Timeout` | 觀測超時 |
+| `-32003` | `Orthogonal conflict` | 正交衝突 `_\|_` |
+| `-32004` | `CAID not found` | 請求的 CAID 不存在且無法冷凝 |
+| `-32005` | `Privilege required` | 需要特權令牌 |
+| `-32006` | `Invalid token` | 特權令牌無效或過期 |
+| `-32007` | `Cycle detected` | 發現循環引用 |
+| `-32008` | `Divergent` | 遞迴發散 |
+
+### 2.5 型別對映與有損處理
+
+由於 JSON 缺乏表達「疊加態」與「正交約束」的能力，投影至 JSON 的行為是 **有損的**。建議僅在穩定特徵值時進行導出。
+
+| n/ 型別 | JSON 序列化表示 | 還原說明 |
+| :--- | :--- | :--- |
+| `_` (Top) | `{"$kind": "top"}` | 萬有子空間，無具體值 |
+| `_\|_` (Bottom) | `{"$kind": "bottom", "cause": "...", "caid": "..."}` | 包含衝突原因與因果鏈 CAID |
+| `A \| B` (Union) | `{"$kind": "union", "branches": [{...}, {...}]}` | 聯集態的所有分支 |
+| `#tag` | `{"$kind": "tag", "name": "tag"}` | 標籤型別 |
+| `@Type` | `{"$kind": "type", "name": "Type", "caid": "..."}` | 型別引用 |
+| Combo `{}` | JSON Object | 標準 JSON 對象，欄位名可能包含 `%` 前綴 |
+| `@list` | `{"$kind": "list", "items": [...]}` | 列表容器 |
+| `@num` | `{"$kind": "number", "val": 3.14, "complex": false}` | 數值，複數時 complex 為 true |
+| `@str` | `"string value"` | 純字串 |
+| `#blur` | `{"$kind": "blur", "caid": "...", "partial": {...}}` | 模糊狀態的已知部分 |
+| `#incomplete` | `{"$kind": "incomplete", "reason": "..."}` | 不完全狀態，無 CAID |
+
+**有損注意事項**：
+*   **效果標籤遺失**：JSON 無法表達 `%effect` 的傳染性，需顯式檢查 `metadata.effect` 欄位。
+*   **CAID 指紋保留**：所有 JSON 對象的 `$caid` 欄位可用於驗證內容一致性。
+*   **環狀引用**：JSON 不支持引用循環，引擎使用 `$ref: "caid://..."` 表示循環引用。
+
+### 2.6 認證與安全 **[Core Requirement]**
+
+**Unix Socket 認證 (預設)**：
+*   透過 Unix socket 的 `getpeername` 驗證 UID/GID。
+*   僅允許同一使用者的進程連接，或配置的白名單群組。
+
+**Token 認證 (TCP/WebSocket)**：
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 0,
+    "method": "nlang/auth",
+    "params": {
+        "token": "hash:sha256:v1:privileged...",
+        "session_timeout": 3600
+    }
+}
+```
+
+**TLS 加密 (TCP)**：
+*   建議使用 mTLS，客戶端需提供客戶端證書。
+*   證書的 CN 欄位映射至 `n/` 的觀測身份。
 
 ---
 
-## 3. 工作區儲存結構 (.oo/)
+## 3. 運行時實作細節 (Runtime Implementation) **[Reference Recommendation]**
 
-本節定義 Ouroboros 工作區的儲存規範。實作者應區分「核心必要結構」與「參考佈局」。
+### 3.1 核心執行緒模型
 
-### 3.1 核心必要結構 **[Core Requirement]**
-為了確保跨實作的內容互操作性，任何符合 `n/` 規範的儲存引擎**必須**實作以下邏輯：
-*   **內容定址儲存 (Content-Addressable Storage)**：物件必須以 CAID 為標識存儲於 `objects/` 目錄中。目錄深度與演算法前綴必須對齊 **[REAL_01](./REAL_01_Ouroboros_Engineering.md)**。
+Ouroboros 引擎採用 **M:N 執行緒模型**，與異步 Rust 的 `tokio` 或 `async-std` 類似：
 
-### 3.2 參考實作佈局 **[Reference Recommendation]**
-為了與 `oo` 官方工具鏈保持 100% 相容，建議實作者採用以下佈局：
+*   **工作者執行緒池 (Worker Threads)**：數量通常等於 CPU 核心數，用於執行 CPU 密集型的投影計算。
+*   **I/O 執行緒 (I/O Threads)**：用於處理 FFI 調用、網路請求等阻塞操作。
+*   **調度器 (Scheduler)**：採用工作竊取 (Work-Stealing) 算法，確保負載均衡。
 
+### 3.2 觀測請求的生命週期
+
+```rust
+// 虛擬碼：觀測請求處理流程
+enum ObservationRequest {
+    Converge { path: Path, fuel: MBU, timeout: Duration },
+    Query { caid: CAID, depth: usize },
+    Morph { source: Node, morphism: CAID, args: Vec<Node> },
+}
+
+async fn handle_request(req: ObservationRequest) -> ObservationResult {
+    // 1. 檢查快取 (Cache Lookup)
+    if let Some(cached) = cache.get(&req.key()) {
+        return Ok(cached);
+    }
+    
+    // 2. 燃料配額檢查
+    if !fuel_manager.reserve(req.fuel) {
+        return Err(ObservationError::FuelExhausted);
+    }
+    
+    // 3. 執行投影
+    let result = match req {
+        Converge { path, fuel } => converge_path(path, fuel).await,
+        Query { caid, depth } => query_node(caid, depth).await,
+        Morph { source, morphism, args } => apply_morphism(source, morphism, args).await,
+    };
+    
+    // 4. 結果快取與計費
+    if let Ok(ref node) = result {
+        cache.insert(req.key(), node.clone());
+        fuel_manager.consume(req.fuel - node.remaining_fuel());
+    }
+    
+    result
+}
+```
+
+### 3.3 協程與綠色執行緒
+
+對於 `#divergent` 偵測和長時間運算，引擎使用協程 (Coroutine) 實現協作式多工：
+
+*   **協作點 (Yield Points)**：在每次遞迴合併、態射應用、CAID 計算時插入檢查點。
+*   **搶佔 (Preemption)**：雖然 `n/` 語義上不支持搶佔（保證原子性），但引擎可以在協作點檢查 `%timeout` 並拋出 `#timeout` 異常。
+*   **上下文切換成本**：協程切換成本約 100-200ns，遠低於 OS 執行緒切換。
+
+### 3.4 錯誤恢復與熱重載
+
+*   **分段觀測 (Segmented Observation)**：將大型 Combo 的觀測分解為多個小片段，每個片段獨立計費與快取。
+*   **檢查點 (Checkpoint)**：每隔一定 MBU 消費自動建立檢查點，允許從檢查點恢復而非重新開始。
+*   **熱重載 (Hot Reload)**：在開發模式下，引擎監聽源碼變更，僅使受影響的 DAG 節點失效，而非重啟整個會話。
+
+---
+
+## 4. 工作區儲存結構 (.oo/)
+
+### 4.1 核心必要結構 **[Core Requirement]**
+*   **內容定址儲存 (CAS)**：物件必須以 **CAID** (譜幾何指紋) 為標識存儲於 `objects/` 目錄中。
+
+### 4.2 參考佈局 **[Reference Recommendation]**
 ```
 .oo/
-├── objects/        ← [核心] 內容定址存儲
-├── refs/
-│   ├── heads/      ← 分支指標 (如 main -> hash)
-│   └── HEAD        ← 當前活躍指標
-├── staged          ← 暫存的演化定義 (n/ 格式)
-├── sessions/       ← Service 模式下的工作階段快取
+├── objects/        ← [核心] 內容定址儲存 (CAS)
+│   ├── objects.idx      ← 物件索引 (CAID → 文件位置)
+│   ├── refs.idx         ← 反向引用索引
+│   ├── pack/            ← 打包壓縮的物件
+│   └── 00/              ← 按前兩碼分散儲存
+│       ├── 0001abc...   ← 實際物件文件
+│       └── ...
+├── refs/           ← 分支指標 (heads/HEAD)
+│   ├── heads/main
+│   └── HEAD
+├── staged          ← 暫存的投影定義
 ├── config.n        ← 局部環境配置
-└── repl_history    ← 交互式命令歷史
+├── audit.log       ← 特權操作審計日誌
+└── wal/            ← 寫前日誌 (Write-Ahead Log)
 ```
 
-### 3.3 增量依賴追蹤 (Incremental Dependency Tracking) **[Reference Recommendation]**
-為了支援高效的增量收斂，引擎應在記憶體中維護一張依賴圖（Dependency DAG）：
+### 4.3 內容定址儲存 (CAS) 格式 **[Core Requirement]**
 
-1.  **動態建構**：在「視界優先解析」過程中，每當一個節點引用另一個節點時，建立一條從下游到上游的有向邊。
-2.  **循環處理**：若偵測到強連通分量（SCC），且路徑中無態射變換，則依據 **[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)** 判定為靜止循環（結果為 `_`）。
-3.  **無效化策略**：當一個 Commit 被切換或演化時，僅對 DAG 中受影響的節點標註為「髒 (Dirty)」，在下次觀測時重新收斂。
-4.  **存儲建議**：依賴圖屬於運行時狀態，**不建議持久化**。引擎啟動後可從不可變的 Commit 中隨時重建。
+每個存儲於 `objects/` 的對象必須遵循以下物理格式：
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Object Header (32 bytes)                               │
+│  - Magic: "NLAG" (4 bytes)                              │
+│  - Version: 1 (4 bytes)                                 │
+│  - CAID Algorithm: enum (4 bytes)                       │
+│  - Payload Size: u64 (8 bytes)                          │
+│  - Reserved: 12 bytes                                   │
+├─────────────────────────────────────────────────────────┤
+│  CAID (variable, depends on algorithm)                  │
+├─────────────────────────────────────────────────────────┤
+│  Payload (compressed, see below)                        │
+├─────────────────────────────────────────────────────────┤
+│  Checksum (Blake3, 32 bytes)                            │
+└─────────────────────────────────────────────────────────┘
+```
+
+**檔案命名**：物件檔案以完整 CAID 命名，但按前兩個位元組分散儲存於子目錄（如 `objects/00/0001abc...`），避免單一目錄檔案過多。
+
+### 4.4 壓縮策略 **[Reference Recommendation]**
+
+為了節省存儲空間，Payload 可選擇壓縮：
+
+| 壓縮算法 | 適用場景 | 壓縮率 | CPU 開銷 | 建議閾值 |
+| :--- | :--- | :--- | :--- | :--- |
+| **None** | 小型 Combo | 100% | 無 | < 1KB |
+| **LZ4** | 中型 Combo，快速解壓優先 | 60-70% | 低 | 1KB - 100KB |
+| **Zstd** | 大型 Combo，存儲優先 | 40-50% | 中 | > 100KB |
+| **Dictionary Zstd** | 重複模式多的結構化數據 | 30-40% | 中高 | 大量相似物件 |
+
+**自動選擇**：引擎根據 Payload 大小自動選擇壓縮算法。
+
+### 4.5 索引與查找 **[Core Requirement]**
+
+**物件索引 (`objects.idx`)**：
+*   格式：`CAID → (file_id, offset, size, compression_algo)`
+*   存儲於記憶體中的 HashMap，啟動時從磁碟加載。
+*   寫入新對象時同步更新。
+*   定期檢查點（Checkpoint）至磁碟，避免啟動時全量掃描。
+
+**反向引用索引 (`refs.idx`)**：
+*   格式：`CAID → Vec<Referrer_CAID>`
+*   用於碎片整理時識別孤兒對象。
+*   僅在 `oo gc` 時重建，避免寫放大。
+
+**索引快取策略**：
+*   啟動時載入全部索引（假設 < 100MB）。
+*   寫操作先寫 WAL，再更新記憶體索引，最後異步刷盤。
+
+### 4.6 事務與崩潰恢復 **[Core Requirement]**
+
+**寫前日誌 (Write-Ahead Log, WAL)**：
+*   寫入新對象前，先寫入 WAL。
+*   WAL 條目包含：操作類型、CAID、暫存文件路徑。
+*   確認寫入成功後才更新主索引，最後刪除 WAL 條目。
+
+**原子提交**：
+*   `oo commit` 操作必須是原子的——要麼完全成功，要麼完全不寫入。
+*   使用兩階段提交（2PC）：先寫入所有新對象，再原子性更新 `refs/HEAD`。
+
+**啟動檢查**：
+*   引擎啟動時檢查 WAL 目錄。
+*   若有未完成的事務，根據策略回滾（刪除暫存文件）或重做（完成寫入）。
+
+**校驗和驗證**：
+*   讀取對象時驗證 Blake3 校驗和。
+*   若不匹配則標記為 `#corrupted` 並嘗試從遠端節點恢復（若配置）。
+
+### 4.7 打包與垃圾回收 **[Reference Recommendation]**
+
+**物件打包 (Packing)**：
+*   類似 Git 的 packfile，將大量小物件打包為連續存儲。
+*   使用差分壓縮（delta compression）儲存相似物件的差異。
+*   `oo gc --aggressive` 觸發重新打包。
+
+**垃圾回收 (GC)**：
+*   `oo gc` 掃描所有 Commit，識別被引用的對象。
+*   刪除未被任何 Commit 引用的「孤兒對象」。
+*   `--dry-run` 選項僅預覽將被刪除的對象。
 
 ---
 
-## 4. 指令對應表 (CLI to System Morphisms)
+## 5. 外部函數介面 (FFI) 的實作 **[Core Requirement]**
 
-| CLI 指令 | 對應系統態射 | 說明 |
-| :--- | :--- | :--- |
-| `oo add` | `~%Engine./evolve` | 將檔案內容注入暫存區。 |
-| `oo commit` | `~%repl./commit` | 將暫存區固化為新 Commit。 |
-| `oo run --observe` | `~%Engine./observe` | 收斂並輸出目標路徑。 |
-| `oo rollback` | `~%repl./rollback` | 移動 HEAD 指標。 |
-| `oo branch` | `~%repl./branch` | 建立演化分支。 |
+### 5.1 FFI 沙箱：量子退相干屏蔽 **[Core Requirement]**
 
----
+若 FFI 態射標記為 **`#pure`**，引擎 **必須** 隔離環境相位噪聲，確保觀測結果的決定論：
 
-## 5. 漸進式採用與嵌入模式 (Incremental Adoption)
+1. **時鐘凍結 (Clock Freezing)**：
+   *   沙箱內的時間函數（如 `gettimeofday`）必須回傳固定值（Epoch 0 或請求開始時間）。
+   *   確保多次調用同一純粹 FFI 函數產生完全相同的結果。
 
-`n/` 並非必須全盤取代現有系統。透過 **Ouroboros Service (oo service)**，現有程式碼可以將 `n/` 作為一個**語義插件 (Semantic Plugin)** 來逐步嵌入。
+2. **確定性熵源 (Deterministic Entropy)**：
+   *   沙箱內的隨機數生成器必須由當前路徑的 **CAID** 衍生隨機種子。
+   *   這確保了「相同輸入產生相同輸出」的純粹性。
 
-### 5.1 作為 DSL 嵌入現有語言
-現有的 C/Rust/Python 程式可以透過標準的 JSON-RPC 呼叫 `oo service`：
-1.  **發起觀測 (Observe Request)**：將 `n/` 腳本（定義或規則）發送給引擎。
-2.  **接收坍縮結果 (Collapsed Response)**：引擎進行格論收斂，並將結果以 JSON 形式回傳。
-3.  **語法對齊**：利用 JSON 的 `{"$kind": "..."}` 標記來處理 `n/` 的特殊極端值（如 Top/Bottom）。
+3. **環境變數隔離**：
+   *   沙箱內無法讀取或修改主進程的環境變數。
+   *   僅允許透過顯式參數傳遞配置。
 
-### 5.2 外部函數介面 (FFI) 的實作 **[Core Requirement]**
+4. **檔案系統虛擬化**：
+   *   純粹 FFI 函數無法存取真實檔案系統，僅能操作記憶體中的虛擬檔案描述符。
+   *   若需讀取檔案，必須在 FFI 調用前由引擎預先載入並作為參數傳入。
 
-對於需要極高性能或底層系統調用的場景，實作者可以實作 **[SPEC_09](./SPEC_09_Standard_Library.md)** 定義的 `%external` 態射。
+### 5.2 FFI 型別映射參考 **[Core Requirement]**
 
-#### 5.2.1 FFI 沙箱與純粹性義務
-為了守護 **Invariant 1 (決定論)**，若 FFI 態射被標記為 **`#pure`**，引擎實作者 **必須** 提供具備下列特性的沙箱環境：
+`n/` 的型別與外部語言（C、Rust、WASM）的映射必須遵循以下規範，確保跨語言調用的語義一致性：
 
-1.  **環境隔離 (Env Isolation)**：嚴禁外部程式存取宿主機之環境欄位、硬體識別碼或物理路徑。
-2.  **時鐘凍結 (Clock Freezing)**：嚴禁讀取系統物理時間。所有對時間的請求必須回傳固定值（Epoch 0 創世時刻）。
-3.  **無狀態保證 (Statelessness)**：外部程式在兩次呼叫之間嚴禁保留任何物理層面的可變狀態。
-4.  **確定性熵源 (Deterministic Entropy)**：若外部程式需使用隨機性，引擎必須透過當前路徑的 CAID 衍生出確定性種子（Deterministic Seed）進行注入。
+#### 基礎型別映射表
 
-> [!CAUTION] **規格合規警告**
-> 若引擎實作環境無法提供上述硬性隔離（例如受限於作業系統權限），則該引擎 **必須** 將所有 FFI 調用強制標記為 **`#io`**。嚴禁在不具備隔離能力的情況下將 FFI 偽裝為 `#pure`，這將導致 CAID 在不同節點間產生分歧，視為嚴重違反規格。
+| n/ 型別 | C 對應型別 | Rust 對應型別 | 位元組對齊 | 備註 |
+| :--- | :--- | :--- | :---: | :--- |
+| `@bool` | `bool` (C99+) | `bool` / `u8` | 1 | `0` = false, `1` = true |
+| `@int` | `int64_t` | `i64` | 8 | LEB128 編碼後傳輸 |
+| `@float` | `double` | `f64` | 8 | IEEE 754 標準雙精度 |
+| `@complex` | `n_complex_t` (見下方) | `(f64, f64)` | 16 | 實部 + 虛部各 8 bytes |
+| `@str` | `const char*` | `*const u8` + `usize` | 8/16 | UTF-8 編碼，含長度前綴 |
+| `@bytes` | `const uint8_t*` | `&[u8]` | 8/16 | 原始位元組，含長度前綴 |
+| `@caid` | `const char*` | `String` / `&str` | 8 | CAID 字串，UTF-8 編碼 |
 
-*   **動態載入**：引擎可透過動態連結庫（`.so`, `.dll`）或 WebAssembly（Wasm）加載外部函數實作。
-*   **型別安全檢查**：在進入外部程式前，引擎**必須**驗證輸入參數是否滿足態射的型別約束。
-*   **隔離與安全**：建議將外部函數運行於獨立的沙箱或線程中，防止其崩潰影響 `n/` 引擎的穩定性。
+#### 複數型別結構 (n_complex_t)
 
+量子化後的 `n/` 支援複數運算，FFI 層必須明確定義其記憶體佈局：
 
-### 5.3 FFI 型別映射參考
-為了保證跨語言呼叫的一致性，建議實作者遵循以下映射標準：
+```c
+// C 標頭檔定義
+#ifndef NLANG_COMPLEX_H
+#define NLANG_COMPLEX_H
 
-| n/ 型別 | Rust (建議) | C (ABI) | JavaScript |
-| :--- | :--- | :--- | :--- |
-| **`@bool`** | `bool` | `bool` / `int8_t` | `Boolean` |
-| **`@int`** | `i64` / `num_bigint` | `int64_t` | `BigInt` |
-| **`@float`** | `f64` | `double` | `Number` |
-| **`@str`** | `String` / `&str` | `const char*` | `String` |
-| **`@list`** | `Vec<Value>` | `Value**` | `Array` |
-| **`@combo`** | `IndexMap<String, Value>` | `struct Map*` | `Object` |
-| **`@morphism`** | `Box<dyn Fn(Value) -> Value>` | 函數指標或閉包結構 | `Function` |
-| **`@option`** | `Option<Value>` | `Value*` (NULL 可表 None) | `null \| Value` |
-| **`@result`** | `Result<Value, Cause>` | `Result { Value* val; Cause* err; }` | `{ ok?, val?, err? }` |
-| **`_\|_` (Bottom)** | `Err(Cause)` | `NULL` | `undefined` / `Error` |
-| **`_` (Top)** | `Value::Top` | `void*` | `null` |
+typedef struct {
+    double real;      // 實部
+    double imag;      // 虛部
+} n_complex_t;
 
+// 輔助巨集
+define NLANG_COMPLEX_REAL(c) ((c).real)
+#define NLANG_COMPLEX_IMAG(c) ((c).imag)
+#define NLANG_COMPLEX_MAKE(r, i) ((n_complex_t){.real = (r), .imag = (i)})
 
----
+#endif // NLANG_COMPLEX_H
+```
 
-## 6. IO 實戰模式 (IO Practice Patterns)
-
-為了讓開發者能編寫實際的應用，建議採用以下「純粹化」模式來包裝外部 IO：
-
-### 6.1 外部 API 抽象化模式
-不直接在業務邏輯中呼叫 `~%IO`，而是定義一個「能力 Combo」：
-
-```nlang
-;; 1. 定義能力型別 (Boundary)
-@UserAPI: {{
-    get_user: (id: @str) -> @User | #error
-}}
-
-;; 2. 實作外部綁定 (FFI Bridge)
-~my_service: @UserAPI & {
-    get_user: (id -> ~%IO./http_get "https://api.example.com/user/${id}")
+```rust
+// Rust FFI 定義
+#[repr(C)]
+pub struct NComplex {
+    pub real: f64,
+    pub imag: f64,
 }
 
-;; 3. 業務邏輯保持純粹 (Pure Logic)
-/process: (api: @UserAPI, id) ->
-    api.get_user(id) |> { ... }
+impl NComplex {
+    pub fn new(real: f64, imag: f64) -> Self {
+        Self { real, imag }
+    }
+    
+    pub fn from_complex128(c: Complex<f64>) -> Self {
+        Self { real: c.re, imag: c.im }
+    }
+}
 ```
 
-### 6.2 快取與固化策略
-利用 **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** 定義的 `#cached` 標籤，引擎應自動對冪等的 GET 請求進行 CAID 快取。
-*   **工程建議**：在分散式系統中，`oo service` 應維護一個「CAID 到 IO 回應」的映射表，讓重複的外部觀測能在不觸發實際網路請求的情況下直接收斂。
+#### 定點數型別 (Fixed-Point)
+
+為確保跨平台數值一致性，`n/` 的內部定點數表示（見 **[REAL_03](./REAL_03_CAID_Protocol.md)** §4.1）在 FFI 邊界的轉換規則：
+
+| n/ 內部表示 | FFI 傳輸格式 | 轉換公式 |
+| :--- | :--- | :--- |
+| 128-bit 定點數 (64+64) | `n_fixed128_t` 結構 | `value = integer + fraction / 2^64` |
+| 譜座標 (複數定點) | `n_spectral_coord_t` | 實部/虛部各為 128-bit 定點 |
+
+```c
+typedef struct {
+    int64_t integer;
+    uint64_t fraction;
+} n_fixed128_t;
+
+typedef struct {
+    n_fixed128_t real;
+    n_fixed128_t imag;
+} n_spectral_coord_t;
+```
+
+#### Combo 結構傳遞
+
+Combo 結構在 FFI 邊界以 **JSON 序列化字串** 形式傳遞，或透過記憶體共享介面（零拷貝）：
+
+**選項 A：JSON 字串（預設）**
+- 優點：語言無關，易於除錯
+- 缺點：序列化開銷
+
+**選項 B：共享記憶體（零拷貝）**
+- 適用場景：高頻數值計算（如矩陣運算）
+- 要求：呼叫方與被呼叫方協定固定的記憶體佈局
+
+```c
+// 共享記憶體介面範例：投影算子矩陣
+typedef struct {
+    uint32_t dim;           // 矩陣維度 D
+    n_complex_t* data;      // D×D 複數矩陣，行優先存儲
+    uint32_t flags;         // 標記：1=唯讀, 2=需釋放
+} n_projection_matrix_t;
+```
+
+#### 型別驗證義務
+
+引擎在 FFI 調用前**必須**執行以下驗證：
+
+1. **NULL 檢查**：指針型別參數不得為 NULL（除非標記為可選）。
+2. **對齊檢查**：結構體指標必須符合對齊要求（通常為 8-byte 對齊）。
+3. **範圍檢查**：數值型別在轉換前檢查溢位風險。
+4. **編碼驗證**：字串型別必須為有效的 UTF-8。
+
+若驗證失敗，引擎必須回傳 `#ffi_malformed` 並附帶詳細的型別不符資訊。
 
 ---
 
-## 7. 格式化工具 (oo fmt) 的建議演算法 **[Reference Recommendation]**
+### 5.3 FFI 調用協議 **[Core Requirement]**
 
-1. **AST 解析**：將 `.n` 檔案解析為抽象語法樹。
-2. **語義縮排**：根據 Combo 嵌套層級增加縮排（建議 4 空格）。
-3. **Key 排序**：
-   - 優先排列前綴：`%`, `~%`, `~`, `@`, `/`.
-   - 最後排列 **Data 欄位 (無前綴)**。
-   - 相同類別內依字母排序。
-4. **換行規則**：
-   - 欄位定義後強制換行。
-   - `{` 前保留一個空格，若內部欄位超過 3 個則解開折疊（Unfold）。
+FFI 函數必須遵循以下調用協議，以確保與 `n/` 的 Combo 結構正確互轉：
 
-> [!TIP]
-> [!NOTE]：引擎在進行 `#commit` 前，應自動對 Staged 內容進行 `fmt` 轉換，再進行內容雜湊計算。這對於維護全域 CAID 的唯一性至關重要。
+**輸入序列化**：
+```c
+// C ABI 介面範例
+typedef struct {
+    const char* caid;          // 輸入節點的 CAID 字串
+    const char* json_payload;  // Combo 的 JSON 序列化表示
+    size_t payload_len;
+} nlang_input_t;
+```
+
+**輸出反序列化**：
+```c
+typedef struct {
+    char* caid;                // 輸出節點的 CAID（若為新節點）
+    char* json_payload;        // 輸出 Combo 的 JSON
+    size_t payload_len;
+    char* error_message;       // 若為 _|_，錯誤原因
+} nlang_output_t;
+```
+
+**記憶體所有權**：
+*   輸入記憶體由引擎分配，FFI 函數**嚴禁釋放**。
+*   輸出記憶體由 FFI 函數分配（使用 `malloc`），引擎讀取後負責釋放。
+*   若 FFI 函數使用自訂分配器，必須提供對應的 `free` 回調。
+
+### 5.4 FFI 效果傳播 **[Core Requirement]**
+
+FFI 函數的效果標籤（`%effect`）必須正確傳播至調用者：
+
+*   **聲明義務**：FFI 函數必須在註冊時明確聲明其效果（`#pure`, `#io`, `#nondet`, `#state`）。
+*   **執行時驗證**：引擎在 FFI 調用前後檢查效果標籤的一致性。若聲明為 `#pure` 但實際執行時檢測到 I/O 操作，引擎將拋出 `#ffi_impurity_violation`。
+*   **效果升級**：若 FFI 函數內部調用了另一個效果更強的 FFI 函數，效果會自動升級（如 `#pure` → `#io`）。
+
+### 5.5 常見 FFI 實作模式 **[Reference Recommendation]**
+
+**模式 A：C ABI 直接綁定**
+*   適用場景：效能敏感的數值計算（如線性代數庫）。
+*   工具：使用 `bindgen` 從 C 標頭檔自動生成 `n/` 綁定。
+
+**模式 B：WASM 沙箱**
+*   適用場景：來源不可信的外掛（如社群貢獻的態射）。
+*   工具：將 FFI 函數編譯為 WASM，引擎透過 WASI 介面執行。提供額外的安全隔離。
+
+**模式 C：子進程 RPC**
+*   適用場景：需要完整運行時環境的語言（如 Python、Node.js）。
+*   工具：FFI 函數運行於獨立子進程，與引擎透過管道或 gRPC 通信。
+*   缺點：效能開銷較大，適合 I/O 密集型而非計算密集型任務。
 
 ---
 
-## 8. 特權與權限管理 (Privilege & Token Management)
+## 6. 記憶體管理與垃圾回收 (Memory Management) **[Reference Recommendation]**
 
-特權操作（如 `~%Engine./pin`）在 Service 模式下必須受到嚴格的安全驗證。
+### 6.1 子空間引用語義
 
-### 8.1 Token 生命週期與格式管理
-建議 `oo` 引擎透過工作區配置實作以下權限原語：
+`n/` 中的「節點」本質上是 **不可變的結構共享 (Immutable Structural Sharing)**：
 
-*   **Token 格式 (建議)**：採用 `CAID:PrivilegeSet:Signature` 結構。
-    - `CAID`: 該 Token 自身的內容識別。
-    - `PrivilegeSet`: 權限標籤聯集（如 `#pin | #squash`）。
-    - `Signature`: 基於發放者私鑰的加密簽章。
-*   **Token 產生**：`oo token generate --expires 15m`
-    *   建議預設有效期為 15 分鐘，以降低洩露風險。
-*   **Token 撤銷**：`oo token revoke <token-id>`
-    *   建立黑名單機制，立即作廢尚未過期的特權憑證。
-*   **持久化**：Token 紀錄應存儲於 `.oo/config.n` 的私有區域（Local Home），不應進入宇宙的 Commit 歷史。
+*   **引用計數 (RC)**：每個 Combo 節點維護一個引用計數。當節點被其他節點引用（如作為欄位值）時，計數遞增。
+*   **不可變性保證**：節點一旦創建，其內容不可修改。這消除了「修改後影響其他引用者」的風險。
+*   **寫時複製 (CoW)**：當看似需要「修改」節點時（如合併操作），實際上創建新節點並共享未變更的部分。
 
-### 8.2 安全建議
-*   **隔離觀測**：特權工作階段應具備獨立的視界快取，防止特權收斂結果意外污染一般觀測者的快取。
-*   **審計日誌 (Audit Log Schema)**：所有特權操作必須記錄於 `.oo/audit.log`，其欄位應包含：
-    - `timestamp`: ISO 8601 時間戳。
-    - `actor_id`: 進行操作的 Token CAID。
-    - `op`: 進行的特權操作型別。
-    - `path`: 受影響的宇宙路徑。
-    - `status`: #success 或錯誤標籤。
+### 6.2 世代垃圾回收
 
+對於長時間運行的 Service 模式，引擎採用 **世代 GC (Generational GC)**：
+
+*   **新生代 (Young Generation)**：剛創建的節點。採用複製算法（Copying GC），快速回收短期存活的臨時對象。
+*   **老年代 (Old Generation)**：經過多輪 GC 仍存活的節點。採用標記-清除算法（Mark-Sweep），減少長期對象的複製開銷。
+*   **永久代 (Permanent)**：CAID 已被寫入 Commit 的節點。僅在 `#squash` 操作後才可能被回收。
+
+### 6.3 觀測視界與 GC 的協作
+
+*   **視界內節點 (In-Horizon)**：正在被觀測或等待觀測的節點被標記為「根 (Roots)」，GC 絕不回收。
+*   **視界外節點 (Out-of-Horizon)**：未被任何觀測路徑引用的節點可被回收。即使其 CAID 存在於 `objects/` 目錄，記憶體中的副本仍可被清除。
+*   **惰性加載 (Lazy Loading)**：當觀測需要一個已被 GC 回收的節點時，引擎從 `objects/` 重新讀取並反序列化。
+
+### 6.4 記憶體碎片整理
+
+長時間運行後，`.oo/objects/` 目錄可能積累大量「孤兒對象」（未被任何 Commit 引用的舊版本）：
+
+*   **碎片整理 (Compaction)**：`oo gc` 命令掃描所有 Commit，識別被引用的對象，刪除未被引用的對象。
+*   **增量整理**：在 Service 模式下，碎片整理在背景執行，避免阻塞主線程。
+*   **硬連結共享**：若多個工作區引用相同 CAID，引擎使用硬連結 (Hard Link) 共享物理存儲。
 
 ---
 
-## 9. IDE 與符號觀測 (IDE & Symbolic Observation)
+## 7. 特權與權限管理 (Privilege & Token Management) **[Core Requirement]**
 
-為了提升開發者的觀測體驗，建議 `oo-lsp` (Language Server Protocol) 與 IDE 插件實作下列「符號美化 (Symbolic Ligatures)」與「視覺觀測透鏡」功能。
+特權模式提供繞過格論約束的能力。為了守護宇宙完整性，其安全管理被視為**核心規格義務 (Core Requirement)**。
 
-### 9.1 幾何符號坍縮 (Symbolic Collapsing)
+### 7.1 特權令牌格式 **[Core Requirement]**
 
-當開發者在 IDE 中執行程式碼時，插件可動態將文字符號渲染為其格論的數學原形。這只是顯示層的變換，檔案內容保持不變。IDE 的 Symbolic Ligatures（如把 `_` 渲染成 $\top$）是顯示層變換，不影響 CAID 計算。
+**Token 結構**：採用 `CAID:PrivilegeSet:Signature` 的三段式結構。
+
+```
+hash:sha256:v1:abc123...:PIN|SQUASH:ed25519:signature...
+│                    │  │          │           │
+│                    │  │          │           └─ Ed25519 簽名
+│                    │  │          └─ 簽名算法
+│                    │  └─ 權限集合（位元標記）
+│                    └─ 分隔符
+└─ 授權者的 CAID
+```
+
+**權限集合 (Privilege Set)**：
+| 位元 | 權限 | 說明 |
+| :--- | :--- | :--- |
+| 0 | `PIN` | 允許直接覆蓋節點值 (#pin)。 |
+| 1 | `COMMIT` | 允許提交含有 `_|_` 的內容。 |
+| 2 | `SQUASH` | 允許執行歷史壓縮 (#squash)。 |
+| 3 | `ROLLBACK` | 允許回滾至任意歷史提交。 |
+| 4 | `EFFECT` | 允許強制標記效果 (#effect_override)。 |
+| 5 | `MIGRATE` | 允許執行跨版本結構遷移。 |
+
+### 7.2 令牌生命週期 **[Core Requirement]**
+
+**發放 (Issuance)**：
+*   由具備 `ADMIN` 權限的令牌或硬體安全模組 (HSM) 簽名發放。
+*   必須包含有效期（建議最長 24 小時）。
+*   可選擇綁定至特定 IP、PID 或工作區路徑。
+
+**驗證 (Validation)**：
+1.  引擎啟動時載入公鑰白名單（`~/.oo/authorized_keys`）。
+2.  每次特權操作前驗證 Token 簽名與有效期。
+3.  檢查操作類型是否包含於 Token 的權限集合。
+
+**撤銷 (Revocation)**：
+*   記錄撤銷清單 (CRL) 於 `~/.oo/revoked_tokens`。
+*   即使 Token 尚未過期，也可透過管理介面立即撤銷。
+*   引擎每 5 分鐘重載 CRL。
+
+### 7.3 隔離觀測與審計 **[Core Requirement]**
+
+特權工作階段應具備獨立的投影快取：
+
+*   **快取隔離**：特權操作產生的中間結果必須與普通快取物理隔離，避免污染非特權會話。
+*   **審計日誌**：所有特權操作必須記錄至 `.oo/audit.log`：
+    ```
+    [2024-01-15T09:23:45Z] PRIVILEGED: #pin
+    Token: hash:sha256:v1:abc123...
+    Path: _.config.debug
+    Old: {...}
+    New: {...}
+    CAID: hash:sha256:v1:new456...
+    ```
+*   **不可否認性**：審計日誌必須寫入防篡改存儲（如 Append-only 文件系統或簽名鏈）。
+
+### 7.4 最小權限原則 **[Reference Recommendation]**
+
+建議實作採用以下策略：
+
+*   **臨時提升 (Temporary Elevation)**：類似於 `sudo`，特權令牌不應長期持有。
+*   **操作確認**：危險操作（如 `#squash`）需二次確認。
+*   **影響預覽**：執行前顯示將受影響的節點數量與 Commit 範圍。
+*   **自動降級**：閒置 5 分鐘後自動清除特權狀態。
+
+---
+
+## 8. IDE 與符號觀測 (IDE & Symbolic Observation) **[Reference Recommendation]**
+
+`n/` 語言設計時充分考慮 IDE 支援。Ouroboros 引擎提供 **語言伺服器協議 (LSP)** 實作，實現「語義感知的開發體驗」。
+
+### 8.1 幾何符號渲染 (Symbolic Ligatures)
+
+為了提升可讀性，建議 IDE 或終端使用具備 Ligature 支援的字型（如 Fira Code、JetBrains Mono），將特定字元序列渲染為數學符號：
 
 | 原始文字 | 建議渲染符號 | 語義 |
 | :--- | :---: | :--- |
-| `_` | **$\top$** (Top) | 萬有集合 / 所有的可能性 |
-| `_\|_` | **$\bot$** (Bottom) | 空集合 / 邏輯衝突 |
-| `#_` | **#$\top$** (End) | 序位終點 |
-| `#_\|_` | **#$\bot$** (Start) | 序位起點 |
-| `->` | **$\to$** | 態射定義 |
-| `\|>` | **$\rhd$** | 演化管道 |
+| `_` | **$\top$** | 萬有子空間 |
+| `_\|_` | **$\bot$** | 零維空間 |
+| `\|>` | **$\rhd$** | 算子應用管道 |
+| `<...>` | **$\diamond$** | 正交投影算子 |
+| `&` | **$\sqcap$** | 格論相遇（Meet） |
+| `\|` | **$\sqcup$** | 格論聯集（Join） |
+| `!<` | **$\lnot$** | 對合否定 |
+| `->` | **$\rightarrow$** | 態射映射 |
+| `=>` | **$\Rightarrow$** | 邏輯蘊含 |
 
-### 9.2 視界邊界與語義著色 (Highlighting)
+### 8.2 三位一體語義著色
 
-*   **三位一體著色**：根據 **[SPEC_05](./SPEC_05_The_Trinity_Isomorphism.md)**，LSP 應為不同前綴分配具備本體論區隔的顏色。
-    *   **`/` (Logic)**：建議使用動態感強烈的顏色（如紫色或藍色）。
-    *   **`@` (Type)**：建議使用具備定界感、穩定的顏色（如綠色或青色）。
-    *   **`%` (Meta)**：建議使用具備權威感的特殊顏色（如金色或橙色）。
-*   **視界隔離預覽**：根據 **[SPEC_14](./SPEC_14_Formal_Grammar.md)** 的 `!field_start` 斷言，動態淡化（Dim）下一個欄位的 Key，以視覺化地呈現表達式的「收斂邊界」。
+建議語法高亮將三種核心符號以不同顏色區分，強化開發者的模式識別：
 
-### 9.3 實時收斂內插 (Inlay Hints)
+*   **`/` (Logic)**：建議使用動態感強烈的紫色 (#8B5CF6)。代表計算與轉換。
+*   **`@` (Type)**：建議使用穩定的青色 (#06B6D4)。代表定義與結構。
+*   **`%` (Meta)**：建議使用權威感的金色 (#F59E0B)。代表自省與元資訊。
 
-利用 Ouroboros 的 `~%Engine./observe` 原語，IDE 可在編輯時於行尾顯示該節點的當前坍縮結果。
-*   **範例**：`x: /add 1 2` 旁邊顯示 `→ 3`。
-*   **型別推導**：若尚未坍縮至原子，則顯示當前收斂到的最窄型別（如 `→ @int`）。
+**效果標籤著色**：
+*   `#pure`：綠色（安全）
+*   `#io`：黃色（注意）
+*   `#nondet`：橙色（警告）
+*   `#state`：紅色（危險）
+*   `#cached`：藍色（已固化）
 
-### 9.4 虛空觀測 (Hover Tips)
+### 8.3 語言伺服器協議 (LSP) 擴展 **[Reference Recommendation]**
 
-對於宇宙中尚未約束的「虛空」節點，LSP 應提供深度的哲學與狀態提示：
-*   **`_` 懸停**：顯示「此路徑尚未收斂，當前處於萬有集合（Top）狀態，具備無限可能性。」
-*   **`_|_` 懸停**：顯示「此處發生邏輯衝突，已坍縮至空集合（Bottom）。」並聯動顯示 `%cause` 診斷資訊。
+Ouroboros LSP (`oo-lsp`) 提供標準 LSP 功能與 `n/` 特有的「幾何感知」功能：
 
-### 9.5 測試與覆蓋率展望 (oo test)
-*   **自動取樣**：`oo test` 可根據態射的輸入型別（如 `@u8`）自動產生邊界測試案例（0, 255, 256）。
-*   **空間覆蓋報告**：不僅報告測試通過與否，還應視覺化地展示態射輸入域的「覆蓋地圖」，標示哪些子空間尚未經過觀測驗證。
+**標準功能**：
+*   **自動完成 (Completion)**：基於當前宇宙的已觀測節點提供欄位建議。
+*   **跳轉定義 (Go to Definition)**：解析 CAID 引用，跳轊至定義源碼（若可用）。
+*   **符號重命名 (Rename)**：重命名別名並更新所有引用（注意：不影響 CAID）。
+*   **懸停提示 (Hover)**：顯示節點的 `%id`、型別、`%effect` 等元資訊。
 
-### 9.6 啟發式型別推導與靜態分析 (Type Inference)
-由於 `n/` 的型別亦是動態收斂的 Combo，LSP 應採用啟發式演算法（Heuristics）來提供即時回饋：
+**n/ 特有功能**：
+*   **譜系視圖 (Lineage View)**：顯示節點的合併歷史與 `#refine` 鏈。
+*   **視界模擬 (Horizon Simulation)**：允許 IDE 臨時修改 `%fuel` 或 `%timeout`，預覽不同精度下的觀測結果。
+*   **衝突視覺化 (Conflict Visualization)**：當合併產生 `_|_` 時，並排顯示衝突雙方的結構差異。
+*   **燃料儀表板 (Fuel Dashboard)**：即時顯示當前文件的 MBU 消耗分布。
 
-1.  **局部局部收斂 (Partial Convergence)**：IDE 不應等待全域收斂，而應在有限的 `%fuel` 限制下對當前視界進行「嘗試性坍縮」。
-2.  **結構化提示**：若型別尚未坍縮為原子標籤，IDE 應展示其具備的結構特徵（如 `→ { name: @str, ... }`）。
-3.  **型別錯誤報告規範**：當偵測到預期收斂為 `_|_` 時，建議以「幾何不相交」的邏輯展示錯誤：
-    *   `Expected: @int`
-    *   `Found: "string" @str`
-    *   `Conflict: @int & @str == _|_`
-4.  **邊界判定**：明確區分「語法錯誤」（Layer 1）與「收斂失敗」（Layer 2/3）。
+### 8.4 LSP 通訊協議 **[Reference Recommendation]**
 
-### 9.7 互動式衝突解決流程 (Conflict Resolution UI)
-當平行提交觸發 `#conflict` (特別是在 `~%repl.merge_strategy: #strict` 時)，工具鏈（如 `oo` CLI 或 IDE）應提供互動式的衝突解決流程：
+```typescript
+// n/ 特有的 LSP 擴展介面
+interface NLangServer {
+    // 請求特定路徑的觀測結果（可能觸發引擎計算）
+    "nlang/observe": (params: {
+        path: string;
+        fuel?: number;
+        strategy?: "blur" | "strict" | "approximate";
+    }) => ObservationResult;
+    
+    // 獲取節點的譜系（精煉鏈）
+    "nlang/getLineage": (params: {
+        caid: string;
+    }) => LineageInfo;
+    
+    // 模擬合併結果（不寫入實際狀態）
+    "nlang/simulateMerge": (params: {
+        base: string;
+        left: string;
+        right: string;
+    }) => MergeResult;
+    
+    // 訂閱特定路徑的變更（增量更新）
+    "nlang/subscribe": (params: {
+        path: string;
+    }) => void;
+    
+    // 通知：路徑觀測結果變更
+    "nlang/onObserved": Notification<{
+        path: string;
+        oldCAID: string;
+        newCAID: string;
+        fuelConsumed: number;
+    }>;
+}
+```
 
-1.  **Three-way Diff 視圖**：展示 `Staged` (目前的工作階段)、`Incoming` (晚到的遠端或平行 HEAD) 以及 `Base` (兩者共同的祖先 Commit)。
-2.  **語義層級衝突**：與傳統基於純文字的 git merge 不同，`oo` 的衝突解決應基於 AST。若衝突點在於 `a: 1` 與 `a: 2`，工具不應提示行數衝突，而應提示「路徑 `$.a` 在原子層級不相容」。
-3.  **解決策略選項**：允許開發者在互動介面中選擇保留本機 (`#favor_staged`)、接受外部 (`#favor_incoming`) 或手動編寫一個新的 Combo 結構來替代衝突節點。
+### 8.5 除錯支援 **[Reference Recommendation]**
 
-### 9.8 除錯與溯源建議 (Debugging)
-為了應對非嚴格錯誤處理帶來的定位難度，建議實作者提供以下工具：
-*   **`oo debug --trace <path>`**：當路徑收斂至 `_|_` 時，深度遍歷其 `%cause` 鏈，並以時間軸或邏輯樹的形式展示衝突發生的完整過程。
-*   **視覺化衝突點**：在 IDE 中，對於局部收斂至 `_|_` 的節點，建議使用特殊的視覺提示（如紅色波浪線或警告圖示），點擊後可直接跳轉至導致該衝突的原始定義位置。
-*   **漸進式收斂提示 (Optimization Hints)**：當觀測觸發 `#incomplete` 或 `%fuel` 消耗超過閾值（如 80%）時，引擎應在診斷資訊中包含優化建議。例如：
-    *   *「偵測到深層聯集合併，建議將 ${path} 改為 Cocoon 以縮小搜索空間。」*
-    *   *「此路徑觸發了非全序模式匹配，建議重構為更具體的型別約束以啟用熱帶優化。」*
+`oo` CLI 提供除錯協議適配器 (`oo-debugger`)，支援 VS Code 等 IDE：
+
+*   **斷點 (Breakpoints)**：支援在管道 (`|>`)、合併 (`&`)、態射應用處設置斷點。
+*   **逐步執行 (Stepping)**：
+    *   *Step Over*：跳過當前態射的內部實作。
+    *   *Step Into*：進入態射的定義（若為純 `n/` 定義）。
+    *   *Step Out*：跳出當前合併層級。
+*   **變數檢視 (Variables)**：顯示當前作用域內的所有綁定及其 CAID。
+*   **譜回溯 (Spectral Traceback)**：當觀測到 `_|_` 時，顯示導致衝突的完整因果鏈。
 
 ---
 
-## 10. 規範化計費模型 (Standardized Billing Model) **[Core Requirement]**
+## 9. 規範化計費模型 (Standardized Billing Model) **[Core Requirement]**
 
-為了確保跨引擎實作在觸及計算視界邊緣時能產生一致的 `#blur` CAID，所有符合 Ouroboros 規範的引擎**必須**遵循下列規範：
+為了確保在視界邊緣產生一致的 **#blur CAID**，引擎必須遵循 MBU 能階計費。
 
-1.  **創世預設值 (Genesis Defaults)**：引擎若未獲取觀測者顯式的元資訊配置（如 `%fuel`），**必須**採用 **[SPEC_09](./SPEC_09_Standard_Library.md) §7** 定義的創世預設值進行計算。
-2.  **計費能階 (MBU)**：引擎**必須**遵循下列最小計費單位（Minimum Billing Units）進行資源扣除。
-### 10.1 核心操作計費表
+### 9.1 核心操作計費表
 
 | 操作型別 | 單位消耗 (MBU) | 說明 |
 | :--- | :---: | :--- |
-| **節點展開 (Node Expansion)** | 1 | 透過路徑訪問並讀取一個 Combo 欄位或原子。 |
-| **態射應用 (Morphism App)** | 10 | 執行一次 `/` 態射呼叫（包含參數綁定）。 |
-| **格論合併 (Lattice Merge)** | 5 | 執行一次兩個非原子節點的 `&` 或 `\|` 合併運算。 |
-| **模式匹配 (Pattern Match)** | 2 | 匹配一個 AST 節點（按匹配路徑深度計費）。 |
-| **態射升寫 (Lifting)** | 5 + $E_{inner}$ | 管道 `\|>` 穿透容器時的額外管理能耗。 |
-| **外部調用 (FFI Call)** | 50+ | 基本消耗 50，其餘依實作提供的複雜度宣告計費。 |
+| **投影展開 (Subspace Expansion)** | 1 | 透過路徑訪問子空間基底。 |
+| **算子應用 (Operator App)** | 10 | 執行一次么正變換（包含參數糾纏）。 |
+| **譜校準 (Spectral Calibration)** | 25 | 提取正交投影譜摘要（參與 CAID）。 |
+| **正交合併 (Orthogonal Merge)** | 5 | 執行一次子空間的交集或併元運算。 |
+| **算子升寫 (Lifting)** | 5 + $E_{inner}$ | 管道穿透張量容器的管理能耗。 |
+| **FFI 調用 (External Interaction)** | 50+ | 與外部環境進行干涉。 |
 
-### 10.2 遞迴累計與複合公式 (Composite Billing)
-為了確保計費的決定論，複合操作遵循 **「深度優先累計原則」**：
-
-1.  **管道鏈計費**：對於 `x \|> f \|> g`，總消耗為 $E(x) + E(f(x)) + E(g(f(x)))$。每一級管道的輸出作為下一級的輸入，能量消耗隨邏輯流傳導。
-2.  **升寫遞迴 (Recursive Lifting)**：當態射應用於嵌套容器（如 `[[1]]`）時，每一層升寫扣除 5 MBU 的管理能耗，並遞迴累加內層元素的處理成本。
-3.  **短路權益**：若合併運算因型別不相交（$A \sqcap B = \bot$）而提前終止，引擎應僅扣除至衝突點為止的能耗，不計入未展開分支的預估質量。
-
-### 10.3 計費不變性
-*   **與效能無關**：MBU 描述的是「邏輯步數」而非「物理 CPU 週期」。一個優化良好的引擎可以用 1ms 跑完 1000 MBU，而慢速引擎需要 10ms，但兩者**必須**在消耗相同數額時停止觀測。
-*   **遞迴計費**：所有嵌套的操作必須累加計費。
-*   **CAID 參與義務**：當產生 `#blur` 狀態時，剩餘的 `%fuel` 數值**不得**納入 CAID 計算（因為它受觀測者起始燃料影響），但所採用的計費模型版本號**必須**納入雜湊。
+### 9.2 遞迴累計原則
+*   **管道鏈計費**：能量消耗隨邏輯流傳導累加。
+*   **短路權益**：若投影因正交衝突提前終止，僅扣除至衝突點為止的能耗。
 
 ---
 
-## 11. 物件生存週期與視界清理 (Object Lifecycle & Pruning) **[Reference Recommendation]**
+## 10. 物件生存週期與幾何蒸發 (Object Lifecycle & Geometric Evaporation) **[Reference Recommendation]**
 
-在 `n/` 的內容定址架構中，物理儲存空間的管理基於「可達性 (Reachability)」模型。實作者應提供機制來清理不再具備觀測價值的物理物件。
+`n/` 宇宙的物件（以 CAID 標識的內容）經歷完整的生命週期，從誕生到最終的「蒸發」。
 
-### 11.1 根集合 (Root Set)
+### 10.1 生命週期狀態機
 
-引擎在進行清理操作前，必須識別當前的根集合。任何從根集合可達的 CAID 物件**嚴禁**被刪除。根集合包括：
-*   **活躍指標**：`.oo/refs/HEAD` 及其指向的所有 Commit 節點。
-*   **命名參照**：所有位於 `.oo/refs/heads/` 與 `.oo/refs/tags/` 的指標。
-*   **演化區 (Staged Area)**：目前尚未 commit 但已注入工作區的節點定義。
-*   **釘選集合 (Pin Set)**：使用者透過 `oo pin <caid>` 顯式標記為永久保留的物件。
+```
+┌─────────┐    ┌──────────┐    ┌─────────┐    ┌──────────┐
+│ Staged  │───▶│ Observed │───▶│ Commit  │───▶│ Persist  │
+│ (暫存)   │    │ (已觀測)  │    │ (已提交) │    │ (已持久化)│
+└─────────┘    └──────────┘    └────┬────┘    └────┬─────┘
+                                    │              │
+                                    ▼              ▼
+                              ┌──────────┐    ┌──────────┐
+                              │ Refine   │    │ Evaporate│
+                              │ (被精煉)  │    │ (被蒸發)  │
+                              └──────────┘    └──────────┘
+```
 
-### 11.2 視界清理策略 (Pruning Strategies)
+**各狀態說明**：
 
-建議引擎實作下列清理等級：
+1. **Staged (暫存)**：
+   *   位於工作記憶體，尚未被完整觀測。
+   *   可能處於 `#incomplete` 或編輯中狀態。
+   *   若進程崩潰，Staged 內容丟失。
 
-1.  **Session Cleanup**：清理所有已失效的會話（Session）快取與臨時 `#blur` 結果。
-2.  **Loose Object Pruning**：清理所有不再被任何 Commit 指向的孤立物件。
-3.  **History Truncation (進階)**：
-    *   允許使用者將 Commit 歷史截斷至特定深度。
-    *   截斷後的舊 Commit 內容被物理刪除，僅保留其 CAID 指紋以維持因果鏈的完整性。若未來需要存取這些內容，引擎應透過 `~%Discovery` 向外尋找（詳見 **[REAL_02](./REAL_02_Ouroboros_Protocols.md)**）。
+2. **Observed (已觀測)**：
+   *   已完成收斂，具備穩定 CAID。
+   *   位於記憶體快取，尚未寫入磁碟。
+   *   可被 `#blur` 或 `#exact`。
 
-### 11.3 精煉重定向與空間回收
+3. **Committed (已提交)**：
+   *   已寫入 `.oo/objects/` 目錄。
+   *   記錄於當前分支的提交歷史中。
+   *   除非執行 `gc`，否則永久保留。
 
-當一個模糊節點（`#blur`）被精確節點（`Exact`）自動重定向後：
-*   引擎應將原本指向 `BlurCAID` 的依賴更新為 `ExactCAID`。
-*   若 `BlurCAID` 對應的實體物件已無其他邏輯引用，則其佔用的空間應被標記為可回收。
+4. **Persisted (已持久化)**：
+   *   已推送至遠端節點或備份存儲。
+   *   具備多重冗餘，可從本地災難恢復。
+
+5. **Refined (被精煉)**：
+   *   存在 `#refine` Commit 指向更精確的版本。
+   *   舊版本仍可被歷史 Commit 引用，因此不能刪除。
+
+6. **Evaporated (被蒸發)**：
+   *   長期未被引用，從本地存儲移除。
+   *   但 CAID 仍可能存在於遠端或備份中。
+
+### 10.2 幾何蒸發 (Evaporation) **[Reference Recommendation]**
+
+**觸發條件**：
+*   **時間條件**：物件超過 30 天未被任何觀測路徑引用。
+*   **空間條件**：磁碟空間低於閾值（預設 10%）。
+*   **熱度條件**：物件的「觀測熱度 (Observation Heat)」排名處於末位。
+
+**熱度計算公式**：
+```
+Heat(O) = Σ (1 / (current_time - access_time_i)) * importance_factor
+```
+
+其中 `importance_factor` 考慮：
+*   是否被標準庫引用（高重要性）
+*   是否被當前 HEAD 引用（中高重要性）
+*   是否被多個分支引用（中重要性）
+*   僅被歷史 Commit 引用（低重要性）
+
+**蒸發過程**：
+1.  將物件標記為 `EVAPORATED`，從 `objects.idx` 移除。
+2.  實際刪除物理文件（可配置為移至冷存儲而非直接刪除）。
+3.  記錄蒸發日誌，便於審計與恢復。
+
+### 10.3 幾何冷凝 (Condensation) **[Reference Recommendation]**
+
+當觀測需要一個已被蒸發的物件時，引擎嘗試「冷凝 (Condensation)」：
+
+1. **本地冷存儲檢查**：若配置為移至冷存儲（如 S3 Glacier），先嘗試從冷存儲恢復（可能需要數小時）。
+
+2. **LADD 協議請求**：透過 **[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)** 的發現機制，向鄰居節點請求該 CAID。
+   ```nlang
+   ;; 虛擬碼：冷凝請求
+   ~%Discovery./fetch <caid> {
+       %strategy: #strict
+       %timeout: 3600  ;; 給予較長的超時
+   }
+   ```
+
+3. **種子節點回退**：若 LADD 發現失敗，嘗試從創世種子節點（官方鏡像）獲取。
+
+4. **冷凝失敗**：若所有嘗試失敗，返回 `_|_` (%cause: `#evaporated_permanently`)。
+
+### 10.4 生命週期策略配置 **[Reference Recommendation]**
+
+使用者可透過 `config.n` 配置生命週期策略：
+
+```nlang
+~%Engine: {
+    lifecycle: {
+        ;; 蒸發策略
+        evaporation: {
+            enabled: #true
+            threshold_days: 30
+            min_disk_free_percent: 10
+            cold_storage_path: "/mnt/cold-storage/oo"
+        }
+        
+        ;; 冷凝策略
+        condensation: {
+            enabled: #true
+            ladd_timeout_seconds: 300
+            seed_fallback: #true
+            max_concurrent_requests: 10
+        }
+        
+        ;; GC 策略
+        gc: {
+            auto_schedule: #true
+            interval_hours: 24
+            aggressive_mode: #false  ;; 若為 #true，也刪除被歷史引用但非當前 HEAD 的物件
+        }
+    }
+}
+```
+
+### 10.5 與內容定址的兼容性 **[Core Requirement]**
+
+蒸發機制**絕不違反**內容定址的不變性：
+
+*   **CAID 不變**：即使物件被蒸發，其 CAID 仍指向相同的邏輯內容。
+*   **冷凝一致性**：從任何來源（本地、遠端、冷存儲）冷凝的物件必須通過 CAID 驗證，否則視為 `#corrupted`。
+*   **歷史不可變**：蒸發**不影響**已存在的 Commit 歷史，僅影響本地存儲的物理可用性。
+
+---
+
+## 11. 與其他規格的關係
+
+| 本文件章節 | 對應規格文件 | 說明 |
+| :--- | :--- | :--- |
+| FFI 沙箱 | **[SPEC_08](./SPEC_08_Meta_and_Runtime.md) §5** | `#pure` 的嚴格定義與效果傳播。 |
+| 計費模型 | **[SPEC_08](./SPEC_08_Meta_and_Runtime.md) §3** | `%fuel` 與視界參數的詳細語義。 |
+| 特權管理 | **[SPEC_08](./SPEC_08_Meta_and_Runtime.md) §6** | `#pin`, `#commit` 等操作的定義。 |
+| LSP 協議 | **[SPEC_11](./SPEC_11_Reflection_and_Synthesis.md)** | 反映與合成機制。 |
+| 蒸發與冷凝 | **[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md)** | OODP 發現協議。 |
+| 增量收斂 | **[GUIDE_03](./GUIDE_03_Incremental_Convergence.md)** | DAG 與快取的實作指南。 |
+
+---
+
+## 工程實作總結
+
+Ouroboros 引擎的實作是量子化語義與物理現實的橋樑。本文件定義了從 CLI 到儲存、從 FFI 到 IDE、從權限到生命週期的完整工程規範。實作者應遵循 **[Core Requirement]** 標記的義務，並參考 **[Reference Recommendation]** 的最佳實踐，以確保不同實作間的互操作性。
+
+> **結語**：銜尾蛇不斷吞噬自己的尾巴，象徵著無限的循環與自我參照。Ouroboros 引擎即是這樣一個系統——它透過內容定址實現自我描述，透過格論合併實現自我演化，透過形式驗證追求自我完善。

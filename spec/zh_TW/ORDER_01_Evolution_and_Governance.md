@@ -109,9 +109,9 @@
 *   **`~%Governance.@Voter` 結構**：
     ```nlang
     {{
-        pubkey: b""      ;; 成員 Ed25519 公鑰
+        pubkey: b""        ;; 成員 Ed25519 公鑰
         weight: @int & > 0 ;; 投票權重（必須為正整數）
-        alias:  @str?    ;; 人類可讀別名 (選填)
+        alias:  @str?      ;; 人類可讀別名 (選填)
     }}
     ```
 *   **信任根**：`~%Official.architects` 定義為 `@{ [@~%Governance.@Voter] }` (Voter 之集合)。
@@ -172,7 +172,7 @@
 | :--- | :--- |
 | **[SPEC_00](./SPEC_00_Introduction.md)** | 定義了六層架構。 |
 | **[SPEC_10](./SPEC_10_Evolution_and_Commit.md)** | 治理行為之物理紀錄基礎。 |
-| **[SPEC_13](./SPEC_13_Discovery_and_Package.md)** | 定義了別名衝突消融機制。 |
+| **[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md)** | 定義了別名衝突消融機制。 |
 | **[SPEC_16](./SPEC_16_Testing_and_Proof.md)** | 定義治理簽章所依賴的 `#proof` 結構。 |
 | **[SPEC_17](./SPEC_17_Self_Evolution.md)** | 提供規格演化與遷移（%migration）的幾何工具。 |
 | **[REAL_05](./REAL_05_Compliance_and_MVP.md)** | 定義合規性驗證的具體測試案例。 |

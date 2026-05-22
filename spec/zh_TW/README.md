@@ -21,7 +21,7 @@
 - **[SPEC_10: 演化與因果邊界 (Causal Boundary) (Commit)](./SPEC_10_Evolution_and_Commit.md)**
 - **[SPEC_11: 反映與合成 (Reflection)](./SPEC_11_Reflection_and_Synthesis.md)**
 - **[SPEC_12: 遞迴與驗證 (Recursion)](./SPEC_12_Logic_Validation_and_Recursion.md)**
-- **[SPEC_13: 發現與內容幾何 (Discovery)](./SPEC_13_Discovery_and_Package.md)**
+- **[SPEC_13: 銜尾蛇發現協定 (OODP)](./SPEC_13_Ouroboros_Discovery_Protocol.md)**
 - **[SPEC_14: 正式語法 (Grammar)](./SPEC_14_Formal_Grammar.md)**
 - **[SPEC_15: 反模式 (Anti-Patterns)](./SPEC_15_Anti_Patterns.md)**
 - **[SPEC_16: 測試與證明 (Testing)](./SPEC_16_Testing_and_Proof.md)**
@@ -45,6 +45,7 @@
 - **[APP_03: 範式比較與遷移](./APP_03_Paradigm_Comparison.md)**
 - **[APP_04: 數學基礎](./APP_04_Mathematical_Foundations.md)**
 - **[APP_05: 全球邏輯格與 LADD 協議](./APP_05_LADD_Global_Logic_Lattice.md)**
+- **[APP_06: 語義大一統理論](./APP_06_Unified_Field_Theory.md)**
 
 ### 工程指南 (Engineering Guides)
 - **[GUIDE_01: 排版風格指南](./GUIDE_01_Style_and_Formatting.md)**
@@ -101,7 +102,7 @@
 | **[SPEC_07: 態射管道](./SPEC_07_Logic_and_Pipe.md)** | 100% | 100% | 遞迴升寫深度限制實作中 |
 | **[SPEC_08: 運行時](./SPEC_08_Meta_and_Runtime.md)** | 100% | 80% | 效果標籤的動態傳染驗證 |
 | **[SPEC_09: 標準庫](./SPEC_09_Standard_Library.md)** | 100% | 50% | 創世預設值已規範，等待引擎實作 |
-| **[SPEC_13: 發現](./SPEC_13_Discovery_and_Package.md)** | 100% | 10% | LADD 引力路由規範已正式化 |
+| **[SPEC_13: 銜尾蛇發現協定](./SPEC_13_Ouroboros_Discovery_Protocol.md)** | 100% | 10% | LADD 引力路由規範已正式化 |
 | **[SPEC_17: 自我演化](./SPEC_17_Self_Evolution.md)** | 100% | 0% | N-1 自舉演算法規範已正式化 |
 | **[COSMOLOGY: 宇宙學](./COSMOLOGY/00_COSMOLOGY_Overview.md)** | 100% | N/A | 理論定稿 |
 
@@ -111,11 +112,9 @@
 
 | 優先級 | 項目 | 目標章節 | 說明 |
 | :---: | :--- | :--- | :--- |
-| P0 | LADD 協議規範化 | **[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)** | 定義 Packet 結構與路由決定論。 (100% 已完成) |
+| P0 | 銜尾蛇量子化 | 全域 | 基於 Solèr 定理與 Bohrification 的語義大一統重構企劃，從分配格走向正交模格 |
 | P0 | 增量收斂引擎實作 | **[GUIDE_03](./GUIDE_03_Incremental_Convergence.md)** | 完成基於 CAID 快取的增量合併原型。 |
 | P1 | 規格書 Combo 化 | 全域 | 將 Markdown 轉化為 n/ Combo，實現自我驗證。 |
-| P1 | 標準庫補全 | **[SPEC_09](./SPEC_09_Standard_Library.md)** | 實作 `~%Math` 與 `~%List` 的全量態射。 |
-| P2 | AGI 自觀測模擬 | **[COSMOLOGY/12](./COSMOLOGY/12_PHYSICS_Digital_Cosmology.md)** | 測試引擎對自身規則的反映與優化。 |
 
 ---
 

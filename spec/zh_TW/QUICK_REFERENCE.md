@@ -109,8 +109,8 @@
 | **[SPEC_00](./SPEC_00_Introduction.md)** | 介紹 | — | 哲學、六層架構、守恆定律 |
 | **[SPEC_01](./SPEC_01_Foundation_and_Lattice.md)** | 格論 | ⭐ | Top/Bottom, Meet/Join, 補集 |
 | **[SPEC_02](./SPEC_02_Lexical_Structure.md)** | 詞法 | ⭐ | 前綴、原子、運算子層級 |
-| **[SPEC_03](./SPEC_03_Combo_System.md)** | Combo | ⭐⭐ | 開放/封閉、Cocoon、異質展開 |
-| **[SPEC_04](./SPEC_04_Navigation_and_Duality.md)** | 導航 | ⭐⭐ | 詞法作用域 (Lexical Scope)、水晶透視 |
+| **[SPEC_03](./SPEC_03_Combo_System.md)** | Combo | ⭐⭐ | 疊加態預設/本徵態封閉、Cocoon、異質展開 |
+| **[SPEC_04](./SPEC_04_Navigation_and_Duality.md)** | 導航 | ⭐⭐ | 詞法作用域 (Lexical Scope)、水晶透視 `<...>` (正交投影算子 $P_a$) |
 | **[SPEC_05](./SPEC_05_The_Trinity_Isomorphism.md)** | 三位一體 | ⭐⭐⭐ | Data/Type/Logic 同構 |
 | **[SPEC_06](./SPEC_06_Unification_Logic.md)** | 統一化 | ⭐⭐⭐⭐ | 合併演算法、極小元素規則 |
 | **[SPEC_07](./SPEC_07_Logic_and_Pipe.md)** | 態射與管道 | ⭐⭐⭐ | 態射、管道、遞迴升寫 |
@@ -119,16 +119,18 @@
 | **[SPEC_10](./SPEC_10_Evolution_and_Commit.md)** | 演化 | ⭐⭐ | 因果邊界 (Causal Boundary)、核心態射 |
 | **[SPEC_11](./SPEC_11_Reflection_and_Synthesis.md)** | 工具 | ⭐⭐⭐ | 規範化、Unicode NFC、反映 |
 | **[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)** | 遞迴 | ⭐⭐⭐ | 不動點、發散判定 |
-| **[SPEC_13](./SPEC_13_Discovery_and_Package.md)** | 發現 | ⭐⭐⭐⭐ | CAID 封套、快照、精煉共識 |
+| **[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md)** | 發現 | ⭐⭐⭐⭐ | CAID 封套、快照、精煉共識 |
 | **[SPEC_14](./SPEC_14_Formal_Grammar.md)** | 文法 | ⭐⭐⭐ | PEG 定義、Unicode 識別碼 |
 | **[SPEC_15](./SPEC_15_Anti_Patterns.md)** | 反模式 | ⭐⭐ | 禁止行為、歧義預防 |
 | **[SPEC_16](./SPEC_16_Testing_and_Proof.md)** | 測試 | ⭐⭐ | 空間覆蓋率、證明格式 |
 | **[SPEC_17](./SPEC_17_Self_Evolution.md)** | 自我演化 | ⭐⭐⭐⭐⭐ | 創世演算法、N-1 自舉 |
 | **[SPEC_18](./SPEC_18_The_Echo.md)** | 餘韻 | ⭐⭐⭐ | 終極對稱 |
-| **[APP_01](./APP_01_Tropical_Geometry.md)** | 熱帶擴展 | ⭐⭐⭐⭐ | 熱帶幾何與幾何優化（研究草案） |
+| **[APP_01](./APP_01_Tropical_Geometry.md)** | 熱帶擴展 | ⭐⭐⭐⭐ | 熱帶幾何與幾何優化 |
 | **[APP_02](./APP_02_Formal_Verification.md)** | 形式證明 | ⭐⭐⭐ | 戰略藍圖與機器證明路線圖 |
 | **[APP_03](./APP_03_Paradigm_Comparison.md)** | 範式比較 | ⭐ | 傳統語言對照與心態轉變指南 |
 | **[APP_04](./APP_04_Mathematical_Foundations.md)** | 數學基礎 | ⭐⭐⭐ | 格論與範疇論的核心應用總結 |
+| **[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)** | LADD協議 | ⭐⭐⭐⭐ | 全球邏輯格與引力路由 |
+| **[APP_06](./APP_06_Unified_Field_Theory.md)** | 大一統理論 | ⭐⭐⭐⭐⭐ | EML、Solèr 與 Bohrification 的量子化演化 |
 | **[ORDER_00](./ORDER_00_Interim_Constitution.md)** | 臨時憲法 | ⭐⭐ | 引導期治理與委員會機制 |
 | **[ORDER_01](./ORDER_01_Evolution_and_Governance.md)** | 演化治理 | ⭐⭐ | Epoch 0 啟用之去中心化治理 (Draft) |
 | **[REAL_01](./REAL_01_Ouroboros_Engineering.md)** | 工程實作 | ⭐⭐⭐ | 工作區結構、自舉與視界清理 |
@@ -138,6 +140,8 @@
 | **[REAL_05](./REAL_05_Compliance_and_MVP.md)** | MVP 子集 | ⭐⭐ | 分階段實作與合規性測試 |
 | **[GUIDE_01](./GUIDE_01_Style_and_Formatting.md)** | 排版風格 | ⭐ | 代碼美化與最佳實踐 |
 | **[GUIDE_02](./GUIDE_02_Engine_Optimization.md)** | 引擎優化 | ⭐⭐⭐ | 熱帶幾何優化與啟發式搜尋策略 |
+| **[GUIDE_03](./GUIDE_03_Incremental_Convergence.md)** | 增量收斂 | ⭐⭐⭐ | DAG 與快取的實作指南 |
+| **[GUIDE_04](./GUIDE_04_EML_Execution_Strategy.md)** | EML 執行策略 | ⭐⭐⭐⭐ | 數值穩定性、硬體優化與精度權衡 |
 
 ---
 

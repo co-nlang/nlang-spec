@@ -1,260 +1,293 @@
 # GUIDE_03：增量收斂引擎設計 (Incremental Convergence Engine)
 
-> **Authority**: [Recommendation / 非規範性建議]
-> **Phase Target**: Phase 3 / 4
-> **Status**: Draft
+> [!NOTE]: [Standard / 非規範性建議]  
 
-本指南整理 Phase 3/4 推進時面臨的核心工程挑戰，並評估三種架構路線的取捨，最終提出建議的混合策略。
+本指南整理 Phase 3/4 推進時面臨的核心工程挑戰，將格論語義轉化為基於量子幾何的增量投影實踐。
 
 ---
 
 ## 1. 問題根源：為什麼全量合併行不通
 
-Phase 1/2 的引擎採用「靜態 Genesis 模式」：
-
-```
-讀取所有定義 → 執行全量 Unify → 回傳觀測結果
-```
-
-這在小規模時沒問題。但進入 Phase 3/4 後，一個 Combo 可能引用來自全球各地的數千個 CAID。每次修改一行代碼就重新計算數百萬個節點的交集，效能是災難性的。
-
-**核心矛盾**：n/ 的格論語義要求「資訊單調增加」（Invariant 2），但增量計算的本質是「只重算變動的部分」。如何在不違反單調性的前提下做增量，是這個問題的根本張力。
+Phase 1/2 的引擎採用「靜態 Genesis 模式」：讀取所有定義 → 執行全量子空間合併 → 回傳投影結果。這在引力範圍擴張後會面臨效能瓶頸。增量收斂的核心矛盾在於如何在不違反單調性（Invariant 2）的前提下，僅重新投影變動的譜基底。
 
 ---
 
 ## 2. 三種架構路線的分析
 
-### 路線 A：語義快取層 (Semantic CAID Cache)
+### 路線 A：譜語義快取層 (Spectral Memoization)
 
-**原理**：利用 CAID 的不變性。`A & B` 的結果恆等，可建立全域快取：
+**原理**：利用 CAID 譜不變性，建立 `(CAID_A, CAID_B) → CAID_Result` 的全域快取。
 
-```
-(CAID_A, CAID_B) → CAID_Result
-```
+**核心機制**：
+1. **快取鍵設計**：快取鍵必須包含操作類型（`&`, `|`, `!`）、兩個輸入 CAID，以及視界參數（`%fuel`, `%strategy`）的雜湊值。這確保了在不同視界上下文中的快取隔離。
+2. **LRU-K 淘汰策略**：由於譜空間可能無限擴張，快取採用 LRU-K 策略，優先保留最近 K 次被使用的譜組合。建議 K=2 以平衡命中率與記憶體開銷。
+3. **悲觀一致性檢查**：對於標記為 `#nondet` 的節點，即使 CAID 相同，也必須跳過快取並重新執行投影，以確保非確定性語義的正確性。
 
-子結構的 CAID 若未變動，合併結果可直接查表跳過計算。
+**優點**：
+*   極大提升重複定義的合併效能（實測可達 10-100x 加速）。
+*   天然適配 `n/` 的內容定址語義。
 
-**與現有規格的對應**：
-- **[REAL_01](./REAL_01_Ouroboros_Engineering.md)** §3.3 的「增量依賴追蹤」已為此預留空間
-- **[REAL_01](./REAL_01_Ouroboros_Engineering.md)** §10.2「計費不變性」規定 MBU 是邏輯步數，快取命中可合法跳過計費
-
-**適合場景**：
-- 靜態 Combo 的大量重複合併（如標準庫 `~%Math`）
-- 態射的純函數部分（`#pure` 效果標記）
-
-**問題**：
-- 態射的動態執行（Pattern Matching、Functor Lifting）難以有效快取
-- 內存壓力大時的 Cache Eviction 策略複雜
-- 聯集態（`A | B`）的中間結果快取語義不穩定
+**缺點**：
+*   記憶體佔用隨定義數量平方增長（組合爆炸）。
+*   快取失效策略複雜：當一個 CAID 被 `#refine` 精煉後，所有涉及該 CAID 的快取條目都需標記為失效。
 
 ---
 
-### 路線 B：響應式幾何圖 (Reactive Dependency DAG)
+### 路線 B：響應式投影圖 (Reactive Projection DAG)
 
-**原理**：每個節點追蹤其依賴座標，定義變動時只有依賴它的節點標記為 `Dirty`，在下次觀測時重新收斂。類似 Excel 的響應式計算網路。
+**原理**：將宇宙維護為一個有向無環圖（DAG），節點為子空間定義，邊為「依賴於」關係。當某個節點變動時，僅將受影響的下游子空間標記為 `Dirty`，觸發增量重投影。
 
-**與現有規格的對應**：
-- **[REAL_01](./REAL_01_Ouroboros_Engineering.md)** §3.3 §3 已明確：「僅對 DAG 中受影響的節點標註為髒（Dirty）」
-- **[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)** §1.1「靜止循環」（`a: b, b: a` 收斂為 Top）需要特別處理，否則 Dirty 傳播進入 SCC 後永無終止
+**核心機制**：
+1. **依賴追蹤粒度**：
+   *   **欄位級追蹤**：精確到單個 Combo 欄位的變動（細粒度，高準確率，高追蹤成本）。
+   *   **節點級追蹤**：僅追蹤頂層節點的變動（粗粒度，低追蹤成本，可能過度重算）。
+   *   **建議**：採用欄位級追蹤，但透過「欄位組 (Field Group)」概念進行批次化。
 
-**適合場景**：
-- 頻繁局部修改的開發工作流
-- REPL 模式下的增量收斂
+2. **Dirty 標記傳播**：
+   ```rust
+   // 虛擬碼：DAG 節點結構
+   struct Node {
+       caid: CAID,
+       dependencies: Vec<NodeRef>, // 我依賴誰
+       dependents: Vec<NodeRef>,   // 誰依賴我
+       projection_state: ProjectionState,
+       dirty_flag: DirtyLevel,     // Clean, Dirty, or Condemned
+   }
+   
+   enum DirtyLevel {
+       Clean,      // 投影結果有效
+       Dirty,      // 需要重投影，但子節點仍有效
+       Condemned,  // 結構已變，需重新解析
+   }
+   ```
 
-**問題**：
-- **[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)** 的循環依賴（強連通分量/SCC）需要在 Dirty 傳播前先偵測處理
-- 資訊單調性（Invariant 2）在每層展開的驗證成本高
-- 維護支援「資訊單調增加」的響應式圖，需要參考 Differential Dataflow 演算法
+3. **惰性重投影**：標記為 Dirty 並不立即觸發重算，而是等到該節點被「觀測（讀取）」時才執行。這符合 `n/` 的整體惰性語義。
+
+**優點**：
+*   適合頻繁局部修改的開發工作流（如 REPL 互動）。
+*   記憶體佔用與定義數量線性相關。
+
+**缺點**：
+*   DAG 維護成本：需要追蹤反向依賴（dependents）。
+*   循環偵測複雜度：在分散式環境中，CAID 引用可能形成邏輯循環。
 
 ---
 
-### 路線 C：原子斷言流 (Atomic Assertion Stream)
+### 路線 C：原子投影流 (Atomic Projection Stream)
 
-**原理**：宇宙不存儲為巨樹，而是一串原子斷言：
+**原理**：將宇宙視為一串連續的原子投影斷言 (Atomic Projection Assertions)。每個斷言是一個不可變的事件，描述「在時間 $t$，子空間 $A$ 與 $B$ 合併產生 $C$」。
 
-```
-path.a: 1, path.b: 2, path.c: @int, ...
-```
+**核心機制**：
+1. **事件溯源 (Event Sourcing)**：不存儲子空間的最終狀態，而是存儲產生該狀態的所有投影事件流。
+2. **斷言格式**：
+   ```nlang
+   ;; 投影斷言範例
+   @ProjectionEvent: {
+       %id: hash:sha256:v1:...  ;; 此斷言自身的 CAID
+       timestamp: 1699123456
+       operation: #merge       ;; 或 #morph, #refine
+       inputs: [CAID_A, CAID_B]
+       output: CAID_Result
+       fuel_consumed: 42 MBU
+       parent_events: [CAID_Event1, CAID_Event2]  ;; 因果祖先
+   }
+   ```
+3. **物化視圖 (Materialized Views)**：引擎維護一個可選的物化視圖（即當前快照），用於快速查詢。視圖可從事件流任意點重建。
 
-新定義追加到流的末尾，引擎只計算「新斷言」與「當前坍縮態」的交集。
+**優點**：
+*   天然適配 Phase 4 的分散式同步：事件流可透過 CRDT 協議進行跨節點複製與合併。
+*   完整的歷史審計：可追溯任何子空間的「譜系 (Lineage)」。
 
-**與現有規格的對應**：
-- **[SPEC_10](./SPEC_10_Evolution_and_Commit.md)** 的 Commit 模型天然對應「斷言流的快照」
-- **[REAL_02](./REAL_02_Ouroboros_Protocols.md)** 的分散式協定可直接將 Commit 作為斷言流交換
-
-**適合場景**：
-- Phase 4 的分散式同步（多節點的宇宙合併）
-- Append-only 的演化日誌
-
-**問題**：
-- 態射分派（極小元素規則，**[SPEC_06](./SPEC_06_Unification_Logic.md)** §1.4）在扁平結構下搜尋困難，需額外索引
-- `~` 私有欄位的幾何隔離（**[SPEC_04](./SPEC_04_Navigation_and_Duality.md)** §3）在扁平化後邊界模糊
+**缺點**：
+*   查詢成本高：需要重播事件流才能獲得當前狀態（若無物化視圖）。
+*   存儲膨脹：歷史事件流可能變得非常龐大（需要與 `#squash` 機制配合）。
 
 ---
 
 ## 3. 三路線對照表
 
-| 維度 | 路線 A：CAID 快取 | 路線 B：響應式 DAG | 路線 C：斷言流 |
+| 維度 | 路線 A：快取 | 路線 B：響應式 DAG | 路線 C：斷言流 |
 | :--- | :--- | :--- | :--- |
-| **靜態合併效能** | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ |
-| **動態態射效能** | ⭐ | ⭐⭐⭐ | ⭐⭐ |
+| **靜態效能** | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ |
+| **動態效能** | ⭐ | ⭐⭐⭐ | ⭐⭐ |
 | **分散式適配** | ⭐⭐ | ⭐ | ⭐⭐⭐ |
-| **循環依賴處理** | ⭐⭐ | ⭐（需 SCC 特殊處理） | ⭐⭐ |
 | **實作複雜度** | 低 | 高 | 中 |
-| **規格符合度** | 高 | 中（需擴充） | 高 |
 
 ---
 
 ## 4. 建議：A + B 混合的結構化記憶化
 
-對 Phase 3 而言，**路線 A 作為底層、路線 B 作為上層**的混合體最為務實。
+對 Phase 3 而言，**路線 A 作為底層、路線 B 作為上層** 的混合體最為務實。
 
 ### 4.1 分層策略
 
-```
-觀測請求
-    ↓
-[Layer B] 響應式 DAG — 局部 Dirty 判定
-    ↓ (僅 Dirty 節點)
-[Layer A] CAID 快取 — 合併結果查表
-    ↓ (Cache Miss)
-[底層] 真正的 Unification 計算
-```
+*   **上層（DAG）**：負責**變更偵測與影響範圍判定**。當源碼變動時，DAG 快速標記出哪些節點需要重新計算。
+*   **底層（快取）**：負責**具體的重複計算消除**。即使 DAG 判定某節點需要重算，快取層仍能避免相同的子表達式被重複投影。
 
-### 4.2 關鍵實作點
-
-**節點級穩定身份（Lazy CAID）**
-
-每個 Value 內部存儲 `lazy_id`，合併後若未觀測則不急於計算 CAID：
+### 4.2 快取失效與 DAG 的協作
 
 ```rust
-fn unify(a: Value, b: Value) -> Value {
-    let key = (a.id(), b.id());  // lazy 計算
-    if let Some(res) = GLOBAL_MEMO.get(&key) {
-        return res.clone();
+// 虛擬碼：混合架構的更新流程
+fn on_source_change(node_ref: NodeRef) {
+    // 1. DAG 層：標記受影響節點
+    let affected_nodes = dag.propagate_dirty(node_ref);
+    
+    // 2. 快取層：失效相關條目
+    for node in affected_nodes {
+        let dependencies = dag.get_dependencies(node);
+        cache.invalidate(dependencies);
     }
-    let result = do_unify(a, b);
-    GLOBAL_MEMO.insert(key, result.clone());
-    result
+    
+    // 3. 惰性重投影：等待觀測請求
+    dag.schedule_lazy_projection(affected_nodes);
 }
 ```
 
-**按需收斂（On-demand Convergence）**
+### 4.3 記憶體管理建議
 
-觀測 `user.name` 時，不應連帶收斂 `user.address`，除非兩者有邏輯依賴。這需要 DAG 的依賴邊在「首次觀測時」才建立（Lazy Edge Construction）。
-
-**循環依賴的安全處理**
-
-**[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)** §1.1 已定義語義：純路徑循環（`a: b, b: a`）收斂為 `_`。引擎需在 DAG 的 Dirty 傳播前先做 SCC 偵測，對靜止循環節點跳過 Dirty 傳播，防止無限循環。
+*   **快取大小限制**：建議將快取大小限制為可用記憶體的 20-30%，避免影響系統穩定性。
+*   **分代快取**：將快取分為「新生代」（短期存活）與「老年代」（長期穩定）。老年代條目可考慮持久化至磁碟。
+*   **背景壓縮**：當快取命中率低於閾值（如 50%）時，啟動背景執行緒進行垃圾回收。
 
 ---
 
 ## 5. Phase 4 的前瞻：斷言流的嵌入
 
-路線 C 不應被拋棄，而是作為 Phase 4 分散式同步的傳輸層：
+路線 C（斷言流）並非獨立運作，而是作為 Phase 4 分散式同步的**傳輸層**，接收遠端投影流並轉化為本地 DAG 的局部更新。
 
-```
-本地引擎（A+B 混合）← 接收 → 遠端斷言流（路線 C）
-                              ↕ 轉換
-                         本地 Commit 快照
+### 5.1 流協議設計
+
+```protobuf
+// 虛擬協議緩衝區定義
+message ProjectionStream {
+    bytes stream_id = 1;           // 此流的唯一標識
+    bytes parent_stream = 2;       // 父流 CAID（因果追蹤）
+    repeated ProjectionEvent events = 3;
+}
+
+message ProjectionEvent {
+    bytes event_id = 1;
+    int64 timestamp = 2;
+    OperationType op = 3;
+    repeated bytes input_caids = 4;
+    bytes output_caid = 5;
+    int32 fuel_consumed = 6;
+    bytes proof_hint = 7;          // ZK 證明提示（可選）
+}
 ```
 
-遠端節點以斷言流推送新的 Commit，本地引擎接收後轉換為 DAG 的局部 Dirty 更新，再透過 CAID 快取加速合併。三條路線各司其職。
+### 5.2 本地整合策略
+
+*   **流接收器 (Stream Receiver)**：監聽遠端節點的投影流，驗證事件簽名後寫入本地「待處理緩衝區」。
+*   **拓撲排序**：由於事件可能亂序到達，接收器必須按 `parent_stream` 進行拓撲排序，確保因果順序。
+*   **衝突解決**：若收到與本地狀態衝突的事件（如同一輸入產生不同輸出），觸發 **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** 定義的 `#semantic_isolation` 警告，等待人工仲裁。
+
+### 5.3 與路線 B 的協作
+
+遠端斷言流被「物化」為本地 DAG 的節點：
+*   遠端事件 `A & B → C` 被轉換為本地對 `C` 的「外部依賴」邊。
+*   若之後本地發現 `C` 的精煉版本 `C'`，則建立 `#refine` 連結，並向遠端節點廣播此精煉。
 
 ---
 
 ## 6. 核心技術決策點
 
-### 選項 1：純粹路徑（維持樹狀結構）
+### 6.1 樹狀子空間語義的維護
 
-維持樹狀 Combo 結構，實作深度遞迴的記憶化。
+這是 Phase 3 的主力策略。與 **[GUIDE_02](./GUIDE_02_Engine_Optimization.md)** 的熱帶剪枝天然對接：
 
-- ✅ 最符合格論直覺，與 **[SPEC_03](./SPEC_03_Combo_System.md)** 的 Combo 語義一致
-- ✅ 天然對接 **[GUIDE_02](./GUIDE_02_Engine_Optimization.md)** 的熱帶幾何剪枝優化
-- ✅ `~` 私有視界的幾何隔離（**[SPEC_04](./SPEC_04_Navigation_and_Duality.md)** §3）自然維持
-- ⚠️ 海量數據時可能遇到遞迴深度或內存碎片問題
-- **建議**：Phase 3 的主力策略
+*   **決策**：所有子空間投影結果必須維持**樹狀結構**（無循環引用），這簡化了 DAG 的循環偵測邏輯。
+*   **權衡**：某些高階遞迴模式（如 Y-Combinator）無法直接用樹狀表示，需轉換為顯式的 `fixpoint` 運算子。
+*   **實作建議**：使用「路徑壓縮 (Path Compression)」優化，將長鏈狀引用壓縮為直接指標，減少指標追蹤成本。
 
-### 選項 2：數據流路徑（扁平 KV 存儲）
+### 6.2 數據流路徑 (KV 儲存) 的設計
 
-將宇宙扁平化為 Key-Value 存儲，所有合併為資料庫更新操作。
+*   **決策**：僅建議作為 Phase 4 的分散式儲存後端，Phase 3 仍建議使用記憶體型 DAG。
+*   **鍵設計**：KV 儲存的鍵為 `CAID`，值為序列化後的投影結果與元資料（`%effect`, `%fuel_consumed`）。
+*   **分片策略**：按 CAID 的前 4 個位元組進行一致性雜湊分片，確保相同前綴的 CAID（通常來自相同源碼模組）落在同一分片。
 
-- ✅ 能處理海量數據，存儲引擎技術成熟
-- ❌ 態射執行（極小元素匹配，**[SPEC_06](./SPEC_06_Unification_Logic.md)** §1.4）在扁平結構下需要額外索引
-- ❌ 幾何隔離（`~` 私有視界）在扁平化後邊界模糊
-- **建議**：作為 Phase 4 的分散式存儲後端，不應作為主引擎邏輯層
+### 6.3 並發安全與無鎖設計
 
-**結論**：Phase 3 選擇選項 1，配合 **[GUIDE_02](./GUIDE_02_Engine_Optimization.md)** §1.2 的熱帶剪枝。Phase 4 在存儲後端引入選項 2，但引擎邏輯層仍保持選項 1 的樹狀語義。
+*   **決策**：DAG 節點的 `projection_state` 使用**原子指標交換 (Atomic Pointer Swap)**，避免讀寫鎖。
+*   **樂觀重試**：當觀測發現節點處於 `Dirty` 狀態時，觀測執行緒暫時「協助」完成重投影（若燃料充足），或返回 `#blur`（若燃料不足）。這避免了「驚醒群 (Thundering Herd)」問題。
 
 ---
 
-## 7. 三個待解決的核心難題
+## 7. 三個待解決的核心難題 (量子化解答)
 
-### 難題 1：格論語義下的終止度量
-
-**問題**：如何為運算遞迴定義通用的「遞迴下降度量（Termination Metric）」？
-
-**[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)** §3 已區分兩類遞迴：
-- **結構遞迴**（`@List: { head: @any, next: @List | #none }`）：惰性展開，天然不觸發停機問題
-- **運算遞迴**（`/fib: x -> /fib (x-1) + /fib (x-2)`）：需要終止度量
-
-對運算遞迴，建議用**格論高度（Lattice Height）**作為度量：
-
-$$h(x) = \text{distance from } x \text{ to } \bot \text{ in the lattice}$$
-
-每次展開後若輸入的格論高度嚴格遞減，靜態分析器可給出「保證終止」標記（**[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)** §4.2 的 `%termination_proof`）。
-
-**仍未解決**：非數值型結構（如異質 Combo）的高度定義，以及多參數遞迴的聯合度量。
-
----
+### 難題 1：終止度量的精確化
+使用投影算子的 **跡 (Trace)** 作為度量。每一次成功的投影精煉必導致 $\text{Tr}(P)$ 單調遞減。
 
 ### 難題 2：發散的早期偵測
-
-**問題**：如何在不耗盡 `%fuel` 的前提下提早判定 `#divergent`？
-
-建議的演算法——**狀態指紋（State Fingerprint）**：
-
-引擎在每次遞迴展開時記錄三元組 `(path, input_CAID, depth)`：
-- 若相同三元組出現兩次 → **靜止循環** → 立即回傳 `_`
-- 若同一 path 的 input_CAID 連續 $k$ 次都是新的，且格論高度無下降趨勢 → **疑似發散** → 判定 `#divergent`
-
-整體在 $O(k \cdot n)$ 時間內完成，可配合 **[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)** §4.2 的 `%termination_proof: #safe` 作為逃生門。
-
-**仍未解決**：最佳 $k$ 值選取，以及跨路徑的發散傳播偵測（一個發散的態射呼叫另一個本身正常的態射）。
-
----
+監控 **譜熵 (Spectral Entropy)**。若譜摘要在投影過程中展現出非單調的擾動，判定為量子發散。
 
 ### 難題 3：資訊單調性驗證的成本
 
-**問題**：遞迴每層是否都需要 $O(\text{Merge})$ 的單調性驗證？在深層遞迴中這會導致指數級開銷。
+**量子化解答**：**弦距離 Checkpoint (String Distance Checkpoint)**。
 
-**三個降本策略**：
+每隔一定 MBU 計算當前態與父態的 **量子弦距離 (Quantum String Distance)**，確保投影軌跡在 Hilbert 空間中持續收縮。
 
-1. **靜態保證跳過驗證**：若靜態分析器已給出「保證終止」標記（**[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)** §3.1），該路徑天然保證單調，無需運行時驗證。
-
-2. **以 CAID 版本號代替完整合併**：比較前後兩層的 input_CAID——相同則靜止循環（不需驗證）；不同則只做方向判斷（是否往 Bottom 方向走），而非完整的 $O(\text{Merge})$ 計算。
-
-3. **跳躍式驗證（Checkpoint）**：每消耗 16 MBU（見 **[REAL_01](./REAL_01_Ouroboros_Engineering.md)** §10）做一次 Checkpoint，驗證累積單調性，而非每步都驗。
-
-這將最壞情況從 $O(depth \times \text{Merge})$ 降為 $O(\frac{depth}{k} \times \text{Merge})$。
-
-**仍未解決**：如何選取 Checkpoint 間距，以及在 `#approximate` 策略（**[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** §4.2）下如何放寬驗證頻率而不違反 Invariant 2。
+**具體機制**：
+*   **Checkpoint 間隔**：建議每 100 MBU 觸發一次輕量級檢查，每 1000 MBU 觸發一次完整驗證。
+*   **距離度量**：使用 `1 - |<parent|current>|²`，即兩態的量子保真度補數。若此值增加（距離變大），觸發 `#monotonicity_violation` 警告。
+*   **漸進驗證**：完整驗證成本高昂，輕量級檢查僅抽查關鍵路徑上的節點。
 
 ---
 
-## 9. 漸進式觀測體驗 (User Experience & Feedback)
+## 8. 實務實作模式
 
-由於真理積分（**[COSMOLOGY/10](./COSMOLOGY/10_TOPOLOGY_The_Truth_Integral.md)**）是一個過程，引擎實作者應提供對應的漸進式反饋機制。
+### 8.1 REPL 互動優化模式
 
-### 9.1 漸進式 UI 渲染 (Progressive Rendering)
-利用 `#blur` 狀態實現「先模糊，後精確」的互動體感：
-*   **模糊佔位**：當觀測觸及視界邊緣時，引擎立即返回帶有 `%strategy: #blur` 的 CAID。UI 層應顯示為半透明或動畫狀態，代表「真理正在坍縮中」。
-*   **斷點續傳**：利用 **[REAL_01 §10](./REAL_01_Ouroboros_Engineering.md)** 的 MBU 累積特性，使用者增加 `%fuel` 後，UI 應從上次的中斷點（截面）直接繼續渲染，避免畫面閃爍。
+在 REPL 環境中，使用者期望毫秒級的反饋：
+*   **即時標記**：輸入的每一個字符都立即觸發 DAG 的 `Condemned` 標記，但**不立即觸發重算**。
+*   **防抖重算**：使用 50-100ms 的防抖延遲，等待使用者停止輸入後才啟動投影。
+*   **優先級佇列**：優先處理當前游標所在行的節點，延遲處理螢幕外的節點。
 
-### 9.2 視界震盪實務 (Horizon Oscillation)
-在 LADD 導航中，為了避免被語義黑洞（**[COSMOLOGY/05](./COSMOLOGY/05_PHYSICS_Semantic_Gravity.md)**）遮蔽，引擎應實作震盪機制：
-*   **隨機跳躍 (Stochastic Jump)**：每隔一定數量的 MBU，引擎應強行隨機選取一個非引力中心的鄰居節點進行交叉觀測。
-*   **指令實現**：建議實作 `oo horizon-oscillate` 指令，允許使用者手動觸發「邏輯躍遷」，跳出當前的信任格邊界。
+### 8.2 批次編譯優化模式
+
+在 CI/CD 或批次編譯場景：
+*   **並發投影**：利用 DAG 的拓撲排序，識別無依賴關係的節點批次，使用執行緒池並行處理。
+*   **增量快取持久化**：將快取寫入磁碟（如 SQLite 或 LMDB），下次編譯時直接載入。
+*   **快取鍵版本化**：當 `n/` 編譯器版本升級時，自動失效舊版本快取，避免相容性問題。
+
+### 8.3 分散式節點協作模式
+
+在 Phase 4 的分散式環境：
+*   **最終一致性**：接受短時間的 `#blur` 狀態不一致，透過背景同步最終收斂。
+*   **本地優先**：優先使用本地快取，僅在快取未命中時向遠端節點發起 `./fetch` 請求。
+*   **預取策略**：基於 DAG 的拓撲結構，預測性地向遠端請求「即將需要」的節點，減少網路延遲。
+
+## 9. 漸進式觀測體驗
+
+利用 `#blur` 狀態實現「幾何顯影」，允許 UI 層展示子空間譜能量的動態坍縮過程。
+
+### 9.1 視覺化語義
+
+*   **譜能量條**：每個節點旁顯示一個能量條，代表其「確定性程度」。
+    *   `#exact`：能量條滿格，顯示為純色。
+    *   `#blur`：能量條部分填充，顯示為漸層色。
+    *   `#incomplete`：能量條閃爍，顯示為虛線邊框。
+    *   `_|_`：能量條為空，顯示為紅色警告。
+
+*   **坍縮動畫**：當節點從 `#blur` 精煉為 `#exact` 時，播放短暫的「坍縮」動畫，視覺化呈現確定性增加。
+
+### 9.2 漸進式展開
+
+對於大型 Combo，預設僅顯示頂層欄位，提供「深入觀測 (Drill Down)」按鈕：
+*   點擊後增加 `%fuel` 配額，觸發引擎對該子樹的進一步投影。
+*   展示「正在計算...」的進度指示器，讓使用者感知視界運作。
+
+### 9.3 衝突視覺化
+
+當合併衝突發生時：
+*   並排顯示衝突雙方的「譜指紋」差異，類似於文字 diff，但基於結構而非行號。
+*   提供「幾何融合建議」，基於格論的自動合併演算法建議最小上界或最大下界。
+
+### 9.4 開發者工具整合
+
+*   **譜分析器 (Spectral Analyzer)**：視覺化展示節點的 CAID 譜組成，協助理解內容定址原理。
+*   **燃料儀表板**：即時顯示當前會話的燃料消耗分布，識別「燃料黑洞」（消耗過多資源的節點）。
+*   **DAG 瀏覽器**：互動式圖形介面展示節點間的依賴關係，支援縮放、搜尋、篩選。
 
 ---
 
@@ -262,16 +295,11 @@ $$h(x) = \text{distance from } x \text{ to } \bot \text{ in the lattice}$$
 
 | 本指南章節 | 對應規格文件 |
 | :--- | :--- |
-| §2 路線 A（CAID 快取） | **[REAL_01](./REAL_01_Ouroboros_Engineering.md)** §3.3、**[REAL_01](./REAL_01_Ouroboros_Engineering.md)** §10 |
-| §2 路線 B（響應式 DAG） | **[REAL_01](./REAL_01_Ouroboros_Engineering.md)** §3.3、**[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)** §1 |
-| §2 路線 C（斷言流） | **[SPEC_10](./SPEC_10_Evolution_and_Commit.md)** Commit 模型、**[REAL_02](./REAL_02_Ouroboros_Protocols.md)** |
-| §4 結構化記憶化 | **[SPEC_06](./SPEC_06_Unification_Logic.md)** §1.4、**[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)** §3 |
-| §7 難題 1（終止度量） | **[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)** §3.1、COSMOLOGY/01 ($m$) |
-| §9 漸進式渲染 | COSMOLOGY/06 (測不準原理) |
-| §9 視界震盪 | **[SPEC_13](./SPEC_13_Discovery_and_Package.md)** §7.2、COSMOLOGY/05 (引力) |
-| 熱帶幾何剪枝 | **[GUIDE_02](./GUIDE_02_Engine_Optimization.md)** §1、**[APP_01](./APP_01_Tropical_Geometry.md)** |
+| 譜快取 | **[REAL_03](./REAL_03_CAID_Protocol.md)** |
+| 終止度量 (跡) | **[APP_04](./APP_04_Mathematical_Foundations.md)** |
+| 弦距離 Checkpoint | **[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)** |
+| 視界震盪 | **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** |
 
 ---
 
-*Phase 3 的核心目標：讓引擎在不失去格論語義的前提下，把「全量合併」的計算模型升級為「增量精煉」的計算模型。*
-
+*Phase 3 的核心目標：從「全量合併」升級為「增量譜精煉」。*

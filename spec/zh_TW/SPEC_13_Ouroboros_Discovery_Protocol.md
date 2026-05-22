@@ -1,56 +1,69 @@
-# n/ Language Specification - 發現與內容幾何 (Discovery & CAID)
+# n/ Language Specification - 銜尾蛇發現協定 (OODP)
 
-本章節定義 `n/` 宇宙透過內容幾何特徵定位節點，並將其轉化為**宇宙發現機制**。
+> **OODP (Ouroboros Discovery Protocol)**：Ouroboros 引擎間進行內容定址、發現與信任管理的**語言層協定規範**。
+
+本章節定義 `n/` 宇宙透過子空間投影特徵定位節點，並將其轉化為**宇宙發現機制**。
 發現（Discovery）是語言層的本體論概念，與部署方式或傳輸協定無關。
+
+---
+
+## 0. 協定架構：五層譜模型與混合設計
+
+OODP 採用**混合架構**：L2 定址層基於傳統 DHT（如 Kademlia），L3 以上導入譜幾何優化。這是一個**工程妥協**——純粹的格論路由在實作上存在根本性限制。
+
+### 為何需要混合架構？
+
+**純粹譜路由的困難**（OODP 的理想）：
+- 譜指紋（Lattice Sketch）是高維連續向量，不像 160-bit 節點 ID 離散且可預測
+- 譜距離 $d_L$ 難以建立確定性的路由表（無法像 XOR 距離那樣進行桶分區）
+- 物理節點需要穩定標識（IP + Port），譜指紋會隨內容變化
+
+**工程妥協的設計**：
+
+| 層次 | 名稱 | 譜幾何對應 | 功能 | 實作參考 |
+| :--- | :--- | :--- | :--- | :--- |
+| **L1 物理層** | 傳輸載體 | 位元流傳輸 | TCP/UDP、libp2p、QUIC（傳輸原始位元） | **[REAL_02](./REAL_02_Ouroboros_Protocols.md)** |
+| **L2 定址層** | 節點定位 | 譜指紋定位 | **Kademlia XOR 路由**（尋找**節點的物理位置**） | **[REAL_03](./REAL_03_CAID_Protocol.md)** |
+| **L3 收斂層** | 譜收斂核心 | 投影算子 Meet | 分散式 `&` 運算、衝突判定 | **[REAL_02](./REAL_02_Ouroboros_Protocols.md)** |
+| **L4 視角層** | Bohrification | 交換子代數過濾 | 權威格論、譜消融、主觀真理坍縮 | **本章 §7** |
+| **L5 應用層** | 語義接口 | 觀測者交互 | `~%Discovery./find`、插件發現、全球實體互動 | **本章 §6** |
+
+**關鍵設計**：L2 使用傳統 DHT 尋找**物理節點**（解決「這台機器在哪裡」），L3 以上才是譜感知路由（解決「這個子空間投影由誰服務」）。兩層各司其職，LADD 作為 L3-L5 的**譜幾何優化擴充**。
 
 ---
 
 ## 1. 核心哲學：Yoneda 視角下的身分
 
-在 `n/` 宇宙中，一個物件的身分不由它的名字決定，而是由它與所有其他物件的關係總和決定。
+在 `n/` 宇宙中，一個子空間的身分不由它的名字決定，而是由它在 Hilbert 空間中展現的投影特徵決定。
 
 ### 1.1 內容定址標識符 (CAID)
-**CAID (Content Addressable Identifier)** 是節點結構的內在標識符，反映了其在宇宙幾何中的唯一指紋。
-在格論模型中，內容相同的兩個節點在邏輯上是同一個存在。
-*   **Hash 即幾何**：CAID 是節點結構的不可變標識。
-*   **Yoneda 原理**：物件由其關係決定。CAID 封裝了節點及其所有子節點的遞迴關係。
+**CAID (Content Addressable Identifier)** 是子空間結構的內在標識符，反映了其投影算子 $P_A$ 的譜幾何指紋。
+*   **波粒二象性**：CAID 既具備抗碰撞的粒子指紋（Digest），也具備散發引力的波動譜摘要（Sketch）。
+*   **Yoneda 原理**：物件由其關係決定。CAID 封裝了子空間投影算子與宇宙中其他算子間的干涉特徵。
 
 ### 1.2 觀測別名 (Observation Alias)
-「名字」是人類觀測者為了導航而建立的投影。
+「名字」是人類觀測者建立的投影標籤。
 *   **別名是相對的**：路徑 `_.deps.ui` 是一個觀測視角。
-*   **CAID 是絕對的**：`hash:sha256:v1:9f86...` 是存在本身的幾何特徵。
-*   **發現的本質**：將一個「觀測別名」與一個「絕對 CAID」進行**坍縮綁定**。
+*   **CAID 是絕對的**：它定義了子空間在全域格論中的幾何座標。
 
 ---
 
-## 2. 發現機制：對萬有集合的約束
+## 2. 發現機制：對萬有子空間的約束
 
-在 `n/` 中，沒有「下載」或「安裝」。所有可能的 Commit 快照早已存在於萬有集合 `_` 之中。
+在 `n/` 中，所有可能的子空間投影早已存在於萬有集合 `_` 之中。
 
-### 2.1 發現即坍縮 (Discovery as Collapse)
-當我們宣告一個依賴時，我們是在對宇宙施加一個定位約束：
+### 2.1 發現即引力坍縮 (Discovery as Gravity Collapse)
+當宣告一個依賴時，是在施加幾何定位約束。引擎透過 **LADD 協議**（L3-L5 優化層）感受譜引力，將路徑坍縮至符合特定 CAID 特徵的子空間。
+
+### 2.2 內容驗證與譜合約 (Spectral Contract)
+發現本質上是 **`&` (合併)** 運算，可對發現結果施加額外約束：
 ```nlang
 deps: {
-    @ai.agent: "commit:9f86..."   ;; 約束 @ai.agent 節點必須具備此 CAID 特徵
-}
-```
-引擎透過搜尋萬有集合，找到符合此 CAID 的節點並將其坍縮至該路徑。若找不到或內容衝突，則收斂為 `_|_`。
-
-### 2.2 內容驗證與介面合約 (Contract Verification)
-由於發現本質上是 **`&` (合併)** 運算，觀測者可以在定位 CAID 的同時，對其內容施加額外的幾幾何約束（介面合約）：
-
-```nlang
-deps: {
-    ;; 發現該 CAID，且強制驗證其必須具備特定的 Logic 介面與型別
-    @db.driver: "hash:sha256:v1:7f8a..." & {
-        /connect: @morphism     ;; 驗證必須具備連線態射
-        /query:   @morphism     ;; 驗證必須具備查詢態射
-        %version: >= "v2.0"     ;; 驗證元資訊版本
+    @db.driver: "hash:blake3:v1:7f8a..." & {
+        /connect: @morphism     ;; 驗證投影算子具備連線能力
     }
 }
 ```
-*   **語義保證**：若發現到的 CAID 內容不符合右側的 `{}` 約束，合併結果將立即坍縮為 `_|_`，並在 `%cause` 中精確指出是哪個介面不匹配。
-*   **防禦性發現**：這防止了「內容正確但語義漂移」的風險，確保引入的外部幾何物件永遠符合本地的執行預期。
 
 ---
 
@@ -59,12 +72,13 @@ deps: {
 CAID 系統依賴「內容已被發現」的假設。為了打破「雞生蛋、蛋生雞」的循環，`n/` 定義了**種子節點 (Seed Nodes)** 機制。
 
 ### 3.1 引擎內建種子 (Hardcoded Seeds)
+
 Ouroboros 引擎在編譯時會內建一組核心規格的 CAID 及其對應內容。以下為創世必須包含的**核心種子清單**：
 
 | 種子路徑 | 角色 | 創世 CAID (Placeholder) |
 | :--- | :--- | :--- |
 | **`~%List`** | 列表處理原語 | `hash:sha256:v1:seed01...` |
-| **`~%Math`** | 算術與位元運算 | `hash:sha256:v1:seed02...` |
+| **`~%Math`** | 算術與數學運算 | `hash:sha256:v1:seed02...` |
 | **`~%Logic`** | 態射與柯里化控制 | `hash:sha256:v1:seed03...` |
 | **`~%Engine`** | 觀測與演化原語 | `hash:sha256:v1:seed04...` |
 | **`~%Discovery`** | 發現與 CAID 解析 | `hash:sha256:v1:seed05...` |
@@ -72,33 +86,41 @@ Ouroboros 引擎在編譯時會內建一組核心規格的 CAID 及其對應內�
 *   **規範化實作保證**：標準庫的 CAID 由其**規範化後的 `n/` 原始碼內容**決定。所有符合規格的引擎，其內建標準庫源碼的 CAID 必須與官方規格書提供的種子完全一致。
 
 ### 3.2 創世 Commit (Genesis Commit)
+
 宇宙的第一個 Commit $C_0$ 包含了所有標準庫的根路徑映射。
 *   **全域唯一性**：所有符合規格的引擎在初始化時，其 `_` 路徑下的標準庫節點之 `%id` 必須完全一致。
+*   **譜凍結保證**：標準庫的 CAID 由其規範化後的譜特徵決定，全宇宙絕對一致。
 
 ---
 
 ## 4. CAID 格式與封套協議
 
-規格書定義 CAID 的邏輯結構，具體的演算法實作由工程層決定。
+規格書定義 CAID 的邏輯結構，具體的演算法實作由 **[REAL_03](./REAL_03_CAID_Protocol.md)**（L2 定址層）決定。
 
 ### 4.1 標準格式 (CAID Envelope)
+
 CAID 字串是一個**自描述的幾何封套 (Self-describing Envelope)**。其格式確保了在不進行雜湊運算前，引擎即可獲取必要的物理元資訊。
 
 #### 4.1.1 物理協議與編碼 (Physical Protocol)
-為了保證全域宇宙的一致性，CAID 的物理表現形式（如 BNF 語法、摘要編碼方式、雜湊演算法清單）由 **銜尾蛇發現協定 (NDP)** 統一定義（詳見 **[REAL_03: CAID 物理協議](./REAL_03_CAID_Protocol.md)**）。
+
+為了保證全域宇宙的一致性，CAID 的物理表現形式（如 BNF 語法、摘要編碼方式、雜湊演算法清單）由 **OODP L2 定址層**統一定義（詳見 **[REAL_03: CAID 物理協議](./REAL_03_CAID_Protocol.md)**）。
 
 #### 4.1.2 規格義務 (Specification Obligations)
+
 1.  **內容唯一性**：相同的內容在相同的格式版本 (`fmt_version`) 下，產生的 CAID **必須** 全宇宙唯一且決定。
 2.  **版本語義隔離**：
     - **格式版本 (`fmt_version`)**：定義 AST 規範化的物理規則。
     - **語言版本 (Spec Version)**：定義語言語義。
     - 兩者為多對一映射關係。
 
-#### 4.1.3 跨版本精煉 (Cross-version Refinement)
+### 4.2 跨版本精煉 (Cross-version Refinement)
+
 當 `fmt_version` 升級導致 CAID 變更時，必須透過 **`#refine` (精煉 Commit)** 建立新舊 CAID 的因果連結（詳見 **[SPEC_10](./SPEC_10_Evolution_and_Commit.md)**）。這允許宇宙在物理格式演進的同時，保持邏輯上的身分連續性。
 
-### 4.2 CAID 等價性判定規則
+### 4.3 CAID 等價性判定規則
+
 判定不同演算法或版本的 CAID 是否等價（幾何一致）的程序如下：
+
 1.  **讀取封套**：從 CAID 字串直接提取 `fmt_version` 與 `algo`。
 2.  **解析 (Parse)**：使用該版本規則將內容還原為 AST。
 3.  **重規範化 (Re-normalize)**：使用當前引擎預設的最新版本規則對 AST 進行重排。
@@ -108,18 +130,12 @@ CAID 字串是一個**自描述的幾何封套 (Self-describing Envelope)**。�
 
 ## 5. 漸進式真理與精煉共識
 
-`n/` 承認**觀測視域 (Observational Perspective)** 的局限性。真理不是一次性的坍縮，而是沿著格不斷深化的過程。
+真理不是一次性的坍縮，而是沿著格不斷深化的過程。
 
 ### 5.1 身份分類與生命週期
-
-- **`CAID_exact` (#exact)**：**本質身分 (Intrinsic Identity)**。
-    - **性質**：由內容幾何決定，具備永久性。是宇宙的終極觀測目標。
-- **`CAID_blur` (#blur)**：**認識論快照 (Epistemological Snapshot)**。
-    - **性質**：標識「在特定限制下的局部視角」。
-    - **快照決定論**：`CAID_blur = hash(CanonicalAST + HorizonParams)`。
-    - **身分轉變 (The Solidification)**：
-        *   **動態態 (Uncommitted)**：作為 $E$ 的臨時替身，具備自動精煉的權限。
-        *   **靜態態 (Committed)**：一旦進入歷史紀錄，它即代表「該紀元下的觀測事實」。其 CAID 錨定的是當時的認識狀態，而非潛在真理。
+*   **`CAID_exact` (#exact)**：本質身分。由子空間本體決定。
+*   **`CAID_blur` (#blur)**：局部截面快照。標識「在特定能量限制下的觀測事實」。
+    *   **固化原則**：一旦寫入 Commit，`CAID_blur` 即代表當時的認識狀態。
 
 ### 5.2 精煉語義與自動重定向 (Refinement)
 
@@ -133,8 +149,8 @@ CAID 字串是一個**自描述的幾何封套 (Self-describing Envelope)**。�
         - **允許範圍**：引擎僅能在 **「觀測視窗 (Live Observation)」** 或 **「暫存演化 (Staged Area)」** 中觀測自動重定向（將 $B$ 靜默替換為 $E$）。這加速了開發時的真理收斂。
         - **嚴禁範圍**：對於已固化的 **歷史 Commit**，引擎 **嚴禁** 觀測隱性重定向。已寫入歷史的 `CAID_blur` 必須保持其原始語義，以防止「歷史回溯性坍縮」與內容定址漂移。
 
-### 5.2.1 跨演算法透明度 (Cross-Algorithm Transparency)
- 
+#### 5.2.1 跨演算法透明度 (Cross-Algorithm Transparency)
+
 精煉機制支援**跨雜湊演算法**與**跨格式版本**的自動重定向：
 
 1.  **不透明目標**：當 `CAID_source` 指向 `CAID_target` 且兩者使用不同雜湊演算法時：
@@ -171,20 +187,20 @@ CAID 字串是一個**自描述的幾何封套 (Self-describing Envelope)**。�
 3.  **自動消融 (Auto-Ablation)**：
     當疊加態的別名參與後續的格論運算（如 `pkg & @SpecificType`）時，不符合型別約束的分支會自動收斂至 `_|_` 並從聯集中移除。
     *   **語義效果**：這實現了「基於需求的衝突解決」。宇宙不需要知道哪個 `pkg` 是「正確」的，它只需要知道哪個 `pkg` 能滿足當前的幾何約束。
-3.  **歧義殘留 (#ambiguous_alias)**：
-    若經過所有約束運算後仍保留多個分支，引擎必須將其標記為 `#ambiguous_alias`。觀測者此時必須透過 **[§8 權威格論]** 顯式選擇一個偏好的觀測視點。
+4.  **歧義殘留 (#ambiguous_alias)**：
+    若經過所有約束運算後仍保留多個分支，引擎必須將其標記為 `#ambiguous_alias`。觀測者此時必須透過 **[§7 權威格論]** 顯式選擇一個偏好的觀測視點。
 
 ---
 
 ## 6. 系統發現介面 (`~%Discovery`)
 
-這些態射定義了語言層如何驅動發現行為。
+這些態射定義了語言層如何驅動發現行為（L5 應用層）。
 
 ### 6.1 基礎原語 (Basic Primitives)
 
 | 態射 | 說明 |
 | :--- | :--- |
-| **`./fetch <caid>`** | 在萬有集合中定位並坍縮該 CAID 的 Combo。 |
+| **`./fetch <caid>`** | 在萬有集合中定位並坍縮該 CAID 的子空間。 |
 | **`./alias <path>`** | 將指定路徑的內容合成為別名映射表。 |
 | **`./identify <node>`** | 獲取指定節點的內在 CAID（即其 `%id`）。 |
 
@@ -202,18 +218,21 @@ CAID 字串是一個**自描述的幾何封套 (Self-describing Envelope)**。�
 *   **用途**：插件系統發現。例如 `~%Discovery./find @Plugin./Interface` 尋找所有實作了特定邊界的擴充功能。
 
 ### 6.3 LADD 協議規範
-全域規模的發現行為應遵循 **LADD (Lattice-Aware Distributed Discovery)** 協議規範（詳見 **[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)**）。
+
+全域規模的發現行為可透過 **LADD (Lattice-Aware Distributed Discovery)** 協議進行譜幾何優化（詳見 **[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)**）。
 
 *   **物理實踐**：LADD 將發現過程定義為「幾何精煉路徑的自動選擇」。查詢請求天然向幾何質量重、約束具體的節點坍縮。
-*   **效能保證**：**[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)** 是全域邏輯格進行收斂的物理實踐標準，所有符合規格的引擎必須確保其路由行為與格論距離 $d_L$ 一致。
+*   **效能保證**：[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)** 是全域邏輯格進行收斂的物理實踐標準，優化後的引擎應確保其路由行為與格論距離 $d_L$ 一致。
+*   **協定定位**：LADD 是 OODP L3-L5 層的**譜幾何優化擴充**，非強制基礎設施。
 
 ---
 
 ## 7. 權威與信任格論 (Authority & Trust Lattice)
 
-在去中心化的發現中，「信任」不是二元的（Yes/No），而是**觀測權重 (Observation Weight)**。
+在去中心化的發現中（L4 視角層），「信任」不是二元的（Yes/No），而是**觀測權重 (Observation Weight)**。
 
 ### 7.1 信任即約束 (Trust as Constraint)
+
 信任來源（Trust Roots）被視為對萬有集合的**優先級標記**。
 
 1.  **信任排序**：觀測者維護一個偏序集 $T$。當別名衝突發生時，引擎依照 $T$ 中的順序進行篩選。
@@ -221,6 +240,7 @@ CAID 字串是一個**自描述的幾何封套 (Self-describing Envelope)**。�
 3.  **權威隔離**：不同的**觀測視域 (Observational Perspective)** 可以具備不同的信任格。這允許在同一個宇宙中，局部地使用未經社群審核的實驗性分支，而不影響全域的穩定性。
 
 ### 7.2 視界震盪與交叉觀測 (Horizon Oscillation)
+
 為了防禦 **語義日蝕攻擊 (Semantic Eclipse Attack)** —— 即惡意節點群組提供一組自洽但與全域格論隔離的偽造權威與內容 —— 引擎 **必須** 實作視界震盪防禦機制：
 
 1.  **隨機跳出 (Stochastic Jump)**：引擎在進行 `./fetch` 或引力導航時，必須以一定比例（創世預設值：1/64 MBU 觀測量）在當前「信任格」之外隨機選取節點進行交叉觀測。
@@ -231,15 +251,19 @@ CAID 字串是一個**自描述的幾何封套 (Self-describing Envelope)**。�
 ---
 
 ## 8. 與其他章節的關係
+
 | 章節 | 關聯 |
 | :--- | :--- |
-| **[SPEC_01](./SPEC_01_Foundation_and_Lattice.md)** | 萬有集合 `_` 是發現機制的源頭。 |
+| **[SPEC_01](./SPEC_01_Foundation_and_Lattice.md)** | 萬有集合 `_` 是發現機制的源頭。正交模格公設。 |
 | **[SPEC_06](./SPEC_06_Unification_Logic.md)** | 發現行為中的 CAID 匹配遵循統一化演算法的極小元素規則。 |
 | **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** | 定義了影響 `CAID_blur` 的計算視界參數。 |
 | **[SPEC_10](./SPEC_10_Evolution_and_Commit.md)** | 定義了驅動精煉變遷的 `#refine` 操作。 |
-| **[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)** | LADD 協議的詳細理論框架與路由演算法。 |
-| **[REAL_03](./REAL_03_CAID_Protocol.md)** | 討論傳輸層協議（NDP）如何實際定位這些幾何特徵。 |
+| **[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)** | LADD 協議：OODP L3-L5 的譜幾何優化擴充。 |
+| **[REAL_02](./REAL_02_Ouroboros_Protocols.md)** | OODP L1-L3 的傳輸層與基礎收斂協定實作。 |
+| **[REAL_03](./REAL_03_CAID_Protocol.md)** | OODP L2 定址層：CAID 的物理編碼與雜湊規範。 |
+| **[REAL_04](./REAL_04_Causal_Chain_Protocol.md)** | OODP 因果鏈協議：`%cause` 結構與錯誤傳播。 |
 | **[COSMOLOGY/05](./COSMOLOGY/05_PHYSICS_Semantic_Gravity.md)** | 發現機制的數位物理學基礎：語義重力場。 |
+| **[COSMOLOGY/15](./COSMOLOGY/15_PHYSICS_Semantic_Resonance.md)** | 諧振身分的物理詮釋。 |
 
 ---
 

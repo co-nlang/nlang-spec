@@ -24,7 +24,7 @@
     - **唯一匹配**：若存在唯一的極小元素（最特定匹配），則回傳其結果。
     - **多重匹配**：若存在多個互不可比（Incomparable）的極小元素，結果為這些分支結果的**格論聯集 (`|`)**。
     - **無匹配 (Empty Selection)**：若所有分支皆不匹配（交集皆為 `_|_`），則結果收斂為 **`_|_` (Bottom)**，標記 `%cause: #no_matching_branch`。
-    - **優先序**：顯式的態射分支定義具有最高優先權，僅在所有顯式分支皆不匹配時，引擎才嘗試進行自動升寫（見 §3.4）。
+    - **優先序**：顯式的態射分支定義具有最高優先權，僅在所有顯式分支皆不匹配時，引擎才嘗試進行自動升寫（見 §5.4）。
 
 #### 情境 A：層級匹配 (Poset Selection)
 ```nlang
@@ -73,16 +73,46 @@
 *   **語法**：`Condition ? Success : Failure`
 *   **展開規則**：
     ```nlang
-    {
+    Condition |> {
         #true: Success
         #false: Failure
-    } Condition
+        _: _|_
+    }
     ```
-*   **語義**：`Condition` 必須收斂至 `@bool`。若為 `#true` 則坍縮至第一分支，若為 `#false` 則坍縮至第二分支。
+*   **語義**：`Condition` 必須收斂至 `@bool`。若為 `#true` 則坍縮至第一分支，若為 `#false` 則坍縮至第二分支。`_` (萬有集合) 作為預設分支，確保非布爾值輸入收斂為 `_|_`。
 
 ---
 
-## 2. 應用與柯里化 (Application & Currying)
+## 2. 微分態射 (Differential Morphisms)
+
+上同調障礙階梯中的 differential $d_r$ 在 `n/` 中對應為內建態射族 `/%differential.{1,2,3}`：
+
+| 態射 | 對應 $d_r$ | 運算 | 行為 |
+|:---|:---:|---|---|
+| `/%differential.1` | $d_1$ | meet 收斂 `&` | 嘗試局部合併。若成功則繼續；若產生 $H^1$ 相位差則記錄於 `%cause` |
+| `/%differential.2` | $d_2$ | 衝突分支 | 將不可調和的 $H^2$ 衝突分支保留為聯集（SPEC_06 §1.7 非嚴格性）|
+| `/%differential.3` | $d_3$ | 視界擴展 | 遇 $H^3$ 障礙時請求更多 `%fuel`，擴大計算視界後重試 |
+
+這些態射由引擎自動調用，不需要使用者顯式編寫。它們存在於規格中是為了讓引擎的收斂流程可以被觀察和除錯：
+
+```nlang
+;; 查詢當前狀態在第幾級 differential
+~%Engine./state.differential
+;; 可能結果：#d1_converging | #d2_branching | #d3_horizon
+
+;; 引擎日誌中的 differential 記錄
+%cause: {
+  %differential: 2
+  %obstruction_degree: #h2_sign
+  %branches: 2
+}
+```
+
+$d_4$ 及以上為預留，對應 Epilogue 的更高階障礙（女巫攻擊、信任隔離）。
+
+---
+
+## 4. 應用與柯里化 (Application & Currying)
 *   **Prefix 呼叫**：`add 2 4`（等同於 `(add 2) 4`）。
 *   **Infix 呼叫**：`/` 開頭者支援 `2 /add 4`。
 *   **結構化傳入**：支援 `add {x: 2, y: 4}`，會自動進行結構化統一（Structural Unification）。
@@ -90,7 +120,7 @@
 
 ---
 
-## 3. 演化管道 `|>` (The Pipe)
+## 5. 演化管道 `|>` (The Pipe)
 `|>` 是宇宙演化的核心，負責將靜態的 Combo 轉化為新的狀態快照。
 
 *   **優先權**：**Level 13** (低於聯集 `|`，高於三元運算 `? :`)。
@@ -99,7 +129,7 @@
     - 公式：`(A | B) |> /f  ≡  (A |> /f) | (B |> /f)`。
     - 語義：當演化對象處於疊加態時，演化行為會平等地作用於所有分支。
 
-### 3.1 演化形態
+### 5.1 演化形態
 管道的右值（RHS）決定了演化的具體方式：
 
 1.  **態射演化 (Morphism Pipe)**：`input |> /Logic`
@@ -109,7 +139,7 @@
 3.  **原子演化 (Atomic Collapse)**：`input |> #success`
     *   強制將輸入與特定原子進行交集。若輸入不相容則收斂為 `_|_`。
 
-### 3.2 上下文符號 `$` 與作用域溯源 `^`
+### 5.2 上下文符號 `$` 與作用域溯源 `^`
 `$` 意象為觀測者在演化樹上的立足點。在 `n/` 中，作用域 (Scope) 是嵌套且具備穿透性的。
 
 #### 3.2.1 符號全語境對照表
@@ -155,12 +185,12 @@ user |> {
 
 ---
 
-### 3.3 演化即提交 (Evolution as Commit)
+### 5.3 演化即提交 (Evolution as Commit)
 每一次成功的管道演化在 `oo` 引擎中都被視為一個原子的狀態推進。
 *   **原子性**：若管道內部的收斂結果為 `_|_`，則整個管道輸出 `_|_` 且不產生新的 Commit。
 *   **不穩定狀態偵測**：利用子型別判定 `x <= _|_` 可以在管道內部建立邏輯防火牆，防止錯誤的演化被提交。
 
-### 3.4 態射升寫與函子性 (Morphism Lifting & Functoriality)
+### 5.4 態射升寫與函子性 (Morphism Lifting & Functoriality)
 
 當管道的輸入是一個容器（如 List、Tuple 或特定 Combo），而右側的態射並不直接接受
 該容器型別時，引擎會嘗試 **將態射升寫（Lift）** ，使其作用於容器的內部元素。
@@ -258,7 +288,7 @@ fn evolve(lv, f) -> Value {
 *   **局部防火牆**：可利用 `x <= _|_` 在升寫態射內部攔截錯誤，將特定的衝突轉換為可接受的狀態（如返回預設值），從而防止單一元素的衝突中斷整個管道。
 
 
-### 3.5 優先權與結合律 (Precedence & Ambiguity)
+### 5.5 優先權與結合律 (Precedence & Ambiguity)
 
 在 `n/` 的運算子層級中，管道演化（`|>`）的優先權高於態射定義（`->`）。這是一項刻意的設計，旨在確保態射體內部的演化邏輯不需要額外的括號。
 
@@ -273,22 +303,22 @@ fn evolve(lv, f) -> Value {
 ```nlang
 data |> (x -> x + 1)    ;; 正確：將 data 應用於匿名態射
 ```
-*註：在 `n/` 的最佳實踐中，更推薦使用 **結構演化 `{}`**（見 §3.1）來替代裸的匿名態射，因為其具備更清晰的作用域語義與結構化能力。*
+*註：在 `n/` 的最佳實踐中，更推薦使用 **結構演化 `{}`**（見 §5.1）來替代裸的匿名態射，因為其具備更清晰的作用域語義與結構化能力。*
 
 ---
 
-## 4. 邏輯即組合 (Logic as Combo)
+## 6. 邏輯即組合 (Logic as Combo)
 由於「萬物皆 Combo」，所有的 Logic (態射) 皆可觀測為一個特殊的 Combo 結構
 (詳見 **[SPEC_03](./SPEC_03_Combo_System.md)** 與 **[SPEC_05](./SPEC_05_The_Trinity_Isomorphism.md)**)。
 
-### 4.1 高階邏輯 (Higher-order Logic)
+### 6.1 高階邏輯 (Higher-order Logic)
 態射可以作為另一個態射的輸入或輸出。傳遞時使用 **結構態引用 (`</f>`)**。
 ```nlang
 /apply: (f: @morphism, x) -> f x
 ```
 當 `apply` 進行 Unification 時，它會驗證傳入的 `f` 是否具備態射特質。
 
-### 4.2 匿名態射語義 (Anonymous Morphism Semantics)
+### 6.2 匿名態射語義 (Anonymous Morphism Semantics)
 
 匿名態射 `(x -> x + 1)` 的完整語義定義：
 
@@ -343,7 +373,7 @@ f 5  ;; 結果：6
 
 ---
 
-### 4.3 態射合併的語義與衝突 (Morphism Merges & Conflict)
+### 6.3 態射合併的語義與衝突 (Morphism Merges & Conflict)
 
 根據 **[SPEC_05: 三位一體同構](./SPEC_05_The_Trinity_Isomorphism.md)**，態射（Logic）本質上亦是 Combo，因此必須遵循格論的交集合併（`&`）運算。
 
@@ -388,14 +418,15 @@ f 5  ;; 結果：6
 
 ---
 
-## 5. 與其他章節的關係
+## 7. 與其他章節的關係
 
 | 章節 | 關聯 |
 | :--- | :--- |
 | **[SPEC_03](./SPEC_03_Combo_System.md)** | Combo 是態射的載體，態射規則以 Combo 結構存儲。 |
 | **[SPEC_04](./SPEC_04_Navigation_and_Duality.md)** | 管道中的 `$` 與 `^` 符號遵循作用域導航規則。 |
 | **[SPEC_05](./SPEC_05_The_Trinity_Isomorphism.md)** | 態射是 Logic 面相的核心，與 Data、Type 構成三位一體。 |
-| **[SPEC_06](./SPEC_06_Unification_Logic.md)** | 態射應用依賴極小元素規則進行模式匹配。 |
+| **[SPEC_06](./SPEC_06_Unification_Logic.md)** | 態射應用依賴極小元素規則進行模式匹配。`%obstruction_degree` 控制微分態射的行為。 |
+| **[SPEC_01](./SPEC_01_Foundation_and_Lattice.md)** | $H^1$ / $H^2$ 非分配性為微分態射提供代數基礎。 |
 | **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** | 管道演化受計算視界（`%fuel`, `%timeout`）限制。 |
 | **[SPEC_09](./SPEC_09_Standard_Library.md)** | 函子升寫依賴 `%fmap` 等代數介面。 |
 | **[SPEC_14](./SPEC_14_Formal_Grammar.md)** | 欄位邊界保護確保了態射鏈的正確切分。 |

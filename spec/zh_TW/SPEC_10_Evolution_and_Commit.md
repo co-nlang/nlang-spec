@@ -117,7 +117,7 @@
 | **[SPEC_01](./SPEC_01_Foundation_and_Lattice.md)** | 格論收斂是演化與 Commit 的數學基礎。 |
 | **[SPEC_06](./SPEC_06_Unification_Logic.md)** | 所有的演化操作（#evolve, #commit）皆遵循統一化算法。 |
 | **[SPEC_11](./SPEC_11_Reflection_and_Synthesis.md)** | `~%repl` 是觀測與控制演化狀態的系統介面。 |
-| **[SPEC_13](./SPEC_13_Discovery_and_Package.md)** | 定義了 `#refine` 如何驅動觀測視窗內的自動重定向。 |
+| **[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md)** | 定義了 `#refine` 如何驅動觀測視窗內的自動重定向。 |
 | **[SPEC_16](./SPEC_16_Testing_and_Proof.md)** | 測試與證明可作為 `#commit` 前的自動化守門員。 |
 | **[REAL_02](./REAL_02_Ouroboros_Protocols.md)** | 定義了引擎如何透過協定交換 Commit 與解決競爭。 |
 | **[COSMOLOGY/08](./COSMOLOGY/08_PHYSICS_Thermodynamics.md)** | 演化的熱力學背景：Commit 鏈的增長與因果壓力。 |

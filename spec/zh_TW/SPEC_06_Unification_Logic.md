@@ -36,15 +36,72 @@
 ### 1.2 Combo 的遞迴收斂
 當 $A$ 與 $B$ 皆為 Combo 時，對其所有欄位路徑 $p$ 進行遞迴運算：
 1.  **共通欄位**：若 $A.p$ 與 $B.p$ 皆存在，則 $C.p = A.p \sqcap B.p$。
-2.  **獨有欄位 (開放世界)**：若僅 $A.p$ 存在，且 $B$ 是 Combo `{}`，則 $C.p = A.p$。
-3.  **封閉世界違規**：若僅 $A.p$ 存在且為非 Top 值，但 $B$ 是 Cocoon `{{}}` 且未定義路徑 $p$，則根據封閉假設，$B.p$ 隱含為 $\bot$，導致合併結果 $C.p = A.p \sqcap \bot = \bot$。這體現了 Cocoon 對外部非預期擴張的「拒絕權」。
+2.  **獨有欄位 (疊加態預設)**：若僅 $A.p$ 存在，且 $B$ 是 Combo `{}`，則 $C.p = A.p$。
+3.  **本徵態封閉違規**：若僅 $A.p$ 存在且為非 Top 值，但 $B$ 是 Cocoon `{{}}` 且未定義路徑 $p$，則根據本徵態預設，$B.p$ 隱含為 $\bot$，導致合併結果 $C.p = A.p \sqcap \bot = \bot$。這體現了 Cocoon 對外部非預期擴張的「拒絕權」。
 
 
 ### 1.3 聯集與分支收斂
-1.  **分發律**： $A \sqcap (B \sqcup D) = (A \sqcap B) \sqcup (A \sqcap D)$。
-2.  **分支化簡**：合併後若產生多個重複分支，自動進行冪等化簡。
-3.  **空集消除**：若聯集中的某個分支坍縮為 `_|_`，該分支從聯集中移除。若所有分支皆為 `_|_`，則整體結果為 `_|_`。
-4.  **保守性原則 (Conservatism)**：在執行極小元素篩選時，若兩個分支 $K_i$ 與 $K_j$ 因視界限制（具備 `#blur` 狀態）導致其子集關係 $K_i \subseteq K_j$ 為 **「不可判定 (Undecidable)」**，則引擎 **必須** 保留兩者，維持聯集態。這確保了在燃料不足時，引擎不會錯誤地丟棄潛在的合法路徑。
+在正交模格中，全域分配律（Global Distributive Law）並不成立。這意味著合併與聯集的順序會影響結果，反映了不相容觀測量的非交換性。
+
+1.  **局部分配律 (Local Distributivity / Bohrification)**：
+    分配律 $A \sqcap (B \sqcup D) = (A \sqcap B) \sqcup (A \sqcap D)$ 僅在 A、B、D 彼此 **「交換 (Commute)」** 時成立。
+    *   **語義**：這對應於 Bohrification 中的一個特定「交換視角 (Perspective)」。在同一個觀測視角下，邏輯表現如經典分配格。
+2.  **正交模律 (Orthomodular Law)**：
+    格結構必須滿足：若 $A \sqsubseteq B$，則 $B = A \sqcup (B \sqcap !A)$。
+    *   **物理意義**：這保證了子空間的分解與正交補的一致性。
+3.  **分支化簡**：合併後若產生多個重複分支，自動進行冪等化簡。
+4.  **空集消除**：若聯集中的某個分支坍縮為 `_|_`，該分支從聯集中移除。若所有分支皆為 `_|_`，則整體結果為 `_|_`。
+5.  **保守性原則 (Conservatism)**：在執行極小元素篩選時，若兩個分支 $K_i$ 與 $K_j$ 因視界限制（具備 `#blur` 狀態）導致其子集關係 $K_i \subseteq K_j$ 為 **「不可判定 (Undecidable)」**，則引擎 **必須** 保留兩者，維持聯集態。這確保了在燃料不足時，引擎不會錯誤地丟棄潛在的合法路徑。
+
+#### 1.3.1 障礙度標記 (Obstruction Degree)
+
+當合併產生衝突時，引擎根據障礙等級在 `%cause` 中記錄 `%obstruction_degree`：
+
+| 標籤 | 障礙等級 | 收斂行為 | 代數特徵 |
+|:---|:---:|:---|:---|
+| `#h1_phase` | $H^1$ | **可補償**，繼續收斂，路徑修正 | 兩 MASA 交集非空，有連續相位 |
+| `#h2_sign` | $H^2$ | **不可補償**，必須分支 SPLIT | 四 MASA 交替乘積 $= -I$ |
+| `#h3_gerbe` | $H^3$ | **視界擴張**，增加 `%fuel` 後重試 | 三重重疊關聯子失效 |
+| `#h4_sybil` | $H^4$ | **信任隔離**，標記為女巫候選 | 神經複形頂點集被污染 |
+
+- `#h1_phase` 時引擎應嘗試相位修正後繼續。修正規則：若兩 MASA 的 meet 非空，計算其幾何相位差 $\theta_{AB}$；若 $\theta_{AB} < \varepsilon_{coherent}$ 則合併，否則分支（詳見 REAL_03 §4.1 相位感知合併）。
+- `#h2_sign` 時引擎必須保留所有衝突分支（非嚴格性，見 §1.7）。
+- `#h3_gerbe` 和 `#h4_sybil` 為預留標籤，當前引擎可忽略，但必須記錄。
+
+#### 1.3.2 上鏈格式 (Cocycle Format)
+
+`%cause` 中的衝突記錄應遵循以下上鏈結構，使衝突的代數起源可被標準化追溯：
+
+```nlang
+%cause: {
+  %degree:        <int>                   ;; 上同調維度：1 (H¹) / 2 (H²) / 3 (H³) / 4 (H⁴)
+  %obstruction:   #h1_phase | #h2_sign | #h3_gerbe | #h4_sybil
+  %cocycle:       [<masa_1>, <masa_2>, ..., <masa_n>]  ;; 形成障礙的 MASA 序列
+  %holonomy:      <phase> | <sign>        ;; 累積的相位（H¹）或符號（H²）
+  %branches:      <int>                   ;; 衝突產生的分支數（僅 H²/H⁴）
+}
+```
+
+| 字段 | H¹ 障礙 | H² 障礙 |
+|:---|:---|:---|
+| `%cocycle` | `[MASA_A, MASA_B]`（二重覆蓋）| `[MASA_A, MASA_B, MASA_C, MASA_D]`（四重循環）|
+| `%holonomy` | $e^{i\theta}$（連續相位）| $-I$（$\mathbb{Z}_2$ 符號翻轉）|
+
+範例（Peres-Mermin 方塊衝突）：
+```nlang
+%cause: {
+  %degree:      2
+  %obstruction: #h2_sign
+  %cocycle:     [@MASA_X, @MASA_Y, @MASA_Z, @MASA_W]
+  %holonomy:    -I
+  %branches:    2
+}
+```
+
+對於 `#h3_gerbe` 和 `#h4_sybil`，`%cocycle` 長度分別為 5 和 6，
+對應 Čech 神經中 4-重疊和 5-重疊的維度（APP_04 §2.3）。
+
+> 上述障礙等級的 Čech 神經基礎（MASA 交集複形如何決定障礙維度）見 **[APP_04 §2.3](./APP_04_Mathematical_Foundations.md)**。
 
 > [!NOTE]：
 > 遞迴的 Combo 合併、差集的德摩根轉換，以及此處的極小元素篩選，在最壞情況下可能導致 **組合爆炸 (Combinatorial Explosion)**，這本質上是一個 NP-hard 問題。

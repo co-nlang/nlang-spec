@@ -1,8 +1,16 @@
-# REAL_04：因果鏈協議 (Causal Chain Protocol)
+# REAL_04：因果鏈協議 (OODP Causal Chain Protocol)
 
 > [!NOTE]: [Standard / 規範性標準]  
-> [!NOTE]: 本協議統一定義 `%cause` 元欄位的物理結構與所有標準化的因果標籤（Cause Tags）。
-> 基於 **觀測對偶性 (Observation Duality)**，`%cause` 既是一個可直接比較的標籤，也是一個包含豐富診斷資訊的封閉結構。
+> 本協議統一定義 **OODP (Ouroboros Discovery Protocol)** 中 `%cause` 元欄位的物理結構與所有標準化的因果標籤（Cause Tags）。
+
+基於 **觀測對偶性 (Observation Duality)**，`%cause` 既是一個可直接比較的標籤，也是一個包含豐富診斷資訊的封閉結構。
+
+**本文定位**：
+- **層級**：OODP 跨層級基礎設施（用於 L3-L5 的錯誤傳播與診斷）
+- **上游**：SPEC_13 (發現語義)、SPEC_08 (視界管理)
+- **下游**：REAL_02 L3 (收斂層衝突處理)
+
+> 關於 OODP 五層架構的完整定義，請參閱 **[SPEC_13: 銜尾蛇發現協定](./SPEC_13_Ouroboros_Discovery_Protocol.md)** §0。
 
 ---
 

@@ -23,7 +23,7 @@
 ### 1.1 規格自省與版本聲明
 
 規格書不僅描述語言，它本身也受 `n/` 的幾何規則管理。
-*   **版本義務**：每一份正式發佈的規格 Commit **必須** 更新 **[SPEC_00](./SPEC_00_Introduction.md)** 中的版本映射表。
+*   **版本義務**：每一份正式發布的規格 Commit **必須** 更新 **[SPEC_00](./SPEC_00_Introduction.md)** 中的版本映射表。
 *   **相容性宣告 (`%compat`)**：規格節點應包含 `%compat` 欄位，明示其所依賴的底層 `fmt_version` 與 Ouroboros 引擎版本。
 *   **精煉演化**：當規格發生重大語義變更（如 Layer 1 變更）時，必須發布對應的 `#refine` 演化 Commit，協助舊宇宙節點平滑遷移。
 
@@ -42,7 +42,8 @@
 3.  **規格啟動子 (%promoter)**：
     - 新規格 Combo **必須** 包含一個 `%promoter` 欄位。這是一段使用 $v_{N-1}$ 語法撰寫的遷移邏輯，引導舊引擎如何正確地將觀測權限移交給新規則處理器。
 
-### 1.3 版本自舉與 N-1 原則
+### 1.3 等價映射合成
+
 等價映射表 (`~%Engine.equivalence_map`) 不是一個獨立的規格節點，而是引擎對歷史中所有 **`#refine` Commit** 進行掃描與彙整後產生的**動態視圖**。
 
 **合成演算法**：
@@ -61,17 +62,17 @@
 
 3.  **核心不變性**：雖然演算法可能升級，但「萬物皆 Combo、收斂為合併」的數學公理（Layer 0）是永久凍結的。這保證了跨版本的結構始終具備同構的可能性。
 
-### 1.3 版本自舉與 N-1 原則
+### 1.4 版本自舉與 N-1 原則
 新規格版本的 CAID 計算與解析必須遵循 **「穩定先行 (Stable First)」** 原則：
 
-#### 1.3.1 語義奇點 (Semantic Singularity)
+#### 1.4.1 語義奇點 (Semantic Singularity)
 對於 **Epoch 0** 的正式啟動，其官方 CAID 體系遵循以下**語義自舉演算法 (Semantic Bootstrapping)**：
 1.  **創世包 (Genesis Bundle)**：定義為規格書內建的標準庫原始碼集合（`~%List`, `~%Math`, `~%Engine` 等）。
 2.  **規範化**：使用屆時硬編碼於 v1.0.0 引擎內的規範化邏輯對創世包進行格式化。
 3.  **雜湊**：對結果進行 SHA256 運算，產生 Epoch 0 的「語義創世 CAID」。
 4.  **因果錨定**：此 CAID 被視為語義治理的起點，用於精煉引導期（Pre-genesis）的所有實驗性 Commit。
 
-#### 1.3.2 跨世代退化封套 (The Degenerate Envelope)
+#### 1.4.2 跨世代退化封套 (The Degenerate Envelope)
 為了確保舊版引擎（ $v_{N-1}$ ）能成功計算新規格（ $v_N$ ）的 CAID，任何規格跳躍的頂層結構必須遵循以下**退化佈局 (Degenerate Layout)**：
 
 1.  **Layer 0 隔離**：新規格的核心定義內容（可能包含舊引擎不認識的語法）必須封裝在舊引擎視為**原子字面量**（如 `b"..."` 位元組陣列或 `""` 長字串）的欄位中。
@@ -90,7 +91,7 @@
     }
     ```
 
-#### 1.3.3 語義虛擬化掛載 (Semantic Virtualization)
+#### 1.4.3 語義虛擬化掛載 (Semantic Virtualization)
 「雙引擎」並非指同時運行兩套完整的二進制文件，而是指引擎核心必須具備**語義版本切換 (Semantic Mode Switching)** 的能力。
 
 *   **物理要求**：引擎在執行 `%migration` 態射或解析具有歷史 CAID 的節點時，必須將統一化（Unification）算法的「公設集」切換至對應版本的狀態。
@@ -100,7 +101,7 @@
     3.  **幾何映射**：將運算後的結果（通常是純數據或基礎 Combo）重新注入 $v_N$ 的觀測空間。
 *   **WASM 建議 (Reference Recommendation)**：對於架構跨度極大的版本，建議實作者將舊版核心收斂邏輯編譯為獨立的 WASM 模組進行動態掛載，實現物理級別的語義隔離。
 
-### 1.4 相容性宣告 (%compat)
+### 1.5 相容性宣告 (%compat)
 規格版本透過 `%compat` 宣告其相容的舊版本 CAID 集合：
 ```nlang
 @n_spec: {
@@ -195,5 +196,5 @@ _: _ & <_>    ;; Top 觀測自己的幾何結構態，結果仍然是 Top
 | :--- | :--- |
 | **[SPEC_01](./SPEC_01_Foundation_and_Lattice.md)** | 格論收斂是版本演化的數學基礎。 |
 | **[SPEC_10](./SPEC_10_Evolution_and_Commit.md)** | Commit 模型紀錄了語言規格本身的演化歷史。 |
-| **[SPEC_13](./SPEC_13_Discovery_and_Package.md)** | 語言版本透過 CAID 進行發現與驗證。 |
+| **[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md)** | 語言版本透過 CAID 進行發現與驗證。 |
 | **[COSMOLOGY/13](./COSMOLOGY/13_PHYSICS_Observer_Sovereignty.md)** | 自我演化的物理本質：觀測者奇點與 AGI 湧現。 |

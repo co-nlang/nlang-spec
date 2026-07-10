@@ -2,7 +2,11 @@
 
 > 「在 n/ 的宇宙中，沒有執行，只有觀測。真理即是收斂之點。」
 
-**n/** (n-slash 或 n-lang) 是一個以數據為中心、基於幾何格論（Lattice-based）的宣告式程式語言。本 Repo 存放 `n/` 語言的唯一真理來源——**n/ 法典**。
+**n/** (n-slash 或 n-lang) 是一個**以觀測為中心的語義作業系統**，建立在宣告式的幾何格論（Lattice-based）核心之上。本 Repo 存放 `n/` 語言的唯一真理來源——**n/ 法典**。
+
+[英文版 (English Version)](README.md)
+
+**現行版本:v0.2.0**——穩定分水嶺。規格自此穩定;變更依[版號政策](meta/VERSIONING.md)記錄於 [CHANGELOG](spec/CHANGELOG.md)。
 
 ---
 
@@ -14,7 +18,7 @@
 ```nlang
 ;; 1. 定義一個「型別」(邊界)
 @Adult: {{
-    age: @int & >= 18
+    age: @int & 18..
 }}
 
 ;; 2. 獲取一份「數據」(存有)
@@ -43,14 +47,18 @@ user: ~payload & @Adult
 | **卷五：體系** | 驗證與網路 | [遞迴 (12)](spec/zh_TW/SPEC_12_Logic_Validation_and_Recursion.md), [發現協定 (13)](spec/zh_TW/SPEC_13_Ouroboros_Discovery_Protocol.md), [語法 (14)](spec/zh_TW/SPEC_14_Formal_Grammar.md), [反模式 (15)](spec/zh_TW/SPEC_15_Anti_Patterns.md) |
 | **卷六：餘韻** | 證明與演化 | [測試 (16)](spec/zh_TW/SPEC_16_Testing_and_Proof.md), [自我演化 (17)](spec/zh_TW/SPEC_17_Self_Evolution.md), [餘韻 (18)](spec/zh_TW/SPEC_18_The_Echo.md) |
 
+### 正字法系列 (SYNTAX - 規範性語法裁決)
+逐構件的語法定稿,是表層文法的權威裁決層(形式文法見 SPEC_14)。
+*   **[約定與索引 (SYNTAX_00)](spec/zh_TW/SYNTAX_00_Conventions.md)**:13 章——詞法、字面量與原子、路徑、容器、前綴、比較與子型別、觀測對偶、元數據、態射應用/定義、Enum/Poset、管道與三元。
+
 ### 數位宇宙學 (Cosmology - 附錄系列)
-這是一套從物理與拓撲角度解釋 `n/` 動力學的深度附錄。
-*   **[總論與索引](spec/zh_TW/COSMOLOGY/00_COSMOLOGY_Overview.md)**：包含 $E=mc^2$、語義引力、量子坍縮與層論等 15 章理論精華。
+這是 `n/` 設計的**物理直覺層**（非規範性；嚴格數學在理論論文系列）。
+*   **[總論與索引](spec/zh_TW/COSMOLOGY/00_COSMOLOGY_Overview.md)**：7 章——質能等價（$E=\text{Tr}(P)c^2$）、語義引力、KS 計算視界（視界深度 $= H^3$）、全像虧損，到觀測者自我表示（$n=4$）。
 
 ### 具現標準與實務指南
 - **具現標準**：[工程實作 (REAL_01)](spec/zh_TW/REAL_01_Ouroboros_Engineering.md)、[通訊協議 (REAL_02)](spec/zh_TW/REAL_02_Ouroboros_Protocols.md)、[CAID 物理協議 (REAL_03)](spec/zh_TW/REAL_03_CAID_Protocol.md)、[因果鏈協議 (REAL_04)](spec/zh_TW/REAL_04_Causal_Chain_Protocol.md)、[合規測試 (REAL_05)](spec/zh_TW/REAL_05_Compliance_and_MVP.md)。
 - **診斷輔助**：[錯誤代碼 (ERROR_CODES)](spec/zh_TW/ERROR_CODES.md)。
-- **實務指南**：[排版風格 (GUIDE_01)](spec/zh_TW/GUIDE_01_Style_and_Formatting.md)、[引擎優化 (GUIDE_02)](spec/zh_TW/GUIDE_02_Engine_Optimization.md)、[增量收斂 (GUIDE_03)](spec/zh_TW/GUIDE_03_Incremental_Convergence.md)。
+- **實務指南**：[排版風格 (GUIDE_01)](spec/zh_TW/GUIDE_01_Style_and_Formatting.md)、[引擎優化 (GUIDE_02)](spec/zh_TW/GUIDE_02_Engine_Optimization.md)、[增量收斂 (GUIDE_03)](spec/zh_TW/GUIDE_03_Incremental_Convergence.md)、[EML 執行策略 (GUIDE_04)](spec/zh_TW/GUIDE_04_EML_Execution_Strategy.md)。
 - **理論附錄**：[熱帶幾何 (APP_01)](spec/zh_TW/APP_01_Tropical_Geometry.md)、[形式證明 (APP_02)](spec/zh_TW/APP_02_Formal_Verification.md)、[範式比較 (APP_03)](spec/zh_TW/APP_03_Paradigm_Comparison.md)、[數學基礎 (APP_04)](spec/zh_TW/APP_04_Mathematical_Foundations.md)、[LADD 全球格論 (APP_05)](spec/zh_TW/APP_05_LADD_Global_Logic_Lattice.md)、[語義大一統理論 (APP_06)](spec/zh_TW/APP_06_Unified_Field_Theory.md)、[上同調障礙階梯導讀 (APP_07)](spec/zh_TW/APP_07_The_Obstruction_Ladder.md)。
 
 ---

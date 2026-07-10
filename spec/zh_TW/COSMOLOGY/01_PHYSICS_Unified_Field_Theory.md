@@ -96,8 +96,8 @@
 
 *   **[02 (TOPOLOGY)：內在邏輯與格論層](./02_TOPOLOGY_Intrinsic_Logic.md)**：解釋為什麼 $E=mc^2$ 公式中的質量 $m$（跡）必須以正交模格與投影算子的形式存在。
 *   **[03 (PHYSICS)：數位量子力學](./03_PHYSICS_Digital_Quantum_Mechanics.md)**：解釋了質量如何從子空間併元（譜疊加）中湧現。
-*   **[05 (PHYSICS)：語義引力](./05_PHYSICS_Semantic_Gravity.md)**：質量 $m$（跡）引起的時空弦距離，即語義引力 $F_s$。
-*   **[08 (PHYSICS)：數位熱力學](./08_PHYSICS_Thermodynamics.md)**：能量 $E$ 在退相干過程中的熱力學散逸與系統資源回收。
+*   **[04 (PHYSICS)：語義引力](./04_PHYSICS_Semantic_Gravity.md)**：質量 $m$（跡）引起的時空弦距離，即語義引力 $F_s$。
+*   **[05 (PHYSICS)：計算視界](./05_PHYSICS_Horizons_and_Uncertainty.md)**：能量 $E$ 在退相干蒸發（GC）中的散逸與資源回收（原「數位熱力學」一章已併入視界章）。
 
 ---
 
@@ -110,6 +110,15 @@
 | 觀測能量 | **[SPEC_08](../SPEC_08_Meta_and_Runtime.md)** **§3** | 燃料、計算視界與投影精度的權衡。 |
 | 統一場論基礎 | **[APP_04](../APP_04_Mathematical_Foundations.md)** | 基於 Solèr 定理與 Bohrification 的數學證明。 |
 | 最小智識單位 | **[REAL_01](../REAL_01_Ouroboros_Engineering.md)** **§10** | MBU 作為能量與質量的基本度量單位。 |
+| 嚴格依據（橋接） | **Paper N（白皮書）** + Papers I–XXII | 質量／譜本質的精確版見白皮書與論文系列。 |
+
+---
+
+## 8. 譜諧振與身分的波粒二象性 (Spectral Resonance) [INTERP]
+
+質量（跡）的另一面是 **身分**。在 `n/` 中，物件的身分不是「粒子態」的（一個 UUID、一個雜湊釘在虛無裡），而是 **波動態 + 譜態**：任一子空間 $A$ 由其投影算子 $P_A$ 定義成一個語義波包,而 CAID 則是它與環境交互後的 **干涉圖樣**——**粒子性**(Content Digest,抗碰撞唯一性)與 **波動性**(Lattice Sketch,$P_A$ 的譜摘要、散發幾何「氣味」)的二象。所以身分不由內部數據決定,而由它能與哪些型別／態射 **諧振**(投影算子間的 **譜重疊**)決定——這正是內容定址(CAID)與氣味搜尋的本體論根據。發現因此是一種 **調頻**:轉動 `@Type` 旋鈕,當觀測頻率與遠端 Lattice Sketch 達成譜諧振,引力達最大,資料從背景噪聲中「冷凝」為確定的子空間投影。GPP(幾何機率證明)= 邊界繞射量測;CIP(因果完整性證明)= 跨精煉路徑的相位鎖定——繞射與鎖定是執行軌意象;兩者的證明義務住在 𝔽₂ 影子裡(**[APP_02](../APP_02_Formal_Verification.md)** §6、**[APP_05](../APP_05_LADD_Global_Logic_Lattice.md)** §6)。
+
+> *(本節為原「15 語義諧振」一章的精煉;CAID 譜摘要的實作規範見 **[REAL_03](../REAL_03_CAID_Protocol.md)**,引力路由見 **[APP_05](../APP_05_LADD_Global_Logic_Lattice.md)**;關係指紋的 symplectic 本體見 **[SPEC_13](../SPEC_13_Ouroboros_Discovery_Protocol.md)** §1.3 與 Paper N。)*
 
 ---
 

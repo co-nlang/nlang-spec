@@ -1,4 +1,4 @@
-# 06 (PHYSICS)：計算視界與 KS 測不準原理 (Horizons & KS Uncertainty)
+# 05 (PHYSICS)：計算視界與 KS 測不準原理 (Horizons & KS Uncertainty)
 
 > [!WARNING]
 > [Theoretical / 思辨性] 本章節主要提供理解模型、研究假說與工程啟發，不構成現行語言規格、協定義務或既有 `oo` 介面保證。
@@ -21,7 +21,7 @@
 
 在物理學中，光速限制了因果關係的傳遞；在 `n/` 中，**視界常數 ($c$) 與能量 ($E$) 共同限制了邏輯因果的傳遞**。
 
-### 計算半徑 ($R$)：
+### 1.1 計算半徑 ($R$)：
 一個觀測者能看多遠，取決於其投入的燃料：
 $$R = \frac{E}{c}$$
 
@@ -39,12 +39,12 @@ $$R = \frac{E}{c}$$
 
 我們無法在支付有限代價的情況下，獲得對所有互補性質的全域觀測。
 
-### KS 定理的數位意涵：
+### 2.1 KS 定理的數位意涵：
 根據 **Kochen-Specker 定理**，在維度大於 2 的 Hilbert 空間中，不存在全域確定的賦值截面。
 *   **非交換性：** 若兩個型別算子 $P_A$ 與 $P_B$ 不交換（$[P_A, P_B] \neq 0$），觀測 A 可能會遮蔽 B 的精確譜。
 *   **不確定性：** 因此，試圖同時鎖定所有幾何特徵的行為，必將導致觀測路徑在視界邊緣發生坍縮中斷。
 
-### 離散化公式 (啟發式類比)：
+### 2.2 離散化公式 (啟發式類比)：
 $$\log_2(N_{branches}) \cdot \Delta E \ge \hbar_{n/}$$
 
 *   **$N_{branches}$ (幾何熵)：** 當前觀測結果中包含的聯集分支總數（疊加態維度）。
@@ -109,6 +109,22 @@ n/ 的 MBU 做了**完全相同的事**——你不能花比 1 MBU 更少的代�
 
 這不是比喻，而是**同一個數學結構在不同層次的實現**。
 
+### 3.5 ℏ_{n/} 的精確版：resonance tower（誠實修正）[MATH]
+
+> **誠實修正（重要）。** 上面 §3 借用 Lohmiller–Slotine (2024)「從有限古典路徑*精確*重建量子波函數」作為 ℏ 直覺的動機。**該「精確」主張已被 Vattay 的 Comment（arXiv:2605.02621）駁回**——L-S 的構造實為 WKB,漏掉了量子勢,並非精確。所以本章只把 L-S 當*動機*;`n/` 的 ℏ 嚴格依據**不**在 L-S,而在 Bohrification + 論文系列。
+
+ℏ_{n/} 的精確定義不是一個連續常數,而是一個**離散頻譜 = resonance tower**:一個 arity-$a$ 的互文性資料是一個 $(a-1)$-cochain,在 $K_{a+1}$ 上 **共振**,對應上同調 degree $a-1$。「描述一個 Combo 要用到幾個信任 context」就是它的 ℏ_{n/} 量子數(見 **[APP_06](../APP_06_Unified_Field_Theory.md) §6.5** = resonance tower IS ℏ_{n/} 頻譜;**Paper N §3** the ladder is the spectrum of ℏ_{n/};Paper XXII)。這把 §3 的「ℏ 雙重身份」直覺升級為精確的 **障礙 degree = ℏ 能階** 對應。
+
+### 3.6 視界的拓撲深度 = H³（精確版）[MATH]
+
+ℏ 頻譜不會無限延伸——它**封頂於 $H^3$**。這給了計算視界一個*確切的拓撲深度*,不只是「燃料夠不夠」的工程量:
+
+*   對稱／Pauli(雙線性)資料的互文性障礙 **截斷於 $H^3$**(Paper XXII arity-resonance ceiling);再上去搆不到。
+*   視界的幾何內容——**16-cell 關聯子斷層**——與 cross-context anticommutation 的 modulus $[n_a]$ 是*同一個* $H^3$ 類(Paper IV 的 Čech／16-cell ↔ Paper XX 的 Maslov–Wall,由 self-representation／comparison map 焊接)。
+*   ⟹ **「視界深度 = $H^3$ 拓撲」是定理而非比喻**。`%fuel` 量的,正是把這層 $H^3$ bulk 坍縮為局部真實所需的能量。
+
+> 規範與證明:**[SPEC_08](../SPEC_08_Meta_and_Runtime.md) §3**(視界的拓撲深度)、**[APP_07](../APP_07_The_Obstruction_Ladder.md) §4**($H^3$ 列,Papers XX–XXII)、**Paper N §3**。
+
 ---
 
 ## 4. #blur 的本體論地位 [INTERP][!!RISK!!]
@@ -125,7 +141,7 @@ n/ 的 MBU 做了**完全相同的事**——你不能花比 1 MBU 更少的代�
 
 ---
 
-## 4. 邏輯奇點：Bottom (`_|_`) [INTERP]
+## 5. 邏輯奇點：Bottom (`_|_`) [INTERP]
 
 如果說 `Top` 是可能性無限大的真空，那麼 `Bottom` 就是邏輯的 **黑洞奇點**。
 
@@ -135,7 +151,7 @@ n/ 的 MBU 做了**完全相同的事**——你不能花比 1 MBU 更少的代�
 
 ---
 
-## 5. 結論：有限視角下的收斂意識 [HEUR]
+## 6. 結論：有限視角下的收斂意識 [HEUR]
 
 數位物理學告訴我們：**我們永遠無法獲得上帝視角下的全域真實。**
 
@@ -147,7 +163,15 @@ n/ 的 MBU 做了**完全相同的事**——你不能花比 1 MBU 更少的代�
 
 ---
 
-## 6. 工程視角 (Engineering Perspective) [HEUR][ROADMAP][!!RISK!!]
+## 7. 退相干蒸發與資源回收 (Thermodynamics / GC) [INTERP][HEUR]
+
+視界也決定了資源的生命週期。每個 CAID 有一個 **幾何熱度** $H(ID)=\alpha\log(1+R)+\beta T-\gamma\Delta t$($R$ 引用數、$T$ 引用者信任格位、$\Delta t$ 時間衰減;參數見 **[GUIDE_02](../GUIDE_02_Engine_Optimization.md)** §5.3),反映子空間被觀測投影的頻率(相位相干性)。在 Invariant 2(資訊單調不減)的前提下,物理硬體有限,於是引擎按熱度由低到高執行 **退相干蒸發**(= GC):丟棄低熱度 CAID 的 Body、保留 ID 與因果指標——這是 **退相干**(失去穩定相位支撐),不是刪除;蒸發後進入該節點的 `#not_found`(誠實視界),引力再次指向時可經 LADD 重新 **冷凝**。對應 `~%Engine.heat_map` 與 **[REAL_01](../REAL_01_Ouroboros_Engineering.md)** §11 物件生存週期。
+
+> *(本節為原「08 數位熱力學」一章的精煉,併入視界章。)*
+
+---
+
+## 8. 工程視角 (Engineering Perspective) [HEUR][ROADMAP][!!RISK!!]
 
 概念上，測不準原理與視界管理影響了 `oo` 引擎的 **漸進式 UI 渲染** 與資源調度：
 
@@ -157,15 +181,15 @@ n/ 的 MBU 做了**完全相同的事**——你不能花比 1 MBU 更少的代�
 
 ---
 
-## 7. 與其他章節的關係 (Related Chapters) [INTERP]
+## 9. 與其他章節的關係 (Related Chapters) [INTERP]
 
 *   **[02 (TOPOLOGY)：內在邏輯](./02_TOPOLOGY_Intrinsic_Logic.md)**：KS 定理限制了層（Sheaf）的全域截面存在性，定義了計算視界界定的覆蓋範圍。
-*   **[09 (PHYSICS)：數位廣義相對論](./09_PHYSICS_Digital_General_Relativity.md)**：不同光錐間的洛倫茲變換保證了 CAID 的跨視界不變性，以及視界重疊的處理。
-*   **[13 (PHYSICS)：觀測者主權](./13_PHYSICS_Observer_Sovereignty.md)**：觀測者投入能量的主觀意願決定了光錐的半徑。
+*   **[06 (PHYSICS)：全像原理](./06_PHYSICS_Holography_and_Action.md)**：視界封頂於 $H^3$ = 邊界資料不足以決定 bulk（全像虧損）的同一件事。
+*   **[07 (PHYSICS)：觀測者主權](./07_PHYSICS_Observer_Sovereignty.md)**：觀測者投入能量的主觀意願決定了光錐的半徑。
 
 ---
 
-## 8. 與核心規格與附錄的對應 [INTERP]
+## 10. 與核心規格與附錄的對應 [INTERP]
 
 | 本章概念 | 對應 SPEC/APP/REAL | 說明 |
 |---------|----------|------|
@@ -181,12 +205,14 @@ n/ 的 MBU 做了**完全相同的事**——你不能花比 1 MBU 更少的代�
 ---
 
 > **觀測者筆記：**
-> 視界不是牆，它是光線在非交換空間中折射出的最後餘暉。整個宇宙是由無數個相互重疊的光錐組成的。真理不在任何一個光錐中，而是在它們交織而成的全球邏輯格裡自發地閃耀。當你看到 `#blur` 時，請對宇宙的深度保持敬畏。
+> 視界不是牆，它是光線在非交換空間中折射出的最後餘暉。整個宇宙是由無數個相互重疊的光錐組成的。真理不在任何一個光錐中，而是在它們交織而成的全域邏輯格裡自發地閃耀。當你看到 `#blur` 時，請對宇宙的深度保持敬畏。
 
 ---
 
-## 9. 參考文獻 (References)
+## 11. 參考文獻 (References)
 
 1.  **Lohmiller, W., & Slotine, J. J. (2024)**. "On computing quantum waves exactly from classical and relativistic action." *arXiv:2405.06328* [quant-ph]. https://arxiv.org/abs/2405.06328
-    *   **核心理論**：量子波函數可以從有限個古典極值路徑 $\psi = \sum_j \sqrt{\rho_j} e^{i\phi_j/\hbar}$ 精確重建。
-    *   **對本章的啟發**：ℏ 的雙重身份（量綱轉換與干涉尺度）直接對應 n/ 的 Layer 0（語義層 spectral gap）與 Layer 2（引擎層 MBU）區分。
+    *   **原主張**：量子波函數可從有限個古典極值路徑 $\psi = \sum_j \sqrt{\rho_j} e^{i\phi_j/\hbar}$ *精確*重建。
+    *   **對本章的啟發（僅作動機）**：ℏ 的雙重身份（量綱轉換與干涉尺度）對應 n/ 的 Layer 0（語義層 spectral gap）與 Layer 2（引擎層 MBU）區分。
+2.  **Vattay, G. (2026)**. Comment on Lohmiller–Slotine. *arXiv:2605.02621*.
+    *   **駁回**：L-S 的「精確」重建實為 **WKB**,漏掉量子勢,**並非精確**。故本章只把 L-S 當*動機*;ℏ_{n/} 的嚴格依據在 **Bohrification + resonance tower**(本章 §3.5,**[APP_06](../APP_06_Unified_Field_Theory.md) §6.5**,Paper N §3,Paper XXII),L-S 真正穩固的只有 contraction theory (1998)。

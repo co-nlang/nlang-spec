@@ -90,9 +90,9 @@
 
 *   **[01 (PHYSICS)：數位統一場論](./01_PHYSICS_Unified_Field_Theory.md)**：拓撲結構是物理定律 $E=mc^2$ 運行的舞台。
 *   **[03 (PHYSICS)：數位量子力學](./03_PHYSICS_Digital_Quantum_Mechanics.md)**：拓撲結構定義了量子投影發生的舞台。
-*   **[06 (PHYSICS)：視界與測不準原理](./06_PHYSICS_Horizons_and_Uncertainty.md)**：KS 定理限制了 Topos 截面的全域存在性。
-*   **[10 (TOPOLOGY)：真理積分與觀測測度](./10_TOPOLOGY_The_Truth_Integral.md)**：將層（Sheaf）的觀測過程形式化為沿著路徑的積分。
-*   **[11 (TOPOLOGY)：Grothendieck 拓撲與信任覆蓋](./11_TOPOLOGY_Grothendieck_Topology.md)**：定義了不同交換視角間進行黏合所需的拓撲條件，以及層（Sheaf）在多重宇宙中進行黏合所需的信任條件。
+*   **[05 (PHYSICS)：計算視界與測不準原理](./05_PHYSICS_Horizons_and_Uncertainty.md)**：KS 定理限制了 Topos 截面的全域存在性。
+*   **[06 (PHYSICS)：全像原理與真理積分](./06_PHYSICS_Holography_and_Action.md)**：將層（Sheaf）的觀測過程形式化為沿路徑的真理積分（§4）。
+*   **[04 (PHYSICS)：語義引力 §6 信任覆蓋](./04_PHYSICS_Semantic_Gravity.md)**：Grothendieck 拓撲定義了不同交換視角間黏合所需的信任條件（原第 11 章已併入）。
 
 ---
 

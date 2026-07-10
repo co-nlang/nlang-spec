@@ -383,9 +383,9 @@ result: /if (@x > 0, (@any -> "positive"), (@any -> "non-positive"))
 
 ;; /cond: 多條件鏈式分派
 grade: /cond [
-    { @score & >= 90: (@any -> "A") }
-    { @score & >= 80: (@any -> "B") }
-    { @score & >= 60: (@any -> "C") }
+    { @score & 90..: (@any -> "A") }
+    { @score & 80..: (@any -> "B") }
+    { @score & 60..: (@any -> "C") }
     { _: (@any -> "F") }
 ]
 

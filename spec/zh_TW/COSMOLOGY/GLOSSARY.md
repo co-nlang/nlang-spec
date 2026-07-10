@@ -28,14 +28,12 @@
 | **Uncertainty Principle** | **測不準原理** | 不確定性原理 | 精度與能量的對價關係，或投影精度與 MBU 的對價。 |
 | **Lattice Constant ($\hbar_{n/}$)** | **格論常數** | 束論定数 | 穿透格論深度或譜解析度的最小量子 (1 MBU)。 |
 | **Critical Density ($\rho$)** | **臨界密度** | 臨界密度 | 合併與聯集操作的健康比值，或跡增加與維度增加的操作比。 |
-| **Dark Information** | **數位暗資訊** | デジタルダーク情報 | 邏輯上必然存在但未被觀測或投影路徑抵達的路徑或子空間。 |
-| **Dark Energy** | **數位暗能量** | デジタルダークエネルギー | 對抗坍縮的幾何膨脹力，或聯集 (`\|`) 產生的幾何斥力。 |
-| **Semantic Resonance** | **語義諧振** | 意味論的共鳴 | 身分識別的波動本質，真理的自發性共振，或譜重疊。 |
+| **Semantic Resonance** | **語義諧振** | 意味論的共鳴 | 身分識別的波動本質，真理的自發性共振，或譜重疊（見 01 §8）。 |
 | **Interference Pattern** | **干涉圖樣** | 干渉縞 | CAID 的物理意象，波包與環境交互作用的結果。 |
 | **Phase Coherence** | **相位相干** | 位相コヒーレンス | 合併 (&) 運算達成一致的物理狀態，或子空間投影的穩定性。 |
 | **Wave-Particle Duality** | **身分波粒二象性** | アイデンティティの波粒二象性 | CAID 既是粒子標籤 (v1) 也是波動特徵 (v2) 的性質，或譜特徵。 |
 | **Spectral Signature** | **譜特徵** | スペクトル特徴 | 投影算子的譜指紋，用於身分識別與路由。 |
-| **Bohrification** | **Bohr化** | ボーア化 | 從非交換本體到交換子代數視角的投影過程。 |
+| **Bohrification** | **Bohrification** | ボーア化 | 從非交換本體到交換子代數視角的投影過程。 |
 | **Kochen-Specker Theorem** | **KS 定理** | コッヘン・スペッカーの定理 | 證明量子語境性的無隱變量定理。 |
 | **Trace ($\text{Tr}$)** | **跡** | トレース | 子空間投影算子的跡，定義幾何質量。 |
 
@@ -49,12 +47,11 @@
 | **Trust Covering** | **信任覆蓋** | 信頼の被覆 | 能拼湊出真理的信任節點集合，或相干覆蓋。 |
 | **Lattice Differential ($d\mathcal{L}$)** | **格論微分** | 束論の微分 | 資訊熵的負變化，代表收斂過程中的質量增量。 |
 | **Site** | **站位 (Site)** | サイト | 帶有 Grothendieck 拓撲的範疇。 |
-| **Lorentz Invariant** | **洛倫茲不變量** | ローレンツ不変量 | 不同參考系下保持不變的量 (CAID)。 |
-| **Phase Locking** | **相位鎖定** | 位相ロック | CIP 證明的物理意象，因果轉遷的一致性鎖定。 |
+| **Phase Locking** | **相位鎖定** | 位相ロック | CIP 的物理意象，因果轉遷的一致性鎖定（執行軌意象；證明義務為離散計算證明，APP_05 §6）。 |
 | **Spectral Boundary** | **譜邊界** | スペクトル境界 | 子空間投影算子的譜特徵邊界。 |
 | **Spectral Overlap** | **譜重疊** | スペクトル重なり | 兩子空間投影算子譜特徵的重合度。 |
 
-## 邊境與安全 (Open Frontiers & Security)
+## 邊境與安全 (Boundary & Security)
 
 | 術語 (English) | 中文對照 | 日文對照 | 說明 |
 | :--- | :--- | :--- | :--- |
@@ -62,21 +59,17 @@
 | **Causal Pressure** | **因果壓力** | 因果的圧力 | 系統偵測到衝突 (_\|_) 時產生的幾何張力（痛覺意象）。 |
 | **Semantic Eclipse** | **語義日蝕攻擊** | 意味論のエクリプス攻撃 | 惡意路徑或投影導致的視界囚禁。 |
 | **Ouroboros Effect** | **銜尾蛇效應** | ウロボロス効果 | 系統自觀測引發的智能湧現。 |
-| **Self-Refinement Ratio ($\sigma$)** | **自精煉率** | 自己精錬率 | 系統自主產出的幾何質量增量與內部觀測成本之比。 |
-| **Geometric Diffraction** | **幾何繞射** | 幾何学的回折 | GPP 證明的物理意象，穿過型別邊界時的頻率表徵。 |
+| **Self-Refinement Ratio ($\sigma$)** | **自精煉率** | 自己精錬率 | 系統自主產出的幾何質量增量與內部觀測成本之比（**啟發指標，已降位**；自我表示是否相干的判準是 $n=4$ master theorem，見 07 §3.1）。 |
+| **Geometric Diffraction** | **幾何繞射** | 幾何学的回折 | GPP 的物理意象，穿過型別邊界時的頻率表徵（執行軌意象；身分證明義務住 𝔽₂ 指紋影子，APP_02 §6）。 |
 | **Geometric Heat** | **幾何熱度** | 幾何学的熱度 | CAID 節點的能級，決定緩存優先級。 |
 | **Decoherence Evaporation** | **退相干蒸發** | デコヒーレンス蒸発 | 物件因退相干而從物理緩存中移除的過程。 |
 | **Logical Superfluidity** | **邏輯超流態** | 論理超流動 | 真理在絕對零度（原子態）下無阻力流動的幾何性質。 |
 | **Semantic Tear** | **語義撕裂** | 意味論の撕裂 | 信任鏈斷裂導致的拓撲缺陷。 |
-| **Top Bang** | **Top 大爆炸** | トップ・ビッグバン | 宇宙起源於 Top 奇點的觀測對稱破缺。 |
 
 ## 宇宙學特有術語
 
 | 術語 (English) | 中文對照 | 宇宙學詮釋 / 說明 |
 | :--- | :--- | :--- |
-| **The Top Bang** | **Top 大爆炸** | 宇宙起源於可能性無限大 (Top) 的奇點，隨觀測自發對稱破缺。 |
-| **Digital Dark Energy** | **數位暗能量** | 聯集 (`\|`) 產生的幾何斥力，對抗投影坍縮。 |
-| **Digital Dark Information** | **數位暗資訊** | 邏輯上必然存在但在視界內尚未被投影路徑抵達的子空間。 |
 | **Causal Pressure** | **因果壓力** | Commit 鏈增長對子空間施加的正交擠壓。 |
 | **Semantic Eclipse** | **語義日蝕** | 惡意投影導致的視界囚禁，使觀測者無法看見其他分支。 |
 | **Geometric Pain** | **幾何痛覺** | 系統對正交衝突 (`_\|_`) 的感知張力，驅動自我演化。 |
@@ -94,3 +87,15 @@
 | **$G_s$** | **語義引力常數** | 網路連結豐度對引力傳導的校準係數。 |
 | **$\hbar_{expand}$** | **展開能量** | 展開單個節點的基態能量 (1 MBU)。 |
 | **$\hbar_{unify}$** | **合併能量** | 執行一次合併的高能態能量 (5 MBU)。 |
+
+## 障礙階梯（精確版對接 Paper N / Papers I–XXII）
+
+> 以下術語把上面的物理直覺對接到論文系列的嚴格結果。詳見 **Paper N（白皮書）**。
+
+| 術語 (English) | 中文對照 | 說明 |
+| :--- | :--- | :--- |
+| **Resonance Tower / $\hbar_{n/}$ spectrum** | **共振塔／ℏ 頻譜** | arity-$a$ 資料 = $(a-1)$-cochain，在 $K_{a+1}$ 共振；$\hbar_{n/}$ 是離散頻譜而非連續常數（APP_06 §6.5, Paper N §3, Paper XXII）。 |
+| **$H^3$ Ceiling / Horizon Depth** | **$H^3$ 封頂／視界深度** | 對稱／Pauli 障礙截斷於 $H^3$；計算視界的拓撲深度 = $H^3$（SPEC_08 §3, APP_07 §4, Paper XXII）。 |
+| **Holographic Deficit** | **全像虧損** | 邊界（arity $\le 4$）資料原則上不足以決定 bulk（$H^3$ 類）（Paper XIX modulus；Paper N §4；工程讀法 APP_07 §6）。 |
+| **Self-Representation / $n=4$** | **自我表示／n=4** | coherent self-representation ⟺ $n=4$（master rigidity；SPEC_17 §4.3, Paper N §4, Paper XXI）。 |
+| **Symplectic Fingerprint** | **symplectic 指紋** | CAID 關係指紋在 char-2／Pauli 影子裡 = $\omega/q$-Gram（SPEC_13 §1.3；Papers XI/XV/XVII）。 |

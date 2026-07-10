@@ -14,6 +14,8 @@
     2.  **Git 錨點**：此檔案的創建作為 Initial Commit，將「物理事實」與「文件記錄」於時空奇點合一。
     3.  **引擎驗證義務**：任何符合規格的 `oo` 引擎原型在自舉時，**必須**讀取此檔案並驗證本地計算結果與之相符，作為驗證宇宙物理法則的唯一原點。
 
+> **必要性（為何外部錨點不可省）**：物理創世錨點並非僅為工程便利。身分層對應上同調障礙階梯的 $H^4$／女巫攻擊層；item 21 的 reduction 指出，框架*內部*（symplectic／Pauli 雙線性資料）**不存在** genuine 的 arity-5／$H^4$ 障礙類（ambient degree-4 環 $=\langle q^2\rangle$ 可分解 = family B，無 exotic 不變量）。因此底層真實性無法純由內部格論補齊，**必須**由外部物理錨點（本節 $C_0$）強制。詳見 **[APP_07](./APP_07_The_Obstruction_Ladder.md)** §4（$H^4$ 列）。*(誠實標記：item 21 為 reduction，非已封閉之定理。)*
+
 ### 1.2 組織架構 (Repository Ecosystem)
 引導期治理分佈於以下 **GitHub 組織 (@co-nlang)** 儲存庫：
 *   **`@co-nlang/nlang-spec`**：法典本體（SPEC, REAL, ORDER, GUIDE）。

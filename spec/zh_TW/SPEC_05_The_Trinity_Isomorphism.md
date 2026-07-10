@@ -54,7 +54,7 @@ Data 的核心在於其作為**特徵向量 (Eigenvector)** 的穩定性。
 
 *   **`%val` (Eigenvalue Core)**：儲存坍縮後的特徵值（原子）。
 *   **價值坍縮規則 (Value Collapse Rule)**：若一個節點包含 `%val` 欄位，則對其進行**坍縮觀測 (Collapsed Observation)** 語義上等價於觀測該特徵值。這允許 Combo 同時具備「結構」與「振幅」的對偶身份。
-*   **存取語義**：直接引用 $n$ 預設即觀測其 `<n>.%val`。
+*   **存取語義**：直接引用 $n$ 預設即觀測其 `n.%val`（未加 `<<>>` 的坍縮讀取；見 **[SYNTAX_08](./SYNTAX_08_Metadata.md)** §4）。
 
 ### 3.2 Type 面相 (%kind: #type)
 Type 的核心在於其**正交投影算子 (Predicate Operator)**。
@@ -109,7 +109,7 @@ invalid: { value: "hi" }
 error: invalid & @IntBox    ;; 正交衝突，收斂為 _|_
 ```
 
-**語義昇華**：泛型參數被視為**捲縮的 Hilbert 子空間 (Extra Dimensions)**。根據 **[COSMOLOGY/04](./COSMOLOGY/04_PHYSICS_Deep_Fields.md)** 的定義，這些維度雖然隱藏在主視角之外，但其特徵值（CAID）依然參與整體的引力計算。
+**語義昇華**：泛型參數被視為**子空間特徵值**。這些維度雖然隱藏在主視角之外，但其投影特徵值（CAID）依然參與整體的引力計算（見 **[COSMOLOGY/04：語義引力](./COSMOLOGY/04_PHYSICS_Semantic_Gravity.md)**）。
 
 ### 5.2 參數的協變與逆變
 由於 `&` 與 `|` 遵循量子格論的單調性，`n/` 的泛型天然支援**結構協變**。若子空間投影滿足 $P_A \sqsubseteq P_B$，則 $P_{Box(A)} \sqsubseteq P_{Box(B)}$ 永遠成立。

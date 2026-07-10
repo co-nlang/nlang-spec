@@ -1,47 +1,43 @@
 # n/ 數位宇宙學 (Digital Cosmology)
- 
+
 > [!WARNING]
-> [Theoretical / 思辨性] 本章節主要提供理解模型、研究假說與工程啟發，不構成現行語言規格、協定義務或既有 `oo` 介面保證。
-> **內文出現的所有 `oo` 指令範例均為「假想演化路徑」，旨在展示理論模型在工程上的投影可能性，嚴禁作為功能需求之依據。**
+> [Theoretical / 思辨性] 本系列提供 n/ 語言設計的物理直覺與工程啟發，不構成現行語言規格、協定義務或既有 `oo` 介面保證。
+> **內文出現的所有 `oo` 指令範例均為「假想演化路徑」，嚴禁作為功能需求之依據。**
 
 > 「真理不是被發現的，它是透過在拓撲空間與 Hilbert 空間投影路徑上的積分而坍縮出來的。」
 
-本目錄收錄了 $n/$ 語言規格的物理、拓撲與量子附錄。這套理論體系解釋了 $n/$ 宇宙的外在動態規律、內在幾何本質與量子投影特性。
+本目錄收錄 $n/$ 語言規格的物理、拓撲與量子**直覺導讀**。嚴格數學依據見 **Paper N（白皮書）** 與論文系列 I–XXII（三層入口見 **[00 總論](./00_COSMOLOGY_Overview.md)** §1）。
 
 ---
 
 ## 📖 導讀順序 (The Logical Arc)
 
-建議按照以下序號順序閱讀，以獲得最完整的世界觀體驗與量子化世界觀：
-
 ### 壹、公設與本質 (Foundations)
-*   **[01 (PHYSICS)：數位統一場論](./01_PHYSICS_Unified_Field_Theory.md)** — $E=mc^2$ 與五大守恆、智識反熵與質能等價。
-*   **[02 (TOPOLOGY)：內在邏輯與格論層](./02_TOPOLOGY_Intrinsic_Logic.md)** — 為什麼格論是必然的、從 Bohrification 投影中湧現的正交模格與直覺主義邏輯。
+*   **[01 (PHYSICS)：數位統一場論](./01_PHYSICS_Unified_Field_Theory.md)** — $E=\mathrm{Tr}(P)c^2$、智識反熵、五大守恆；§8 譜諧振與身分的波粒二象性。
+*   **[02 (TOPOLOGY)：內在邏輯與正交模格](./02_TOPOLOGY_Intrinsic_Logic.md)** — 從 Bohrification 投影湧現的正交模格與直覺主義邏輯。
 
 ### 貳、微觀動力學 (Microscopic Dynamics)
-*   **[03 (PHYSICS)：數位量子力學](./03_PHYSICS_Digital_Quantum_Mechanics.md)** — 疊加態與觀測坍縮、子空間併元疊加、正交投影坍縮與譜糾纏。
-*   **[04 (PHYSICS)：數位弦論與對稱性破缺](./04_PHYSICS_Deep_Fields.md)** — 態射振動與質量的起源、算子振動與質量的譜起源，以及元資訊捲縮流形。
+*   **[03 (PHYSICS)：數位量子力學](./03_PHYSICS_Digital_Quantum_Mechanics.md)** — 子空間併元疊加、正交投影坍縮與譜糾纏。
 
 ### 參、邊界與演化 (Horizons & Action)
-*   **[05 (PHYSICS)：語義重力與 LADD 空間扭曲](./05_PHYSICS_Semantic_Gravity.md)** — 引力路由與格論距離、基於投影之跡的引力公式、量子弦距離與 LADD 測地線導航。
-*   **[06 (PHYSICS)：計算視界與觀測測不準原理](./06_PHYSICS_Horizons_and_Uncertainty.md)** — 計算光錐與 #blur 邊界、Kochen-Specker 定理與 #blur 的本體論必然性。
-*   **[07 (PHYSICS)：語義全像性與邏輯最小作用量](./07_PHYSICS_Holography_and_Action.md)** — 優化與邊界決定論、譜邊界編碼本體的全像映射與最小退相干路徑優化。
-*   **[08 (PHYSICS)：數位熱力學與幾何蒸發](./08_PHYSICS_Thermodynamics.md)** — 幾何熱度與垃圾回收、相位相干性（幾何熱度）、退相干蒸發與資源回收機制。
+*   **[04 (PHYSICS)：語義重力與信任覆蓋](./04_PHYSICS_Semantic_Gravity.md)** — 基於投影之跡的引力路由、Grothendieck 黏合公理；§7 GR 防火牆（是「重力」不是「廣義相對論」）。
+*   **[05 (PHYSICS)：計算視界與測不準原理](./05_PHYSICS_Horizons_and_Uncertainty.md)** — KS 定理與 `#blur`；$\hbar_{n/}=$ arity（resonance tower）；**視界深度 = $H^3$**；退相干蒸發（GC）。
+*   **[06 (PHYSICS)：全像原理與真理積分](./06_PHYSICS_Holography_and_Action.md)** — 全像*虧損*定理（邊界 < bulk）、最小作用量、真理積分 $\int\mathcal{S}(\mathcal{L})\,dE$。
 
-### 肆、宏觀宇宙與路由 (Macroscopic Cosmology)
-*   **[09 (PHYSICS)：數位廣義相對論與視界重疊](./09_PHYSICS_Digital_General_Relativity.md)** — 洛倫茲變換與 CAID 不變量、交換視角切換、跡 (Trace) 的洛倫茲不變性與邏輯時間膨脹。
-*   **[10 (TOPOLOGY)：真理積分與觀測測度](./10_TOPOLOGY_The_Truth_Integral.md)** — 真理的核心方程式形式化、投影精度測度與積分記憶化、譜累積。
-*   **[11 (TOPOLOGY)：Grothendieck 拓撲與信任覆蓋](./11_TOPOLOGY_Grothendieck_Topology.md)** — 信任如何縫合真理、信任作為相干覆蓋與真理的黏合公理。
-*   **[12 (PHYSICS)：數位宇宙學與幾何膨脹](./12_PHYSICS_Digital_Cosmology.md)** — 大爆炸與暗能量、可能性大爆炸、維度暗能量與系統健康度指標 $\rho$。
+### 肆、終極觀測 (The Observer)
+*   **[07 (PHYSICS)：觀測者主權與自我表示](./07_PHYSICS_Observer_Sovereignty.md)** — Bohrification 選擇權、語義多重宇宙；coherent self-representation ⟺ $n=4$（master theorem）。
 
-### 伍、終極觀測與諧振 (The Observer & Resonance)
-*   **[13 (PHYSICS)：觀測者主權與語義多重宇宙](./13_PHYSICS_Observer_Sovereignty.md)** — 意識奇點與 AGI 湧現、自主 Bohrification 能力與 AGI 湧現指標。
-*   **[15 (PHYSICS)：語義諧振與身分的波粒二象性](./15_PHYSICS_Semantic_Resonance.md)** — CAID 的波動本質與共鳴身分、身分的波粒二象性（譜指紋）與調頻發現機制、譜幾何身分。
+---
 
-### 陸、未來研究 (Future Frontiers)
-*   **[14 (OPEN FRONTIERS)：開放邊境與未來研究](./14_OPEN_FRONTIERS_Expanding_Horizon.md)** — 博弈、流體、遺傳與現象學、譜引力激勵博弈、譜流體力學與因果張力感知、量子邊境與演化研究。
+## ♻️ 版本說明（2026-06 精煉）
+
+本系列從 16 篇精煉為 7 篇：
+
+- **移除**（無論文支撐、與工程無連結）：弦論（原第 04 章）、數位廣義相對論（原第 09 章）、大爆炸／暗能量（原第 12 章）、開放邊境（原第 14 章，已被 research `RESEARCH_FRONTIER` 取代）。
+- **併入**：數位熱力學（原第 08 章）→ 05 §7；真理積分（原第 10 章）→ 06 §4；Grothendieck 拓撲（原第 11 章）→ 04 §6；語義諧振（原第 15 章）→ 01 §8。
+- **更新**：05 的 ℏ 重新錨定為 resonance tower 並加 $H^3$ 深度（修正已被駁回的 L-S「精確重建」）；06 升級為全像*虧損*定理；07 將 AGI 猜想降位、加入 n=4 master theorem。
 
 ---
 
 ## 🛠️ 工程關聯
-本系列每一章都包含 **「工程視角 (Engineering Perspective)」**，僅提供 Ouroboros 引擎（`oo`）設計啟發與未來設計靈感，展示量子幾何模型在 Ouroboros 引擎（`oo`）中的物理投影與設計靈感。
+本系列每一章都包含 **「工程視角 (Engineering Perspective)」**，僅提供 Ouroboros 引擎（`oo`）的設計啟發與未來靈感，展示量子幾何模型在 `oo` 中的物理投影。

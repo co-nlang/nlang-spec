@@ -28,6 +28,11 @@
 - **[SPEC_17: 自我演化 (Self-Evolution)](./SPEC_17_Self_Evolution.md)**
 - **[SPEC_18: 餘韻 (Echo)](./SPEC_18_The_Echo.md)**
 
+### 語法細則 (Syntax — 施行細則)
+> 規範性，位階在 SPEC 之下。把 `n/` 從邊界（Type）的法帶到紙面（Data）的存在，逐構造釘死寫法與邊界情況、消除未定義行為。文法上位規範見 SPEC_14。
+- **[SYNTAX_00: 語法細則總則與慣例](./SYNTAX_00_Conventions.md)** ← 從這裡開始（定位、位階、章節格式、索引）
+- SYNTAX_01–12：詞法、字面量、路徑、Combo、前綴本體論、比較與集合運算、觀測對偶、元數據、態射應用與中綴運算、Enum/Poset、態射定義、管道與上下文（**01–12 全數 `[穩定]`**（2026-07-05 定稿）；macro/import 已除名；`$` P1–P5 定案；索引見 SYNTAX_00 §5，引擎同步清單見 meta/ENGINE_SYNC.md）
+
 ### 具現標準 (Realization Standards)
 - **[REAL_01: Ouroboros 工程實作](./REAL_01_Ouroboros_Engineering.md)**
 - **[REAL_02: 通訊協定規範](./REAL_02_Ouroboros_Protocols.md)**
@@ -44,7 +49,7 @@
 - **[APP_02: 形式化驗證戰略](./APP_02_Formal_Verification.md)**
 - **[APP_03: 範式比較與遷移](./APP_03_Paradigm_Comparison.md)**
 - **[APP_04: 數學基礎](./APP_04_Mathematical_Foundations.md)**
-- **[APP_05: 全球邏輯格與 LADD 協議](./APP_05_LADD_Global_Logic_Lattice.md)**
+- **[APP_05: 全域邏輯格與 LADD 協議](./APP_05_LADD_Global_Logic_Lattice.md)**
 - **[APP_06: 語義大一統理論](./APP_06_Unified_Field_Theory.md)**
 
 ### 工程指南 (Engineering Guides)
@@ -56,21 +61,15 @@
 > 物理、拓撲與哲學詮釋框架。非規格性，作為理解 n/ 更深層數學意義的導讀。
 
 - **[COSMOLOGY/00: 數位宇宙學總論](./COSMOLOGY/00_COSMOLOGY_Overview.md)** ← 從這裡開始
-- **[COSMOLOGY/01: 數位統一場論](./COSMOLOGY/01_PHYSICS_Unified_Field_Theory.md)**
-- **[COSMOLOGY/02: 內在邏輯與格論層](./COSMOLOGY/02_TOPOLOGY_Intrinsic_Logic.md)**
+- **[COSMOLOGY/01: 數位統一場論（質能等價 + 譜諧振）](./COSMOLOGY/01_PHYSICS_Unified_Field_Theory.md)**
+- **[COSMOLOGY/02: 內在邏輯與正交模格](./COSMOLOGY/02_TOPOLOGY_Intrinsic_Logic.md)**
 - **[COSMOLOGY/03: 數位量子力學](./COSMOLOGY/03_PHYSICS_Digital_Quantum_Mechanics.md)**
-- **[COSMOLOGY/04: 數位弦論與對稱性破缺](./COSMOLOGY/04_PHYSICS_Deep_Fields.md)**
-- **[COSMOLOGY/05: 語義重力與 LADD 空間扭曲](./COSMOLOGY/05_PHYSICS_Semantic_Gravity.md)**
-- **[COSMOLOGY/06: 計算視界與觀測測不準原理](./COSMOLOGY/06_PHYSICS_Horizons_and_Uncertainty.md)**
-- **[COSMOLOGY/07: 數位全像原理與邏輯最小作用量](./COSMOLOGY/07_PHYSICS_Holography_and_Action.md)**
-- **[COSMOLOGY/08: 數位熱力學與幾何蒸發](./COSMOLOGY/08_PHYSICS_Thermodynamics.md)**
-- **[COSMOLOGY/09: 數位廣義相對論與視界重疊](./COSMOLOGY/09_PHYSICS_Digital_General_Relativity.md)**
-- **[COSMOLOGY/10: 真理積分與觀測測度](./COSMOLOGY/10_TOPOLOGY_The_Truth_Integral.md)**
-- **[COSMOLOGY/11: Grothendieck 拓撲與信任覆蓋](./COSMOLOGY/11_TOPOLOGY_Grothendieck_Topology.md)**
-- **[COSMOLOGY/12: 數位宇宙學與幾何膨脹](./COSMOLOGY/12_PHYSICS_Digital_Cosmology.md)**
-- **[COSMOLOGY/13: 觀測者主權與語義多重宇宙](./COSMOLOGY/13_PHYSICS_Observer_Sovereignty.md)**
-- **[COSMOLOGY/14: 開放邊境與未來研究](./COSMOLOGY/14_OPEN_FRONTIERS_Expanding_Horizon.md)**
-- **[COSMOLOGY/15: 語義諧振與身分的波粒二象性](./COSMOLOGY/15_PHYSICS_Semantic_Resonance.md)**
+- **[COSMOLOGY/04: 語義重力與信任覆蓋](./COSMOLOGY/04_PHYSICS_Semantic_Gravity.md)**
+- **[COSMOLOGY/05: 計算視界（ℏ=arity；視界深度=H³）](./COSMOLOGY/05_PHYSICS_Horizons_and_Uncertainty.md)**
+- **[COSMOLOGY/06: 全像原理與真理積分](./COSMOLOGY/06_PHYSICS_Holography_and_Action.md)**
+- **[COSMOLOGY/07: 觀測者主權與自我表示（n=4）](./COSMOLOGY/07_PHYSICS_Observer_Sovereignty.md)**
+
+> **註（2026-06）：** 本系列已從 16 篇精煉為 7 篇 —— 過時的物理類比（弦論、數位 GR、大爆炸/暗能量）已移除，熱力學、Grothendieck、真理積分、語義諧振各併入相關章節。嚴格數學依據見 **Paper N（白皮書）** 與論文系列 I–XXII。
 
 ### 診斷與輔助
 - **[GLOSSARY: 術語對照表](./GLOSSARY.md)**
@@ -108,13 +107,17 @@
 
 ---
 
-## 4. 待辦事項與優先順序 (TODO & Priorities)
+## 4. 路線圖 (Roadmap)
 
-| 優先級 | 項目 | 目標章節 | 說明 |
-| :---: | :--- | :--- | :--- |
-| P0 | 銜尾蛇量子化 | 全域 | 基於 Solèr 定理與 Bohrification 的語義大一統重構企劃，從分配格走向正交模格 |
-| P0 | 增量收斂引擎實作 | **[GUIDE_03](./GUIDE_03_Incremental_Convergence.md)** | 完成基於 CAID 快取的增量合併原型。 |
-| P1 | 規格書 Combo 化 | 全域 | 將 Markdown 轉化為 n/ Combo，實現自我驗證。 |
+完整路線圖移至 **[meta/ROADMAP.md](../../meta/ROADMAP.md)**（2026-07-05；本節舊 TODO 表已過時並歸檔於該處「已完成」節）。快照：
+
+| 狀態 | 項目 |
+| :---: | :--- |
+| 進行中 | SYNTAX_01–10 語法細則（[SYNTAX_00](./SYNTAX_00_Conventions.md) §5）；oo 引擎 stdlib/協定 phases；claims ledger 後續（[meta/claims_ledger.md](../../meta/claims_ledger.md)） |
+| 排隊中 | 規格書 Combo 化；增量收斂引擎（[GUIDE_03](./GUIDE_03_Incremental_Convergence.md)） |
+| 門檻制 | 對外宣傳（intro）與 Changelog——等語言完成到一個段落（見 ROADMAP §1） |
+
+> Review agents 請注意：spec↔論文系列的宣稱強度以 **[meta/claims_ledger.md](../../meta/claims_ledger.md)** 為準（R0/R1/R2/R3 分級）。
 
 ---
 

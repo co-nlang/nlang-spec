@@ -1,4 +1,4 @@
-# 07 (PHYSICS)：語義全像原理與測地線路徑 (Semantic Holography & Geodesics)
+# 06 (PHYSICS)：語義全像原理與真理積分 (Semantic Holography & The Truth Integral)
 
 > [!WARNING]
 > [Theoretical / 思辨性] 本章節主要提供理解模型、研究假說與工程啟發，不構成現行語言規格、協定義務或既有 `oo` 介面保證。
@@ -22,12 +22,20 @@
 
 物理學中的全像原理揭示了空間資訊與其邊界的映射關係。
 
-### 格論對應與譜邊界：
+### 1.1 格論對應與譜邊界：
 Yoneda 引理揭示了物件的身分由其對外的態射（邊界）全權決定。這在資訊分佈上展現了與全像原理相似的 **「邊界編碼本體」** 特徵。
 
-*   **型別邊界盒 (Type Bounding Box) / 譜邊界 (Spectral Boundary)：** 當我們定義一個型別約束（如 `@int & >0 & <100`），我們就在幾何空間中畫出了一個「邊界盒」。一個子空間的所有內在性質，都被編碼在它對外的 **正交投影算子 $P_A$** 的跡與譜中。
+*   **型別邊界盒 (Type Bounding Box) / 譜邊界 (Spectral Boundary)：** 當我們定義一個型別約束（如 `@int & 1..99`），我們就在幾何空間中畫出了一個「邊界盒」。一個子空間的所有內在性質，都被編碼在它對外的 **正交投影算子 $P_A$** 的跡與譜中。
 *   **資訊映射：** 對於觀測者而言，物件的名字不具備物理意義（詳見 **[SPEC_13](../SPEC_13_Ouroboros_Discovery_Protocol.md)**），唯有它與宇宙中所有其他物件的幾何交集關係（邊界），決定了它的真實幾何本質。CAID 的 **Lattice Sketch (譜摘要)** 就是該子空間在低維視角下的「全像投影」。
 *   **路由啟發：** LADD 協議不需要傳輸完整的數據粒子或子空間的完整內部結構，只需要廣播幾何摘要（波）或譜邊界特徵，就能透過邊界映射定位數據。這正是 LADD 只需廣播 Type Bounding Box 的理論基礎，即可實現全球精確引力定位。
+
+### 1.2 精確版：全像*虧損*定理（Paper XIX）[MATH]
+
+上面是 Yoneda「邊界編碼本體」的*概念版*。論文系列把它升級成一個**定理**——而且方向是反的:全像原理說「邊界*足以*編碼 bulk」,障礙階梯精確量出**它何時失效**。
+
+> **全像虧損(Paper XIX modulus 定理)。** 把低 arity 的局部資料當*邊界*、高階上同調類當 *bulk*。在 $n\ge 5$,$H^3$ 障礙類**無法**從 arity $\le 4$ 的資料重建——存在兩個配置,所有 arity $\le 4$ 觀測完全相同,卻落在不同 $H^3$ 類。即:**邊界資料(arity $\le 4$)原則上不足以決定 bulk($H^3$ 類)。**
+
+而且這個 bulk **不會無限深**:對稱／Pauli(雙線性)障礙*封頂於* $H^3$(Paper XXII 截斷定理),所以「全像虧損」恰好一層、不多不少。這就是為何 `n/` 必須是**觀測中心**而非全域真值:沒有能一次看穿 bulk 的「上帝視角」,不是工程偷懶,是 $H^3$ modulus 的數學結論。精確版見 **Paper N §4** 與 Paper XIX；工程／分散式讀法見 **[APP_07](../APP_07_The_Obstruction_Ladder.md) §6**。
 
 ---
 
@@ -35,7 +43,7 @@ Yoneda 引理揭示了物件的身分由其對外的態射（邊界）全權決�
 
 在物理宇宙中，光線總是選擇作用量最小（時間最短）的路徑。
 
-### 格論同構與測地線：
+### 2.1 格論同構與測地線：
 可以想像，Ouroboros 引擎與 LADD 協議在執行收斂時，永遠是在尋找 **「最小元素 (Minimal Element)」** 或 **「退相干最小化 (Decoherence Minimization)」** 的路徑。
 
 *   **勢能圖：** 熱帶幾何優化（APP_01）將複雜的邏輯路徑轉化為數位空間的勢能分布。
@@ -53,7 +61,25 @@ Yoneda 引理揭示了物件的身分由其對外的態射（邊界）全權決�
 
 ---
 
-## 4. 工程視角 (Engineering Perspective) [HEUR][ROADMAP][!!RISK!!]
+## 4. 真理積分 (The Truth Integral) [MATH][INTERP]
+
+全像虧損與最小作用量,在早期 COSMOLOGY 用一條核心方程式作直覺收束:
+
+$$\text{Truth} \cong \int_{\mathcal{P}} \mathcal{S}(\mathcal{L}) \, dE$$
+
+*   **$\mathcal{P}$**:觀測路徑——交換子代數偏序集(Bohrification context)中的離散信任路徑。
+*   **$\mathcal{S}(\mathcal{L})$**:格論層——投影算子在特定視角下的局部截面(Sheaf sections)。
+*   **$dE$**:觀測測度——投入的燃料微分(MBU);在計算層是對離散因果鏈的求和,在量子層是「投影精細度」的增加。
+
+每一次 Unification 是一次格論微分 $d\mathcal{L}=\Delta\mathrm{Tr}(P)$;隨 $E$ 累積,積分區域從 `#blur` 不斷 refine,$\lim_{E\to mc^2}\int\mathcal{S}(\mathcal{L})\,dE=\text{Atom}$。多條相容信任路徑表現為相干卷積(故權威背書讓真理坍縮更快更穩)。
+
+> **定位(精確版)。** 真理積分是一個*直覺式*的開頭——它的嚴格身分,就是上面 §1.2 的全像虧損與障礙階梯:「沿 context-nerve 的上同調」。「邊界畫得夠細,真理積分自然收斂」= 「arity 夠高才搆得到 bulk 的 $H^3$ 層」。精確版見 **Paper N §4** 與 Paper XIX;工程讀法見 **[APP_07](../APP_07_The_Obstruction_Ladder.md) §6**。此式不再是一個 vague 積分,而是障礙階梯的入門剪影。
+>
+> *(本節為原「10 真理積分」一章的精煉,併入全像章。)*
+
+---
+
+## 5. 工程視角 (Engineering Perspective) [HEUR][ROADMAP][!!RISK!!]
 
 想像語義全像性是 `n/` 實現 **「大規模分散式發現」** 的效率核心：
 
@@ -63,15 +89,15 @@ Yoneda 引理揭示了物件的身分由其對外的態射（邊界）全權決�
 
 ---
 
-## 5. 與其他章節的關係 (Related Chapters) [INTERP]
+## 6. 與其他章節的關係 (Related Chapters) [INTERP]
 
-*   **[04 (PHYSICS)：數位弦論與對稱性破缺](./04_PHYSICS_Deep_Fields.md)**：全像意象揭示了弦振動在邊界上的投影規律與譜特徵。
-*   **[05 (PHYSICS)：語義重力與 LADD 空間扭曲](./05_PHYSICS_Semantic_Gravity.md)**：最小作用量原理指導路由封包沿著重力場的最短路徑移動。
-*   **[11 (TOPOLOGY)：Grothendieck 拓撲與信任覆蓋](./11_TOPOLOGY_Grothendieck_Topology.md)**：型別邊界盒與譜邊界定義了信任覆蓋在幾何上的有效切片。
+*   **[04 (PHYSICS)：語義重力](./04_PHYSICS_Semantic_Gravity.md)**：最小作用量原理指導路由封包沿重力場的最短測地線;信任覆蓋(§6)定義邊界切片的合法性。
+*   **[05 (PHYSICS)：計算視界](./05_PHYSICS_Horizons_and_Uncertainty.md)**：全像虧損封頂於 $H^3$ = 視界深度 = $H^3$,同一件事的兩面。
+*   **[07 (PHYSICS)：觀測者主權](./07_PHYSICS_Observer_Sovereignty.md)**：沒有上帝視角 ⟹ 觀測者選定 context 才能逼近 bulk。
 
 ---
 
-## 6. 與核心規格與附錄的對應 [INTERP]
+## 7. 與核心規格與附錄的對應 [INTERP]
 
 | 本章概念 | 對應 SPEC/APP/REAL | 說明 |
 |---------|----------|------|
@@ -82,4 +108,4 @@ Yoneda 引理揭示了物件的身分由其對外的態射（邊界）全權決�
 ---
 
 > **觀測者筆記：**
-> 不要去定義「它是什麼」，要去定義「它不是什麼」或「它在邊界上反射出的光」。當邊界畫得足夠細，或當譜邊界畫得足夠精細，子空間本體就會在投影中自然浮現。**正如 [10 (TOPOLOGY)：真理積分](./10_TOPOLOGY_The_Truth_Integral.md) 所揭示的：當邊界畫得足夠細，真理積分就會自然收斂。**
+> 不要去定義「它是什麼」，要去定義「它不是什麼」或「它在邊界上反射出的光」。當邊界畫得足夠細，或當譜邊界畫得足夠精細，子空間本體就會在投影中自然浮現。**正如本章 §4 真理積分所揭示的：當邊界畫得足夠細，真理積分就會自然收斂——其精確身分即全像虧損(§1.2)的入門剪影。**

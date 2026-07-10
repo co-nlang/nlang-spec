@@ -12,7 +12,7 @@
 ### 1.1 幾何場反映 (Field Reflection)
 除了對具體節點的觀測，Ouroboros 引擎透過 `~%Engine` 物件向觀測者反映全域幾何場的分布狀態：
 *   **質量場 (`~%Engine.mass_map`)**：反映當前視界內各區域的幾何質量（$m$）分布。
-*   **熱度場 (`~%Engine.heat_map`)**：反映 CAID 的活動能級與蒸發優先權（見 **[COSMOLOGY/08](./COSMOLOGY/08_PHYSICS_Thermodynamics.md)**）。
+*   **熱度場 (`~%Engine.heat_map`)**：反映 CAID 的活動能級與蒸發優先權（見 **[COSMOLOGY/05 §7](./COSMOLOGY/05_PHYSICS_Horizons_and_Uncertainty.md)**）。
 *   **視界反映 (`~%Engine.horizons`)**：反映目前剩餘的燃料（$E$）與計算光錐的邊界。
 
 ### 1.2 `~%repl`：工作階段反映
@@ -79,7 +79,7 @@
 | **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** | 運行時參數透過 `~%Engine` 進行動態反映。 |
 | **[REAL_03](./REAL_03_CAID_Protocol.md)** | 規範化形式是合成運算的物理目標。 |
 | **[COSMOLOGY/01](./COSMOLOGY/01_PHYSICS_Unified_Field_Theory.md)** | 合成運算（$n/^{op}$）的能量消耗與質能轉換。 |
-| **[COSMOLOGY/08](./COSMOLOGY/08_PHYSICS_Thermodynamics.md)** | 幾何熱度場的拓撲反映基礎。 |
+| **[COSMOLOGY/05 §7](./COSMOLOGY/05_PHYSICS_Horizons_and_Uncertainty.md)** | 幾何熱度場（退相干蒸發）的拓撲反映基礎。 |
 
 ---
 

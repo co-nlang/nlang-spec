@@ -38,8 +38,8 @@
     ```nlang
     ;; n/ 風格：模式即匹配
     /status: {
-        @{ @int & >= 18 }: #adult
-        @{ @int & < 18 }: #minor
+        @{ @int & 18.. }: #adult
+        @{ @int & ..17 }: #minor
     }
     ```
 

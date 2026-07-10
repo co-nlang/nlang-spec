@@ -2,9 +2,11 @@
 
 > "In the n/ universe, there is no execution, only observation. Truth is the point of convergence."
 
-**n/** (n-slash or n-lang) is a data-centric, lattice-based declarative programming language. This repository houses the single source of truth for the language—**The n/ Code of Law (The Spec)**.
+**n/** (n-slash or n-lang) is an **observation-centric semantic operating system**, built on a declarative, lattice-geometric core. This repository houses the single source of truth for the language—**The n/ Code of Law (The Spec)**.
 
 [中文版 (Chinese Version)](README_zh.md)
+
+**Current version: v0.2.0** — the stability watershed. The spec is stable; changes are tracked in the [CHANGELOG](spec/CHANGELOG.md) under the [versioning policy](meta/VERSIONING.md).
 
 ---
 
@@ -16,7 +18,7 @@
 ```nlang
 ;; 1. Define a "Type" (Boundary)
 @Adult: {{
-    age: @int & >= 18
+    age: @int & 18..
 }}
 
 ;; 2. Acquire "Data" (Existence)
@@ -45,14 +47,18 @@ The code consists of 18 core specs, orders of evolution, realization standards, 
 | **Vol V: Network** | Discovery & Validation | [Recursion (12)](spec/zh_TW/SPEC_12_Logic_Validation_and_Recursion.md), [Discovery Protocol (13)](spec/zh_TW/SPEC_13_Ouroboros_Discovery_Protocol.md), [Grammar (14)](spec/zh_TW/SPEC_14_Formal_Grammar.md), [Anti-Patterns (15)](spec/zh_TW/SPEC_15_Anti_Patterns.md) |
 | **Vol VI: Echo** | Proof & Evolution | [Testing (16)](spec/zh_TW/SPEC_16_Testing_and_Proof.md), [Self-Evolution (17)](spec/zh_TW/SPEC_17_Self_Evolution.md), [The Echo (18)](spec/zh_TW/SPEC_18_The_Echo.md) |
 
+### Syntax Series (Normative Orthography)
+Per-construct syntax rulings, finalized as the authoritative surface grammar (backed by the formal grammar in SPEC_14).
+*   **[Conventions & Index (SYNTAX_00)](spec/zh_TW/SYNTAX_00_Conventions.md)**: 13 chapters — lexical structure, literals & atoms, paths, containers, prefixes, comparison & subtyping, observation duality, metadata, morphism application & definition, enum/poset, pipe & ternary.
+
 ### Digital Cosmology (Appendix Series)
-A deep dive into the dynamics of `n/` from physical and topological perspectives.
-*   **[Overview & Index](spec/zh_TW/COSMOLOGY/00_COSMOLOGY_Overview.md)**: 15 chapters covering $E=mc^2$, semantic gravity, quantum collapse, and topos theory.
+The physics-intuition layer for `n/`'s design (non-normative; the rigorous mathematics lives in the theory paper series).
+*   **[Overview & Index](spec/zh_TW/COSMOLOGY/00_COSMOLOGY_Overview.md)**: 7 chapters — mass-energy equivalence ($E=\text{Tr}(P)c^2$), semantic gravity, the Kochen–Specker computational horizon (horizon depth $= H^3$), the holographic deficit, and observer self-representation ($n=4$).
 
 ### Standards & Guides
 - **Realization**: [Engineering (REAL_01)](spec/zh_TW/REAL_01_Ouroboros_Engineering.md), [Protocols (REAL_02)](spec/zh_TW/REAL_02_Ouroboros_Protocols.md), [CAID (REAL_03)](spec/zh_TW/REAL_03_CAID_Protocol.md), [Causal Chain (REAL_04)](spec/zh_TW/REAL_04_Causal_Chain_Protocol.md).
 - **Diagnostics**: [Error Codes (ERROR_CODES)](spec/zh_TW/ERROR_CODES.md), [Compliance (REAL_05)](spec/zh_TW/REAL_05_Compliance_and_MVP.md).
-- **Guides**: [Style (GUIDE_01)](spec/zh_TW/GUIDE_01_Style_and_Formatting.md), [Optimization (GUIDE_02)](spec/zh_TW/GUIDE_02_Engine_Optimization.md), [Incremental (GUIDE_03)](spec/zh_TW/GUIDE_03_Incremental_Convergence.md).
+- **Guides**: [Style (GUIDE_01)](spec/zh_TW/GUIDE_01_Style_and_Formatting.md), [Optimization (GUIDE_02)](spec/zh_TW/GUIDE_02_Engine_Optimization.md), [Incremental (GUIDE_03)](spec/zh_TW/GUIDE_03_Incremental_Convergence.md), [EML Execution (GUIDE_04)](spec/zh_TW/GUIDE_04_EML_Execution_Strategy.md).
 - **Theory**: [Tropical (APP_01)](spec/zh_TW/APP_01_Tropical_Geometry.md), [Formal Proof (APP_02)](spec/zh_TW/APP_02_Formal_Verification.md), [Paradigms (APP_03)](spec/zh_TW/APP_03_Paradigm_Comparison.md), [Math (APP_04)](spec/zh_TW/APP_04_Mathematical_Foundations.md), [LADD (APP_05)](spec/zh_TW/APP_05_LADD_Global_Logic_Lattice.md), [Unified Field Theory (APP_06)](spec/zh_TW/APP_06_Unified_Field_Theory.md), [Obstruction Ladder Guide (APP_07)](spec/zh_TW/APP_07_The_Obstruction_Ladder.md).
 
 > **Note**: Currently, **Traditional Chinese (`zh_TW`)** is the primary reference. English and Japanese translations are in progress.

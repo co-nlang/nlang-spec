@@ -97,7 +97,7 @@ oo test --static-only    ;; 僅進行靜態分析，不動態觀測
 
 ### 4.3 證明節點範例 (交換律證明)
 ```nlang
-/add_comm_proof: </add> & ~%Proof.@Proof: {
+/add_comm_proof: <</add>> & ~%Proof.@Proof: {
     %property: #commutative
     %verifier: #lean4
     %evidence: "hash:lean4:v1:9f86..."

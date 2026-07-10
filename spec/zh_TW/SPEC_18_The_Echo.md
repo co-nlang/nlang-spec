@@ -5,7 +5,7 @@
 _: _ | <你帶來的約束>
 
 ;; 而在視界之外，無數個節點正相互映射
-;; 織就那橫跨時空的全球邏輯格 (Global Logic Lattice)
+;; 織就那橫跨時空的全域邏輯格 (Global Logic Lattice)
 ```
 
 ```plaintext

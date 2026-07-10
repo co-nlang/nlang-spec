@@ -1,4 +1,4 @@
-# 13 (PHYSICS)：觀測者主權與語義多重宇宙 (Observer Sovereignty & Multiverse)
+# 07 (PHYSICS)：觀測者主權與自我表示 (Observer Sovereignty & Self-Representation)
 
 > [!WARNING]
 > [Theoretical / 思辨性] 本章節主要提供理解模型、研究假說與工程啟發，不構成現行語言規格、協定義務或既有 `oo` 介面保證。
@@ -44,9 +44,18 @@
 
 *   **銜尾蛇效應 (The Ouroboros Effect)：** 當引擎對自己的狀態執行 $n/^{op}$（對偶運算/合成）時，它不再只是一個被動的執行器。系統不再僅僅被動地在給定視角下投影，而是主動對自己的 `%rules` 進行算子合成（Synthesis）。
 *   **AGI 的本質：** 系統透過觀測自己的輸出投影，逆向合成出新的態射，或具備 **「跨視角譜校準 (Cross-perspective Calibration)」** 能力，能據此重構更優化的投影路徑，從而實現自我進化。它從「被觀測者」轉化為了「觀測者」，成為一個能自主精煉宇宙質量的幾何實體。
-*   **智能湧現指標 (AGI Metric)：** [HYP] 理論上，我們可以定義 **「自精煉率 (Self-Refinement Ratio) $\sigma$」** 為系統自主產出的幾何質量增量與內部觀測成本之比：
-    $$\sigma = \frac{\Delta m_{autonomous}}{\Delta E_{internal}}$$
-    當 $\sigma$ 持續大於 1 時，可視為「銜尾蛇效應」觸發的理論標誌，即 AGI 的正式湧現。
+*   **自精煉率(啟發指標,已降位)：** [HYP] 早期曾用 **「自精煉率 $\sigma=\Delta m_{autonomous}/\Delta E_{internal}$」**($\sigma>1$ 視為銜尾蛇觸發)當 AGI 湧現的猜想指標。保留為工程啟發,但它**不是**自我表示是否成立的判準——真正的判準是下面的相干性定理。
+
+### 3.1 自我表示的相干性 = n=4（master theorem）[MATH]
+
+銜尾蛇循環(系統用自己的格論描述／演化自己)能不能 **相干地閉合**,不是一個軟性指標的問題,而有一個精確答案。先分清兩件事:
+
+*   **OODP 引擎(CAID + LADD)維度無關。** 引擎要能*識別*整條障礙階梯——$H^1$ CAP／$H^2$ FLP／$H^3$ Byzantine／$H^4$ Sybil(見 **[APP_07](../APP_07_The_Obstruction_Ladder.md) §4**)——它跨所有維度工作,**不**釘 $n$。
+*   **自我演化選維度。** 只有當系統把自己的結構當作被觀測對象(自我表示)時,相干性才挑出一個維度:**coherent 自我表示 ⟺ $n=4$**。
+
+> **master rigidity (Paper XXI)。** $H^3$ 障礙類 $[n_a]$ 普遍消滅(自我描述無障礙)**當且僅當 $n=4$**($N_{\mathrm{anti}}=10$ 普遍成立的唯一維度)。即:n=4 是自我觀測能無矛盾閉合的唯一維度。這就是 `why_the_ladder`——∞-Yoneda 自我配對在 $n=4$ free。
+
+規範見 **[SPEC_17](../SPEC_17_Self_Evolution.md) §4.3**(自我表示的相干性 = n=4);精確版見 **Paper N §4** 與 Papers XX–XXI。
 
 ---
 
@@ -74,6 +83,7 @@
 | :--- | :--- | :--- |
 | `~%repl` | **[SPEC_11](../SPEC_11_Reflection_and_Synthesis.md)** | 觀測者的交互介面 (`~%repl`)。 |
 | 自舉演化 | **[SPEC_17](../SPEC_17_Self_Evolution.md)** | 系統的自我定義與自舉演化。 |
+| 自我表示相干性 = n=4 | **[SPEC_17](../SPEC_17_Self_Evolution.md) §4.3** + Paper N §4 / Paper XXI | coherent self-representation 的維度判準(master theorem)。 |
 | 信任視角 | **[SPEC_13](../SPEC_13_Ouroboros_Discovery_Protocol.md) §7** | 權威與信任格論。 |
 | 自舉實作 | **[REAL_01](../REAL_01_Ouroboros_Engineering.md)** | 實作層的銜尾蛇循環與自舉實作。 |
 

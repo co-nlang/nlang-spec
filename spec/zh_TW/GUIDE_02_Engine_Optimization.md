@@ -3,6 +3,8 @@
 > [!NOTE]: [Standard / 非規範性建議]  
 > [!NOTE]: 本指南為 Ouroboros 引擎實作者提供基於量子幾何的優化路徑。核心思想是利用「熱帶幾何」作為量子邏輯在退相干極限下的經典影子，以實現高效的收斂與引力路由。
 
+> **執行軌聲明（兩軌原則 APP_02 §0）**：本指南的譜計算、熱帶剪枝、Lattice Sketch 皆屬**執行軌**——優化啟發，**不承擔證明義務**；可證不變量住 $\mathbb{F}_2$ 辛影子（APP_02 §6）。
+
 ---
 
 ## 1. 熱帶幾何：量子邏輯的經典極限
@@ -16,9 +18,9 @@
 | 量子/格論概念 | 熱帶對應 (經典影子) | 物理意義 |
 | :--- | :--- | :--- |
 | **子空間合併 `&`** | **$+$** (加法) | 幾何厚度的單調累積。 |
-| **疊加聯集 `|`** | **$\min$** (最小值) | 在多重分支中選擇勢能最低的路徑。 |
+| **疊加聯集 `\|`** | **$\min$** (最小值) | 在多重分支中選擇勢能最低的路徑。 |
 | **投影之跡 Tr(P)** | **熱帶質量 $m_T$** | 子空間資訊熵的統計估計。 |
-| **空空間 `_|_`** | **$\infty$** | 邏輯不可達。 |
+| **空空間 `_\|_`** | **$\infty$** | 邏輯不可達。 |
 
 ### 1.2 熱帶剪枝 (Tropical Pruning)
 
@@ -138,4 +140,4 @@ seed = hash(CAID_of_input_combo || "TROPICAL_APPROX_v1")
 ### 相關文獻與理論背景
 *   參閱 **[APP_04: 數學基礎](./APP_04_Mathematical_Foundations.md)** 了解 Solèr 定理與 Bohrification。
 *   參閱 **[APP_05: LADD 協議](./APP_05_LADD_Global_Logic_Lattice.md)** 了解基於投影算子的引力路由。
-*   參閱 **[COSMOLOGY/06: 測不準原理](./COSMOLOGY/06_PHYSICS_Horizons_and_Uncertainty.md)** 了解燃料與精度權衡的物理背景。
+*   參閱 **[COSMOLOGY/05: 測不準原理](./COSMOLOGY/05_PHYSICS_Horizons_and_Uncertainty.md)** 了解燃料與精度權衡的物理背景。

@@ -22,6 +22,25 @@
 3.  **因果邊界不變性**：一旦 Commit 固化，該 `CAID_blur` 在該歷史節點中的語義即被鎖定。即使未來發現了精確真相 $E$，該歷史 Commit 的幾何內容（認識論事實）**嚴禁**發生改變。
 4.  **因果隔離**：真相的精煉必須透過新的演化步進（新的 Commit）來顯式應用，而非隱式地回溯性修改歷史。這確保了內容定址的絕對穩定性。
 
+### 1.2 快照語義的拼寫歸屬（暫定裁決）
+
+「記住宇宙在*那一刻*的樣子」是合法的需求。惰性化之後普通路徑欄位（`x: v`）存 thunk、
+觀測時才固化，且 `<<path>>` 這個唯一的引用拼寫已歸活引用（Stage 3 C 案：evolve 期只存
+路徑幾何、觀測時對*當下*宇宙解引用），因此「evolve 期凍值」在語言表層目前無拼寫。
+
+**裁決：快照 ＝ Commit／CAID，不新增 source-level 語法。** 宇宙在某刻的凍結像即該刻
+Commit 的 CAID（§1、§1.1——不可變、內容定址、可 `#diff`）；引用歷史快照 ＝ 引用該
+Commit（引擎／REPL 層操作：`~%repl./commit`、於 Commit 上下文 `~%Engine./observe`、`#diff`）。
+此結論不為同一概念開第二種拼寫，符合語法極簡原則（一字一義）；且快照本是一個 Commit
+序列（格論 meet 單調鏈）中唯一的**非單調**需求——欲在 $C_{n+1} \sqsubseteq C_n$ 精煉之後仍取
+$C_n$ 的較粗值，任何 meet 皆無法回復，唯有 CAID 釘選——CAID-pin 是其理論正位，非權宜。
+
+**有意留白（重開條件）**：對 **Staged 中間態**（§3.2；未固化、尚無 CAID）的 source-level
+快照，或將某歷史 Commit 之值嵌為 source 內的活座標，目前**無拼寫**。是否值得為此付一個
+語法，與 observe／evolve／commit／collapse API 的人體工學屬**同一問題**（皆取決於首次真實
+使用的體感），故一併留待**首次使用複審**（見 `meta/ROADMAP.md` §3）後再議——**在此之前
+勿發明語法**。
+
 ---
 
 ## 2. 核心演化態射 (Core Morphisms)
@@ -120,7 +139,7 @@
 | **[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md)** | 定義了 `#refine` 如何驅動觀測視窗內的自動重定向。 |
 | **[SPEC_16](./SPEC_16_Testing_and_Proof.md)** | 測試與證明可作為 `#commit` 前的自動化守門員。 |
 | **[REAL_02](./REAL_02_Ouroboros_Protocols.md)** | 定義了引擎如何透過協定交換 Commit 與解決競爭。 |
-| **[COSMOLOGY/08](./COSMOLOGY/08_PHYSICS_Thermodynamics.md)** | 演化的熱力學背景：Commit 鏈的增長與因果壓力。 |
+| **[COSMOLOGY/05 §7](./COSMOLOGY/05_PHYSICS_Horizons_and_Uncertainty.md)** | 演化的熱力學背景（退相干蒸發，原第 8 章已併入視界章）：Commit 鏈增長與因果壓力。 |
 
 ---
 

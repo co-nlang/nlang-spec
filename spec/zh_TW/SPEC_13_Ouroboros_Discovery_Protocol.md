@@ -46,6 +46,23 @@ OODP 採用**混合架構**：L2 定址層基於傳統 DHT（如 Kademlia），L
 *   **別名是相對的**：路徑 `_.deps.ui` 是一個觀測視角。
 *   **CAID 是絕對的**：它定義了子空間在全域格論中的幾何座標。
 
+### 1.3 CAID 的 symplectic 刻畫 (char-2 影子；Papers VII–XXII)
+
+§1.1 的 CAID（Yoneda 關係指紋 = 投影算子 $P_A$ 的譜指紋）是 Paper I–VI 視角的概念定義。
+理論論文系列 VII–XXII 為它補上了精確的代數刻畫：在 stabilizer / Pauli 的特徵二影子裡，觀測代數
+降到有限 symplectic 空間 $V=\mathbb{F}_2^{2n}$，而一個子空間的「關係指紋」就是它與其他算子的
+**$\omega$（交換性）與 $q$（quadratic refinement，相位/符號）資料**，即 $\omega/q$-Gram。
+
+*   **相位/符號的來源**：CAID v2 複數譜（REAL_03 §3.2）所編碼的 sign/phase，其代數本質是
+    $\beta$ / quadratic refinement（Paper XI：$s(C)=(-1)^{\beta/2}$，$\beta_{\text{sum}}\equiv2\pmod4$）。
+*   **投影算子的載體**：3-qubit 下，Bohrification 的投影算子由 $\mathrm{Sp}(6,\mathbb{F}_2)$ 在
+    $\mathbb{C}^8$ 上的 **Weil 表示**具體實現（Paper XV）。
+*   **跨 context 關係**：不同 context 間的 $\omega$ 關係由 cross-context anticommutation 定理刻畫
+    （Paper XVII）。
+
+**一致性**：§1.1（概念）與本節（代數）是同一物的兩層 —— Yoneda 關係指紋的特徵二影子 $=\omega/q$-Gram。
+本節為 §1.1 的延伸而非取代；CAID 物理封套（REAL_03）暫仍以複數譜實作，symplectic 指紋是其數學本體。
+
 ---
 
 ## 2. 發現機制：對萬有子空間的約束
@@ -208,10 +225,10 @@ CAID 字串是一個**自描述的幾何封套 (Self-describing Envelope)**。�
 
 不同於傳統的名稱查詢，`n/` 支援基於「幾何特徵」的搜尋。這本質上是在語義空間中進行 **幾何場導航 (Geometric Field Navigation)**。
 
-#### 1. 服務幾何 (Service Geometry)
+#### 6.2.1. 服務幾何 (Service Geometry)
 節點可向網路宣告其具備的 **服務幾何**（一個 Combo），代表其能提供的幾何約束承諾。
 
-#### 2. `./find <pattern>` (引力導航)
+#### 6.2.2. `./find <pattern>` (引力導航)
 *   **輸入**：一個型別約束 `@Type` 或幾何模式。
 *   **語義**：在全域邏輯格中，沿著幾何重力（型別交集路徑）導航至所有滿足 $Node \sqsubseteq Pattern$ 的節點。
 *   **結果**：回傳一個包含所有匹配節點的聯集態。
@@ -262,8 +279,8 @@ CAID 字串是一個**自描述的幾何封套 (Self-describing Envelope)**。�
 | **[REAL_02](./REAL_02_Ouroboros_Protocols.md)** | OODP L1-L3 的傳輸層與基礎收斂協定實作。 |
 | **[REAL_03](./REAL_03_CAID_Protocol.md)** | OODP L2 定址層：CAID 的物理編碼與雜湊規範。 |
 | **[REAL_04](./REAL_04_Causal_Chain_Protocol.md)** | OODP 因果鏈協議：`%cause` 結構與錯誤傳播。 |
-| **[COSMOLOGY/05](./COSMOLOGY/05_PHYSICS_Semantic_Gravity.md)** | 發現機制的數位物理學基礎：語義重力場。 |
-| **[COSMOLOGY/15](./COSMOLOGY/15_PHYSICS_Semantic_Resonance.md)** | 諧振身分的物理詮釋。 |
+| **[COSMOLOGY/04](./COSMOLOGY/04_PHYSICS_Semantic_Gravity.md)** | 發現機制的數位物理學基礎：語義重力場。 |
+| **[COSMOLOGY/01 §8](./COSMOLOGY/01_PHYSICS_Unified_Field_Theory.md)** | 諧振身分的物理詮釋（譜諧振，原第 15 章已併入）。 |
 
 ---
 

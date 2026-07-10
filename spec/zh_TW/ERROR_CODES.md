@@ -8,7 +8,7 @@
 
 | 標籤 | 說明 | 修復建議 |
 | :--- | :--- | :--- |
-| **`#conflict`** | 靜態邏輯不相容 | 檢查合併的兩個值或型別是否互斥（如 `1 & 2`）。建議使用更寬鬆的型別約束，或使用聯集（`|`）而非交集（`&`）。 |
+| **`#conflict`** | 靜態邏輯不相容 | 檢查合併的兩個值或型別是否互斥（如 `1 & 2`）。建議使用更寬鬆的型別約束，或使用聯集（`\|`）而非交集（`&`）。 |
 | **`#arithmetic_on_anchor`** | 錨點算術非法 | 對序位錨點（如 `#_\|_` 或 `#_`）觀測了非法算術運算。錨點代表序位的極值，其算術行為受格論約束。 |
 | **`#numerical_error`** | 數值運算異常 | 發生除以零、溢出或無效浮點數運算。請檢查態射輸入域或增加邊界檢查。 |
 | **`#divergent`** | 動態非終止（無限遞迴） | 檢測到循環定義。請檢查是否存在終止條件，或增加基底案例以確保收斂到不動點。 |
@@ -16,6 +16,11 @@
 | **`#partial_geometry`** | 幾何內容缺失 | 因網路斷線或資料未發現導致的局部不完全觀測。對應 LADD 協議中的幾何冗餘保護。 |
 | **`#recursive_lazy`** | 結構遞迴標籤 | 表示該節點具備合法的無限結構遞迴定義，僅在顯式觀測路徑抵達時展開。 |
 | **`#tropical_approximation_failed`** | 熱帶近似失敗 | 使用熱帶幾何進行優化加速時發生異常（見 **[APP_01](./APP_01_Tropical_Geometry.md)**）。建議回歸精確格論觀測。 |
+| **`#order_conflict`** | 序位矛盾 | Poset 合併時關係聯集出現矛盾（如 `#a < #b` 遇 `#a > #b`），坍縮為 `_\|_`（**[SYNTAX_10](./SYNTAX_10_Enum_and_Poset.md)** §4.5）。請檢查兩個序位宣告的方向一致性。 |
+| **`#log_singularity`** | 對數奇異點 | `ln(0)` 等對數奇異點。預設策略下回傳 `#blur` 並以本標籤標記 `%cause`（**[SPEC_09](./SPEC_09_Standard_Library.md)**）。可沿 `%branch` 選擇 Riemann 面分支，或檢查輸入域。 |
+| **`#eml_singularity`** | EML 奇異點 | `eml(x, 0)` 之 `ln(0)` 分量奇異。行為同上（**[SPEC_09](./SPEC_09_Standard_Library.md)**）。 |
+| **`#branching`** | 多值分支 | 遞迴/譜驗證中產生合法多值分支（非錯誤，**[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)** §4.1.1）；與 `#divergent`（非終止）區分。如需單值，顯式選擇分支或加約束收窄。 |
+| **`#cancellation_risk`** | 災難性消去風險 | EML 執行策略偵測到浮點災難性消去（**[GUIDE_04](./GUIDE_04_EML_Execution_Strategy.md)**）。屬執行軌數值 QoS（**[APP_02](./APP_02_Formal_Verification.md)** §0），非證明義務；建議改寫算式或提高精度策略。 |
 | **`#fractional_bitwise`** | 分數位元運算違規 | 對非整數複數執行位元運算（如 `/bitAnd 3.5 1`）。位元運算僅在數值**投影**至整數子空間 `@int` 時定義。請先將值投影至整數域再執行位元操作。 |
 
 ### 1.2 視界與資源邊界 (Horizon Boundaries)
@@ -61,6 +66,7 @@
 | **`#effect_violation`** | 純粹性違規 | 在 `#pure` 環境中執行了副作用操作（如 `#io`）。請移除副作用操作，或將環境標記為相應的效應標籤。 |
 | **`#type_mismatch`** | 型別不匹配 | 值不符合其型別約束。請確保輸入數據符合 `@Type` 定義，或更新型別約束以適應數據。 |
 | **`#projection_conflict`** | 型別投影衝突 | 合併兩個型別約束時發生投影衝突（如 `{ x: @int } & { x: @float }`）。整數與浮點數在譜幾何中屬於不同的子空間投影，無法同時滿足。請統一型別約束或使用 `@num` 萬有型。 |
+| **`#no_context`** | 無上下文觀測 | 自由 `$` 在無綁定的觀測下被求值（**[SPEC_07](./SPEC_07_Logic_and_Pipe.md)** §1.2、**[SYNTAX_12](./SYNTAX_12_Pipe_Ternary_and_Context.md)**）。`$` 由最近包圍演化（pipe／dispatch）動態綁定；請將表達式置於管道右側，或改用具名路徑。 |
 
 ### 1.5 系統與特權操作 (System & Privileged Operations)
 

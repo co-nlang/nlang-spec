@@ -1,5 +1,28 @@
 # APP_02：量子化形式驗證戰略藍圖 (Quantum Formal Verification)
 
+## 0. 兩軌原則：驗證撤入特徵二影子，執行留在複數投影（2026-07-11 修訂）
+
+本章初稿寫於 Paper VI（量子化）視角。論文系列 VII–XXII 完成後，我們知道得更多：
+可證明的不變量內容（Maslov／$\beta$、rank-parity、$\omega/q$-Gram、模數）**全數下降到
+特徵二的 symplectic 影子** $V=\mathbb{F}_2^{2n}$（SPEC_13 §1.3：symplectic 指紋是 CAID
+的數學本體，複數譜只是物理封套）；而連續量（cross-ratio 類）在 $\mathbb{F}_2$ 上退化
+（item 21 prior-art 勘定）——**沒有任何安全承載的內容只活在 $\mathbb{C}$ 側**。
+
+由此立兩軌，全章依此重寫：
+
+| 軌 | 域 | 承載 | 性質 |
+| :--- | :--- | :--- | :--- |
+| **驗證軌（proof-bearing）** | $\mathbb{F}_2$ 位元代數 | ZK 證明、身分/反女巫、型別/效果/收斂證書 | 精確、無定點數誤差、無 $O(n^3)$ 譜分解；約束皆為 GF(2) 線性代數＋二次式——**ZK-STARK 原生友善** |
+| **執行軌（navigation-only）** | $\mathbb{C}$ 幾何投影 | 引力路由、smell search、`phase_diff` 連續距離 | 啟發式、允許近似；**永不承載證明義務** |
+
+**工程推論**：電路內不再出現複數算術化、128-bit 定點數編碼、特徵值分解（舊 §6 的三大
+成本與誤差來源全數退場）。連續幾何的品質問題（數值精度、逼近誤差）自此屬執行軌 QoS，
+不屬證明義務。
+
+*誠實標記*：「不變量內容下降到特徵二」對阻礙階梯是定理級（rank-parity、$\beta$、
+$N_{\text{anti}}$ 系列；item 21 為 **reduction 非已封閉定理**，與 ORDER_00 §1.1 同樣標注）；
+「驗證軌足以承載全部工程證書」是以此為據的**架構裁決**，非定理。
+
 ## 1. 驗證架構：量子可信計算基 (Quantum TCB)
 
 我們將 `n/` 的形式化驗證分為三個維度，對應量子化架構。這種分層策略避免了複雜度爆炸，同時確保了從數學基礎到運行時實作的全鏈條可信度。
@@ -92,9 +115,10 @@
 - **歸納步驟**：若 $P(E_1)$ 與 $P(E_2)$ 成立，則 $P(eml(E_1, E_2))$ 成立
 
 **應用範例**：
-- 證明所有 EML 表達式在複數域 $\mathbb{C}$ 上良好定義（除奇異點外）
-- 證明數值精度傳播的誤差上界
-- 驗證 EML 樹至 CAID 的規範化映射之決定論
+- 證明所有 EML 表達式在複數域 $\mathbb{C}$ 上良好定義（除奇異點外）——Layer 0 元數學，
+  屬 Lean 證明對象，與 ZK 電路無涉
+- 數值精度傳播的誤差上界——**執行軌 QoS**（§0），不再是證明義務
+- 驗證 EML 樹至 CAID 的規範化映射之決定論（bn_serial 位元流＝驗證軌對象）
 
 **證明工具**：
 - **Lean 4**：利用其歸納型別系統直接建模 EML 文法
@@ -166,166 +190,137 @@ Layer 0 數學核心（正交模格公設、EML 算子定義）被視為**永久
 
 ### 5.2 零知識語義驗證 (ZK-Semantic Verification)
 
-未來，我們計劃整合 **ZK-STARK** 技術：
-*   **隱私保護驗證**：允許證明者證明「我擁有一個滿足型別 $T$ 的值」，而無需透露該值的具體內容。
-*   **計算壓縮**：將長時間的 Lattice 收斂過程壓縮為簡潔的證明，讓輕量級客戶端只需驗證 CAID 與其附帶的 ZK 證明，無需重新執行整個收斂過程。
-*   **跨鏈語義橋**：使 `n/` 的內容定址宇宙能與其他區塊鏈或分散式系統進行語義互操作，同時保持 CAID 的完整性。
+ZK-STARK 整合**全數落在驗證軌（§0）**：證明對象是 $\mathbb{F}_2$ 側資料
+（$\omega/q$-Gram、bn_serial 位元流、CAID 摘要鏈），不是複數投影。
+*   **隱私保護驗證**：證明「我擁有一個滿足型別 $T$ 的值」而不透露值——型別約束
+    在位元流上判定，電路為位元代數。
+*   **計算壓縮**：將 Lattice 收斂過程壓縮為簡潔證明；輕客戶端驗 CAID＋證明即可，
+    無需重放收斂。
+*   **跨鏈語義橋**：CAID 宇宙與其他分散式系統的語義互操作。
+*   **身分/反女巫**（§6）：symplectic 指紋一致性證明——這是驗證軌的旗艦電路。
 
 ---
 
 ## 6. GPP STARK 電路設計 (Geometric Probability Proofs)
 
-**GPP (Geometric Probability Proof)** 是防禦 **[SPEC_15](./SPEC_15_Anti_Patterns.md)** §7 定義的譜女巫攻擊的核心機制。本節定義 GPP 的具體 STARK 算術化電路設計。
+**GPP** 是防禦 **[SPEC_15](./SPEC_15_Anti_Patterns.md)** §7 譜女巫攻擊的核心機制。
+本節電路自 **2026-07-11 起全面改為 $\mathbb{F}_2$ 辛影子電路**（§0 兩軌原則）：證明
+對象從「複數投影算子的譜」改為「CAID 的數學本體＝$\omega/q$-Gram」（SPEC_13 §1.3）。
+舊版複數電路（定點數雙軌編碼、特徵值分解見證）全數退場，存檔於 git 歷史。
 
 ### 6.1 證明目標
 
-證明者聲稱：「我持有一個子空間投影算子 $P$，其譜特徵為 $S$，且質量 $m = \text{Tr}(P)$」。
+證明者聲稱：「我持有子空間資料 $W\subseteq\mathbb{F}_2^{2n}$（基底 $x_1\ldots x_k$）
+與 quadratic refinement $q$，其 **$\omega/q$-Gram 與公開承諾的 symplectic 指紋一致**」。
 
-驗證者無需下載完整投影算子，只需驗證一個簡潔的 STARK 證明即可確認：
-1.  $P$ 是合法的投影算子（$P^2 = P$，$P^\dagger = P$）。
-2.  $P$ 的跡確實等於聲稱的 $m$。
-3.  $P$ 的譜特徵確實匹配承諾的 $S$。
+驗證者只需驗 STARK 證明即可確認：
+1.  見證是合法的 $\mathbb{F}_2$ 向量資料（booleanity）。
+2.  $\text{Gram}_\omega[i][j] = \omega(x_i, x_j)$ 逐項正確（交換性資料）。
+3.  $q$ 滿足 quadratic refinement 定律 $q(x\oplus y)=q(x)+q(y)+\omega(x,y)$（抽樣驗證）。
+4.  指紋承諾 $= \text{Hash}(\text{Gram}_\omega \,\|\, q)$。
 
-### 6.2 算術化電路 (Arithmetic Circuit)
+**質量退位**：舊版的 $m=\text{Tr}(P)$ 譜質量證明**退出證明範圍**——質量/引力自此為
+執行軌路由啟發值（§6.6），不承載安全性。女巫防禦改由 (a) 本節指紋一致性證明 ＋
+(b) 外部物理錨點（ORDER_00 §1.1；框架內部不存在 genuine $H^4$ 障礙——item 21
+reduction，誠實標記同彼處）承擔。
 
-將投影算子的驗證轉化為有限域 $\mathbb{F}_p$ 上的多項式約束：
+### 6.2 算術化電路（$\mathbb{F}_2$ 位元代數）
 
 ```
-Circuit GPP_Verify {
+Circuit GPP_Verify_F2 {
     ;; 公開輸入 (Public Inputs)
-    pub spectrum_commitment: Field[N],  ;; 譜特徵的 Merkle 根
-    pub claimed_mass:        Field,      ;; 聲稱的質量 m
-    
+    pub fingerprint_commitment: Digest,   ;; Hash(Gram_ω ‖ q)
+    pub n: usize, k: usize,               ;; 環境維度 2n、子空間秩 k
+
     ;; 私有見證 (Private Witness)
-    wit projection_matrix:   Field[D][D], ;; 投影算子 P (D×D 矩陣)
-    wit eigenvalues:         Field[D],    ;; 特徵值列表 (0 或 1)
-    wit eigenvectors:        Field[D][D], ;; 特徵向量基底
-    
-    ;; 約束 1: P^2 = P (冪等性)
-    constraint idempotent: {
-        forall i, j in 0..D-1:
-            sum_k(P[i][k] * P[k][j]) == P[i][j]
-    }
-    
-    ;; 約束 2: P 對稱 (自伴性，實數域上等價於厄米性)
-    constraint hermitian: {
-        forall i, j in 0..D-1:
-            P[i][j] == P[j][i]
-    }
-    
-    ;; 約束 3: 特徵值為 0 或 1
-    constraint binary_eigenvalues: {
-        forall i in 0..D-1:
-            eigenvalues[i] * (eigenvalues[i] - 1) == 0
-    }
-    
-    ;; 約束 4: 跡的計算正確
-    constraint trace_correct: {
-        sum_i(P[i][i]) == claimed_mass
-    }
-    
-    ;; 約束 5: 譜特徵承諾正確 (Merkle 驗證)
-    constraint spectrum_commitment_valid: {
-        merkle_root(eigenvalues) == spectrum_commitment
-    }
+    wit X: Bit[k][2n],                    ;; 基底向量（每列一個 x_i）
+    wit Q: Bit[k],                        ;; q(x_i) 值
+    wit G: Bit[k][k],                     ;; 宣稱的 Gram_ω
+
+    ;; 約束 1: booleanity（大素域嵌入時才需要；二元域原生免費）
+    constraint boolean: forall b in X∪Q∪G: b·(b−1) == 0
+
+    ;; 約束 2: ω 正確——標準 symplectic 形式
+    ;;   ω(x,y) = Σ_{t<n} ( x[2t]·y[2t+1] + x[2t+1]·y[2t] )   (mod 2)
+    constraint gram_omega: forall i≤j: G[i][j] == ω(X[i], X[j]) ∧ G[i][j] == G[j][i]
+    ;; char 2 之下 ω 對稱＝反對稱；對角恆 0（alternating）
+    constraint alternating: forall i: G[i][i] == 0
+
+    ;; 約束 3: quadratic refinement 定律（Fiat–Shamir 抽樣 r 輪）
+    ;;   對隨機 S ⊆ {1..k}: q(⊕_{i∈S} x_i) == Σ_{i∈S} Q[i] + Σ_{i<j∈S} G[i][j]
+    constraint q_law: sampled r rounds
+
+    ;; 約束 4: 承諾正確
+    constraint commitment: Hash(G ‖ Q) == fingerprint_commitment
 }
 ```
 
-### 6.2.1 複數運算的算術化 (Complex Arithmetic Arithmetization)
+全部約束為 GF(2) 上**次數 ≤ 2** 的多項式——沒有定點數、沒有特徵值、沒有譜列表的
+Merkle 化。`q_law` 抽樣輪數 $r$ 由 soundness 目標決定（每輪逃逸機率 $\le 1/2$）。
 
-STARK 電路運作在有限域 $\mathbb{F}_p$（如 Goldilocks 素數 $p = 2^{64} - 2^{32} + 1$）上，然而投影算子 $P$ 及其特徵值是**複數 (Complex Numbers)** $\mathbb{C}$。
+### 6.3 域的選擇（取代舊「複數算術化」節）
 
-為了解決這個語義裂隙，GPP 採用**實部/虛部雙軌定點數表示 (Dual-Track Fixed-Point Representation)**：
-
-#### 複數編碼
-
-| 數學物件 | 編碼方式 | $\mathbb{F}_p$ 表示 |
+| 方案 | 說明 | 適用 |
 | :--- | :--- | :--- |
-| 複數 $z = a + bi$ | 分解為 $(a, b)$ | `(Field(a_real), Field(b_imag))` |
-| 矩陣元素 $P_{ij}$ | $P_{ij} = \alpha_{ij} + \beta_{ij} i$ | 獨立儲存實部與虛部 |
+| **binary-tower STARK**（建議） | 位元原生（$\mathbb{F}_{2^k}$ 塔式域）：XOR＝加法、booleanity 免費 | 首選；約束次數最低 |
+| 大素域位元嵌入 | Goldilocks 等；每位元付 $b(b-1)=0$ 約束 | 過渡方案（工具鏈成熟度考量） |
 
-#### 電路約束擴展
+兩案皆無精度議題：$\mathbb{F}_2$ 資料在任何域中都精確表示。舊版的 128-bit 定點數
+雙軌編碼**廢止**——其唯一用途是逼近 $\mathbb{C}$，而 $\mathbb{C}$ 已退出證明範圍（§0）。
 
-將複數運算轉換為實部/虛部運算：
+### 6.4 STARK 參數（$\mathbb{F}_2$ 電路）
 
-1. **冪等性** ($P^2 = P$)：
-   - 實部約束: $(P_{real}^2 - P_{imag}^2) = P_{real}$
-   - 虛部約束: $(2 \cdot P_{real} \cdot P_{imag}) = P_{imag}$
-
-2. **自伴性** ($P^\dagger = P$，即共軛轉置等於自身)：
-   - 實部對稱: $P_{ij}^{real} = P_{ji}^{real}$
-   - 虛部反對稱: $P_{ij}^{imag} = -P_{ji}^{imag}$
-
-3. **特徵值** (0 或 1)：
-   - 複數特徵值實際上僅有 0 或 1（投影算子特徵值必須實數）
-   - 虛部約束: $\forall i, eigenvalues[i]_{imag} = 0$
-   - 實部約束: $\lambda_{real} \cdot (\lambda_{real} - 1) = 0$
-
-4. **跡的計算**：
-   - 僅需實部求和: $m = \sum_{i} P_{ii}^{real}$
-   - 虛部跡必須為 0
-
-#### 定點數精度建議
-
-採用 **128-bit 定點數表示**（見 **[REAL_03](./REAL_03_CAID_Protocol.md)** §3.1 的精度規範）：
-- 高 64-bit: 整數部分
-- 低 64-bit: 小數部分（精度 $2^{-64}$）
-- 範圍: $[-2^{63}, 2^{63} - 2^{-64}]$
-
-此設計確保了在有限域上對連續幾何語義的精確逼近。
-
----
-
-### 6.3 STARK 參數建議
-
-| 參數 | 建議值 | 說明 |
+| 參數 | 建議值 | 對照舊版（複數電路） |
 | :--- | :--- | :--- |
-| **Field** | $\mathbb{F}_p$, $p = 2^{64} - 2^{32} + 1$ | Goldilocks 素數，64-bit 架構友好 |
-| **D (維度)** | 256 | 投影算子矩陣維度（對應 8-bit 譜解析度） |
-| **Security Level** | 128 bits | 抗碰撞與偽造強度 |
-| **Proof Size** | ~50-100 KB | 壓縮後的證明大小 |
-| **Verification Time** | ~10-50 ms | 客戶端驗證時間 |
+| 見證規模 | $k\cdot 2n + k + k^2$ bits（$n\approx 3$–$8$、$k\le 2n$ ⇒ **數百 bit 級**） | $D{=}256$ 複矩陣 ＝ $2\times256^2$ 個 128-bit 定點數（~16 MB 級） |
+| 約束次數 | $\le 2$（GF(2) 二次式） | 矩陣冪等性＝高次 |
+| Security Level | 128 bits | 同 |
+| Proof Size | ~10–50 KB | ~50–100 KB |
+| Verification Time | ~1–10 ms | ~10–50 ms |
 
-### 6.4 證明生成流程
+*（數量級估計；binary-field STARK 工具鏈選定後校準。）*
+
+### 6.5 證明生成流程
 
 ```
 Prover (節點):
-    1. 載入本地投影算子 P
-    2. 計算 P 的特徵值分解 (eigenvalues, eigenvectors)
-    3. 計算譜承諾: commitment = MerkleRoot(eigenvalues)
-    4. 建構 GPP_Verify 電路的 witness
-    5. 執行 STARK 證明生成算法
-    6. 輸出: (proof, commitment, mass)
+    1. 取子空間基底 X ⊆ F₂^{2n} 與 q 值（直接來自 stabilizer 資料——無須分解任何東西）
+    2. 計算 Gram_ω（O(k²·n) 位元運算）與承諾 Hash(G ‖ Q)
+    3. 建構 witness、執行 STARK 證明生成
+    4. 輸出: (proof, fingerprint_commitment)
 
 Verifier (查詢節點):
-    1. 接收 (proof, commitment, mass)
-    2. 執行 STARK 驗證算法
-    3. 若驗證通過，將 mass 納入引力路由計算
+    1. 驗 STARK（毫秒級）
+    2. 通過 ⇒ 接受該節點的「身分幾何」；質量聲稱另按 §6.6 處理（不入證明）
 ```
 
-### 6.5 與 REAL_02 的協作
+### 6.6 與執行軌的介面（含 REAL_02 協作）
 
-*   **[REAL_02](./REAL_02_Ouroboros_Protocols.md)** §7 定義的 GPP 驗證傳輸層義務，其 Level 2 驗證即為本節定義的 STARK 驗證。
-*   為了相容資源受限設備，證明生成可由「幾何預言機 (Geometric Oracle)」代為執行（見 **[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)** §6）。
+*   **[REAL_02](./REAL_02_Ouroboros_Protocols.md)** §7 的 GPP 驗證傳輸層義務，其 Level 2
+    驗證即本節 $\mathbb{F}_2$ STARK。
+*   **引力/質量（執行軌）**：路由所需的質量聲稱**不再附譜證明**——它是執行軌啟發值。
+    節點可謊報質量，但謊報只影響路由優先序（smell search 的連續重力），**不影響身分
+    與內容真實性**（由指紋證明＋CAID 內容定址＋外部錨點把守）。惡意路由誘導的防禦
+    維持 SPEC_15 反模式機制（黑名單、tiebreaker、hop 預算——引擎已實作）。
+*   **封套一致性**：CAID 物理封套暫為複數譜（REAL_03），數學本體為 $\omega/q$
+    （SPEC_13 §1.3）；兩者的綁定見 §6.7 問題 1。
+*   資源受限設備仍可由幾何預言機代產證明（**[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)** §6）
+    ——$\mathbb{F}_2$ 電路的見證僅數百 bit，此需求已大幅下降。
 
-### 6.6 開放問題
+### 6.7 開放問題（兩軌撤退後重排）
 
-以下問題需要進一步研究才能進入 Phase 4 實作。為每個問題附上初步的潛在解決方向：
+1.  **封套 ↔ 本體綁定**：複數譜封套（REAL_03 §3.2）與 $\omega/q$ 指紋是同一物的兩層
+    （SPEC_13 §1.3），但物理格式尚未攜帶 $\omega/q$ 摘要——「封套沒有說謊」目前缺
+    電路。**方向**：fmt v3 時將 symplectic 指紋納入 CAID 物理封套（雙承諾），或提供
+    封套→本體的推導電路。此即 CAID v2 symplectic fingerprint 工程（linter Tier 2 的
+    同一前提，SPEC_13 §1.3）的規格接口。
+2.  **聚合證明**：遞迴 STARK 將多個 GPP 聚成單證明（證明樹／批次承諾）。$\mathbb{F}_2$
+    電路使葉證明縮小，聚合壓力較舊版已低。
+3.  **質量退位的經濟面**：質量不再可證後，女巫成本模型從「偽造譜」變為「偽造身分
+    幾何＋外部錨點」；SPEC_15 側需重新量化攻擊成本（規格 TODO，非電路問題）。
 
-1.  **高效特徵值分解**：如何在保持零知識的前提下，高效證明投影算子的特徵值分解正確？
-    *   **潛在方向：非決定性見證 (Nondeterministic Witness)**
-        由證明者在電路外算好特徵值 $(\lambda_i, \mathbf{v}_i)$，電路內只需驗證 $P\mathbf{v}_i = \lambda_i \mathbf{v}_i$。這將複雜度從 $O(n^3)$ 的分解降至 $O(n^2)$ 的矩陣-向量乘法。
-    *   **驗證隨機抽樣**：驗證者挑選 $k$ 個隨機座標驗證約束，確保證明者沒有偽造整個特徵值集合。
-
-2.  **動態維度**：如何處理不同維度的投影算子（固定 D=256 可能不適用所有場景）？
-    *   **潛在方向：分箱策略 (Binning)**
-        定義梯級化的固定維度（16, 64, 256, 1024...）。較小的子空間用零填充至最近的梯級，較大的拆解為多個區塊。
-    *   **電路組合技術**：使用遞迴或聚合 STARK，將不同維度的證明組合成單一證明。
-
-3.  **聚合證明**：能否使用遞迴 STARK 將多個 GPP 證明聚合為單一證明，降低驗證開銷？
-    *   **潛在方向：遞迴證明樹**
-        每個 CAID 的 GPP 是葉節點。中間節點的證明驗證其所有子節點的證明。根節點的證明代表整個子空間樹。
-    *   **批次驗證**：當節點一次廣告多個服務時，使用 KZG-based 多項式承諾進行批次驗證，而非逐個檢查。
+*（舊問題 1「高效特徵值分解」**隨兩軌撤退整題消滅**——$\mathbb{F}_2$ 電路無譜分解；
+舊問題 2「動態維度」降級為參數選擇——$k$、$n$ 是小整數，分箱不再必要。）*
 
 ---
 
@@ -338,7 +333,7 @@ Verifier (查詢節點):
 | **Phase 1** | Layer 0 核心公設 | Lean 4 | 6 個月 |
 | **Phase 2** | 投影層正確性 | Isabelle/HOL | 12 個月 |
 | **Phase 3** | 運行時狀態機 | TLA+ | 6 個月 |
-| **Phase 4** | 整合與 ZK 化 | 自定義 | 12 個月 |
+| **Phase 4** | 整合與 ZK 化（$\mathbb{F}_2$ 電路，§6） | binary-field STARK | 12 個月 → **預期下修**（兩軌撤退消滅了複數算術化與譜分解兩大工程，§6.4 對照表） |
 
 *註：時間預估為單一全職研究團隊的概略估計，實際進度可能因發現新的理論挑戰而調整。*
 
@@ -350,9 +345,11 @@ Verifier (查詢節點):
 | :--- | :--- |
 | **[SPEC_01](./SPEC_01_Foundation_and_Lattice.md)** | 正交模格是驗證的基礎，定義了 Layer 0 的公設。 |
 | **[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)** | 譜單調性是不動點計算與發散偵測的理論基礎。 |
-| **[SPEC_15](./SPEC_15_Anti_Patterns.md)** | GPP 證明是防禦 OODP 安全反模式的核心機制。 |
+| **[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md)** §1.3 | **驗證軌的錨**：CAID 數學本體＝$\omega/q$-Gram（char-2 影子）；§6 電路的證明對象。 |
+| **[SPEC_15](./SPEC_15_Anti_Patterns.md)** | GPP 證明是防禦 OODP 安全反模式的核心機制；質量退位後的攻擊成本重估＝該章 TODO。 |
 | **[REAL_02](./REAL_02_Ouroboros_Protocols.md)** | GPP 驗證的傳輸層義務與信任分級。 |
-| **[REAL_03](./REAL_03_CAID_Protocol.md)** | 討論 CAID 譜指紋的物理編碼與可驗證性。 |
+| **[REAL_03](./REAL_03_CAID_Protocol.md)** | CAID 複數譜**封套**的物理編碼（執行軌）；封套↔本體綁定見 §6.7。 |
 | **[APP_04](./APP_04_Mathematical_Foundations.md)** | Solèr 定理與 Bohrification 的詳細數學背景。 |
+| **[APP_07](./APP_07_The_Obstruction_Ladder.md)** §4 | $H^4$／女巫層：內部無 genuine 障礙 ⟹ 外部錨點必要性（§6.1 質量退位的階梯依據）。 |
 | **[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)** | GPP 證明的應用場景與幾何預言機協作。 |
 | **[GUIDE_02](./GUIDE_02_Engine_Optimization.md)** | 啟發式發散偵測的實作指南與效能優化。

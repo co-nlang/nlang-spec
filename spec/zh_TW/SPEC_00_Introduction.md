@@ -4,7 +4,7 @@
 
 ## 1. 核心哲學：觀測、收斂與語義作業系統
 
-`n/` (n-slash 或 n-lang) 是一個**以觀測為中心的語義作業系統 (Observation-Centric Semantic OS)**。
+`n/` (n-slash 或 n-lang) 是一個**以觀測為中心的語義作業系統 (Observation-Centric Semantic OS)**，建立在宣告式的幾何格論（Lattice-based）核心之上。
 
 不同於傳統語言將程式視為「指令序列」，在 `n/` 中：**程式碼是子空間，執行是觀測，真理是收斂**。
 
@@ -32,7 +32,7 @@
 
 ### 1.3 語義作業系統
 
-`n/` 不僅是語言，更是一個**語義作業系統的核心**：
+`n/` 不僅是程式語言，更是一個**語義作業系統的核心**：
 
 *   **OODP/LADD 作為預設**：分散式發現不是外掛，是內建。你的程式天然活在全域邏輯格中。
 *   **Commit 作為版本**：沒有「儲存檔案」，只有「固化觀測」。每次 Commit 是宇宙狀態的離散快照。
@@ -48,7 +48,7 @@
 **Ouroboros** 是 `n/` 語言體系的總稱。為了確保規格的嚴謹性，本法典在不同維度下精確使用以下指稱：
 
 *   **銜尾蛇模型 (Ouroboros Model)**：指 `n/` 的核心理論，包含格論模型、三位一體同構與自我演化機制。
-*   **銜尾蛇引擎 (Ouroboros Engine)**：指實作上述模型的計算核心（如官方實作 `oo`）。它負責處理增量收斂、內容存儲與視界管理。
+*   **銜尾蛇引擎 (Ouroboros Engine)**：指實作上述模型的計算核心（如官方實作 `oo`）。它負責處理增量收斂、內容存儲與視界管理等，也實作銜尾蛇協定。
 *   **銜尾蛇協定 (Ouroboros Protocol)**：指引擎間進行通訊與發現（OODP）的標準規範。
 *   **銜尾蛇符號 (Ouroboros Symbol)**：專指元資訊前綴 `%`，象徵系統的自我意識與自省。
 
@@ -79,24 +79,25 @@
 *   **Layer 4 — 網路與發現層**：全球共識（CAID、發現協定、OODP）。
 *   **Layer 5 — 社會與信任層**：人類協作（別名映射、信任鏈）。
 
-### 4.2 上同調障礙矩陣（參考性）
+### 4.2 上同調障礙矩陣
 
 六層架構（$L_0$–$L_5$）和譜序列頁（$E_1$–$E_\infty$）是兩個獨立的分類軸。
 每個 $L_r$ 層在每個 $E_r$ 頁都有一個投影，形成以下二維矩陣：
 
 | Layer \ Page | $E_1$（局部分配） | $E_2$（$H^1$ 相位） | $E_3$（$d_2$ / $H^2$） | $E_\infty$（完全收斂） |
 |---|---|---|---|---|
-| **L0 數學** | `&` meet / `\|` join | 非分配性（$H^1$ obst） | KS 定理（$H^2$ obst） | Atom / $\bot$ |
+| **L0 數學** | `&` meet / `\|` join | 非分配性（$H^1$） | KS 定理（$H^2$） | Atom / $\bot$ |
 | **L1 語言** | BNF 文法 | Type（子空間投影） | Cocoon `{{}}` 密封性 | CAID 格式 |
 | **L2 標準庫** | StdLib 原語 | `#blur` 局部截面 | 分支（`%cause` 保留）| `#exact` |
-| **L3 執行** | `%fuel` 資源邊界 | 計算視界（$d_3$ obst） | 16-cell 關聯子 | 完全收斂 |
-| **L4 網路** | LADD 引力路由 | DHT / FLP 修復（$H^2$） | BFT（$H^3$ obst） | 全域共識 |
-| **L5 信任** | ORDER 投票 | 治理矛盾 | 女巫抵抗（$H^4$ obst） | 最終權威 |
+| **L3 執行** | `%fuel` 資源邊界 | 視界邊界 | 16-cell 關聯子 | 完全收斂 |
+| **L4 網路** | LADD 引力路由 | 網路分區 / CAP（$H^1$） | FLP 不可能性（$H^2$） | 全域共識 |
+| **L5 信任** | ORDER 投票 | 信任相位差 | 治理矛盾 | 最終權威 |
 
 **意義：**
 - 每個工程決策同時指定它位於哪個 $L_r$ 層和哪個 $E_r$ 頁。
 - 同一 $H^2$ obstruction 在 L2 表現為型別衝突，在 L4 表現為 FLP 不可能性——它們的代數形式相同但物理語境不同。
-- 上同調障礙（$H^1$–$H^4$）的完整定義和證明見系列論文。
+- 本表（欄＝degree）只展開到 $E_3$／$H^2$。各層更深的特徵障礙——L3 計算視界 / 16-cell（$H^3$）、L4 拜占庭 BFT（$H^3$）、L5 女巫攻擊（$H^4$）——出現在 $E_4$／$E_5$ 頁；完整的 CAP / FLP / 拜占庭 / 女巫 $=H^1$/$H^2$/$H^3$/$H^4$ 分散式階梯見 **[APP_07](./APP_07_The_Obstruction_Ladder.md) §4**。
+- 上同調障礙（$H^1$–$H^4$）的完整定義和證明見 **[系列論文](https://github.com/co-nlang/research)** 。$H^2$ 障礙（KS 互文性）的無枚舉代數證明見 **[Papers XVI–XVII](https://github.com/co-nlang/research)** ；$H^3$ 障礙於 $n=4$ 消滅、$n \geq 5$ 開啟，並截斷於 $H^3$（不延伸至 $H^4$）現已為定理，見 **[Papers XX–XXII](https://github.com/co-nlang/research)**。
 
 ### 4.3 規格根架構 (@n_spec)
 
@@ -105,7 +106,7 @@
 ```nlang
 @n_spec: {
     %kind: #type
-    version: @str & regex r"v\d+\.\d+\.\d+(-[a-z0-9.]+)?$"
+    version: r"v\d+\.\d+\.\d+(-[a-z0-9.]+)?$"
 
     ;; 規格分層
     layers: {
@@ -125,18 +126,20 @@
 }
 ```
 
-### 4.4 規格與格式版本映射 (Version Mapping)
+### 4.4 規格演化與格式版本映射 (Version Mapping)
 為了確保內容定址 (CAID) 的穩定性，語言版本與物理格式版本的映射關係如下：
 
 | 語言版本 (Spec) | 預設格式版本 (fmt) | 支援範圍 | 變更說明 |
 | :--- | :--- | :---: | :--- |
 | **`v0.1.0-genesis`** | **`v1`** | `v1` | 物理創世 |
 | **`v0.1.0-alpha.1`** | **`v1`** | `v1` | 引入 LADD 概念 |
-| **`v0.1.0-alpha.2`** (目前) | **`v2`** | `v1`~`v2` | 引入 CAID-v2 |
-| **`v1.0.0`** (預計) | **`v2`** | `v1`~`v2` |  |
+| **`v0.1.0-alpha.2`** | **`v2`** | `v1`~`v2` | 引入 CAID v2 |
+| **`v0.1.0-alpha.3`** | **`v2`** | `v1`~`v2` | 阻礙階梯定理, COSMOLOGY 重構 |
+| **`v0.2.0`** (目前, 分水嶺) | **`v2`**（凍結） | `v1`~`v2` | 規格穩定宣告：SYNTAX_01–12 定稿、`$` P1–P5、惰性/增量收斂語義、快照與 Range 裁決。Changelog 自本版起筆（`spec/CHANGELOG.md`）；版號政策見 `meta/VERSIONING.md` |
+| **`v1.0.0`** (預計) | **`v2`** | `v1`~`v2` | Epoch 0（ORDER_00 §5） |
 
-
-*註：任何對規範化演算法的修改均會導致 `fmt_version` 提升。詳見 **[REAL_03](./REAL_03_CAID_Protocol.md)**。*
+*註 1：任何對規範化演算法的修改均會導致 `fmt_version` 提升。詳見 **[REAL_03](./REAL_03_CAID_Protocol.md)**。*
+*註 2（誠實聲明）：`fmt v2` 的位元佈局在穩定化期間（alpha.2 → v0.2.0）曾有未版本化變更（值正規化 `Atom(Top/Bottom)`、thunk 序列化之 canonical 列印正規化、`TAG_RANGE` 新增），豁免依據＝無既存宇宙依賴。**自 v0.2.0 起 v2 凍結**：任何影響 CAID 位元的變更一律提升 `fmt_version` 並走 SPEC_10 `#refine` 遷移。*
 
 ### 4.5 規範體系與法律效力 (Hierarchy of Authority)
 
@@ -220,7 +223,7 @@
 - **[APP_02: 形式化驗證](./APP_02_Formal_Verification.md)**
 - **[APP_03: 範式比較與遷移](./APP_03_Paradigm_Comparison.md)**
 - **[APP_04: 數學基礎](./APP_04_Mathematical_Foundations.md)**
-- **[APP_05: 全球邏輯格與 LADD](./APP_05_LADD_Global_Logic_Lattice.md)**
+- **[APP_05: 全域邏輯格與 LADD](./APP_05_LADD_Global_Logic_Lattice.md)**
 - **[APP_06: 語義大一統理論](./APP_06_Unified_Field_Theory.md)**
 - **[GUIDE_01: 排版風格指南](./GUIDE_01_Style_and_Formatting.md)**
 - **[GUIDE_02: 引擎優化指南](./GUIDE_02_Engine_Optimization.md)**

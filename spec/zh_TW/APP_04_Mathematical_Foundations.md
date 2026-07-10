@@ -29,7 +29,7 @@
 
 ## 2. 認識論：Bohrification 與 Sheaf Topos
 
-根據 **Kochen-Specker 定理**，不存在一個「上帝視角」能同時賦予所有量子觀測量確定的真值。因此，`n/` 的觀測模型採用了 **Bohrification** 框架。
+根據 **Kochen-Specker 定理**，不存在一個「上帝視角」能同時賦予所有量子觀測量確定的真值。因此，`n/` 的觀測模型採用了 **Bohrification** 框架。KS 障礙的無枚舉純代數證明（$\prod_C W_C = -I$，對所有 12,096 個 Mermin 五角星形（pentagram）成立）見 Papers XVI–XVII。
 
 ### 2.1 交換視角偏序集
 定義 $\mathcal{C}(\mathcal{A})$ 為非交換代數 $\mathcal{A}$ 的所有交換子代數構成的偏序集。
@@ -88,14 +88,28 @@ $$N(\mathcal{U})_n = \{ (C_0, C_1, \dots, C_n) \mid C_0 \cap C_1 \cap \cdots \ca
 
 ---
 
-## 5. 術語對照表：直觀 ↔ 量子 ↔ 數學
+## 5. 特徵二影子：可證性的居所（指針節）
+
+Papers VII–XXII 之後，本章的圖景需補上一層：上述 Hilbert 空間圖景（Solèr 本體、Bohrification 觀測、譜定址）是**物理封套**；而一切**證明義務**——可被第三方機器驗證的不變量內容——降到**特徵二辛幾何影子**裡：$\mathbb{F}_2$ 上的 symplectic 形式 $\omega$ 與其二次精化 $q$（Gram 指紋）。影子層沒有定點數誤差、沒有 $O(n^3)$ 譜分解，只有位元代數，故 ZK 電路住在這裡。
+
+本節僅為指針，不重複闡述（一家一戶原則）：
+
+*   **本體/封套裁決**：**[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md) §1.3**（$\omega/q$-Gram = 數學本體；複數譜 = 物理封套）。
+*   **兩軌原則與 ZK 電路**：**[APP_02](./APP_02_Formal_Verification.md) §0、§6**（驗證軌 $\mathbb{F}_2$ / 執行軌 $\mathbb{C}$；`GPP_Verify_F2` 電路）。
+*   **數學出處**：**[APP_07](./APP_07_The_Obstruction_Ladder.md)**（工程辭典）與 **Paper N**（規格↔論文系列橋接）；嚴格證明見 Papers VII–XXII。
+
+本章 §1–§4 不因此失效：$\mathbb{C}$ 投影仍是執行與導航（引力、氣味、熱帶加速）的幾何居所——只是它不再承擔證明義務。
+
+---
+
+## 6. 術語對照表：直觀 ↔ 量子 ↔ 數學
 
 本表建立 `n/` 語言的三層表達對應關係：
 
 | **直觀用語**<br>(使用者視角) | **量子/格論術語**<br>(規格書用語) | **數學對應**<br>(嚴謹定義) |
 | :--- | :--- | :--- |
 | **萬有集合** `_` | Top 元素 | $\top \in \mathcal{L}$ |
-| **矛盾/衝突** `_|_` | Bottom 元素 | $\bot \in \mathcal{L}$ (零維子空間) |
+| **矛盾/衝突** `_\|_` | Bottom 元素 | $\bot \in \mathcal{L}$ (零維子空間) |
 | **合併** `&` | Meet / 交集 | $A \sqcap B$ / $\mathcal{S}_A \cap \mathcal{S}_B$ |
 | **選擇** `\|` | Join / 聯集 | $A \sqcup B$ / $\mathcal{S}_A \oplus \mathcal{S}_B$ |
 | **否定** `!` | 正交補 | $!A = A^\perp$ / $P_{!A} = I - P_A$ |
@@ -110,7 +124,7 @@ $$N(\mathcal{U})_n = \{ (C_0, C_1, \dots, C_n) \mid C_0 \cap C_1 \cap \cdots \ca
 | **態射** `/func` | 么正變換 | $U: \mathcal{H} \to \mathcal{H}$, $U^*U = I$ |
 | **效果** `#io` | 糾纏 | 與環境子空間的張量積 |
 
-### 5.1 符號層級對應
+### 6.1 符號層級對應
 
 | 符號 | 名稱 | 語義 |
 | :--- | :--- | :--- |
@@ -123,7 +137,7 @@ $$N(\mathcal{U})_n = \{ (C_0, C_1, \dots, C_n) \mid C_0 \cap C_1 \cap \cdots \ca
 | `...` | 展開/解封 | 移除封閉邊界的操作 |
 | `<...>` | 結構態 | 幾何本體的中立觀測 |
 
-### 5.2 概念層級對應
+### 6.2 概念層級對應
 
 **Data (存有)**
 - 直觀：「這裡有個值」
@@ -142,7 +156,7 @@ $$N(\mathcal{U})_n = \{ (C_0, C_1, \dots, C_n) \mid C_0 \cap C_1 \cap \cdots \ca
 
 ---
 
-## 6. 與其他章節的關係
+## 7. 與其他章節的關係
 
 | 數學概念 | 規格章節 | 應用場景 |
 | :--- | :--- | :--- |
@@ -151,10 +165,11 @@ $$N(\mathcal{U})_n = \{ (C_0, C_1, \dots, C_n) \mid C_0 \cap C_1 \cap \cdots \ca
 | **EML 算子** | **[SPEC_09](./SPEC_09_Standard_Library.md)** | 基於複數域 $\mathbb{C}$ 的初等函數自舉。 |
 | **投影算子 (Projection)** | **[REAL_03](./REAL_03_CAID_Protocol.md)** | **CAID** 的譜幾何指紋。 |
 | **熱帶幾何 (Tropical)** | **[GUIDE_02](./GUIDE_02_Engine_Optimization.md)** | 量子退相干極限下的搜尋加速。 |
+| **特徵二辛指紋 ($\mathbb{F}_2$ symplectic)** | **[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md) §1.3**、**[APP_02](./APP_02_Formal_Verification.md) §6** | 可證不變量的數學本體；ZK 驗證電路。 |
 
 ---
 
-## 7. 總結：Solèr 與 Bohrification 的銜尾蛇
+## 8. 總結：Solèr 與 Bohrification 的銜尾蛇
 *   **Solèr 提供了「本體」**：確保了幾何結構能映射至強大的 Hilbert 空間。
 *   **Bohrification 提供了「觀測」**：確保了有限觀測者能在非交換宇宙中獲得一致的經典視角。
 

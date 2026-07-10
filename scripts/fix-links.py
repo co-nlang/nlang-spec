@@ -48,9 +48,17 @@ def fix_bare_references(directory, spec_map):
                 new_content = new_content[:start] + link + new_content[end:]
         
         if new_content != content:
-            with open(filepath, 'w', encoding='utf-8') as f:
-                f.write(new_content)
-            print(f"[FIXED] Linked bare references in {filename}")
+            if WRITE:
+                with open(filepath, 'w', encoding='utf-8') as f:
+                    f.write(new_content)
+                print(f"[FIXED] Linked bare references in {filename}")
+            else:
+                print(f"[DRY-RUN] Would link bare references in {filename} (pass --write to apply)")
+
+import sys
+WRITE = "--write" in sys.argv  # 2026-07-11 safety fuse: this tool MUTATES spec files;
+                               # default is dry-run. It also cannot distinguish code
+                               # blocks/tables from prose — review its diff manually.
 
 if __name__ == "__main__":
     if not os.path.exists(SPEC_DIR):

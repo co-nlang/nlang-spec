@@ -134,7 +134,7 @@ L2 使用 **Kademlia XOR 路由**尋找物理節點。這是工程妥協——�
     services:   [@caid]    ;; 該節點可服務的子空間 CAID 列表
     capacity:   @int       ;; 當前負載容量（相對值）
     signature:  b""        ;; 節點簽名
-    ttl:        @int & < 16
+    ttl:        @int & ..15
 }}
 ```
 
@@ -228,9 +228,14 @@ L2 使用 **Kademlia XOR 路由**尋找物理節點。這是工程妥協——�
 
 為了防禦 **[SPEC_15](./SPEC_15_Anti_Patterns.md)** §7 定義的譜女巫攻擊與其他 LADD 層攻擊，節點必須在傳輸層實作 GPP (Geometric Probability Proof) 的基礎驗證。
 
+> **兩軌修訂（2026-07-11，APP_02 §0）**：GPP 的證明對象是**身分幾何**——節點持有的
+> 子空間之 $\omega/q$-Gram symplectic 指紋（$\mathbb{F}_2$ 電路，APP_02 §6）。
+> **質量（mass）退出證明範圍**：它是執行軌的路由啟發值，可聲稱、可謊報，謊報只
+> 影響路由優先序，不影響身分與內容真實性。
+
 ### 7.1 GPP 封包擴展
 
-當節點廣告其幾何質量 (Geometric Mass) 時，必須附帶可驗證的證明：
+當節點廣告其服務幾何時，必須附帶可驗證的身分幾何證明：
 
 ```nlang
 @ServiceAdvertisement: {{
@@ -238,16 +243,16 @@ L2 使用 **Kademlia XOR 路由**尋找物理節點。這是工程妥協——�
     services:   [@caid]
     capacity:   @int
 
-    ;; GPP 證明結構（參見 APP_05 §5）
+    ;; GPP 證明結構（電路見 APP_02 §6）
     gpp_proof: {{
-        spectrum_commitment: @hash  ;; 譜特徵的雜湊承諾
-        boundary_proof:      b""   ;; STARK 證明數據（壓縮後）
-        mass_evidence:       @float ;; 聲稱的幾何質量證據
-        timestamp:           @int    ;; Unix 時間戳，防止重放攻擊
+        fingerprint_commitment: @hash  ;; ω/q-Gram 指紋承諾（Hash(Gram_ω ‖ q)）
+        identity_proof:         b""   ;; F₂ STARK 證明數據（壓縮後）
+        timestamp:              @int   ;; Unix 時間戳，防止重放攻擊
     }}
 
+    mass_hint:  @float     ;; 幾何質量（執行軌啟發值，**不入證明**）
     signature:  b""        ;; 對上述結構的 Ed25519 簽名
-    ttl:        @int & < 16
+    ttl:        @int & ..15
 }}
 ```
 
@@ -257,16 +262,21 @@ L2 使用 **Kademlia XOR 路由**尋找物理節點。這是工程妥協——�
 
 1.  **簽名驗證**：驗證 `signature` 與 `node_id` 對應的公鑰匹配。
 2.  **時間驗證**：`timestamp` 與本地時間差異不得超過 **60 秒**。
-3.  **質量承諾驗證**：`mass_evidence` 必須與 `gpp_proof.spectrum_commitment` 數學一致（即 $m = \text{Tr}(P)$ 的聲稱必須與譜承諾對應）。
-4.  **STARK 驗證**（若引擎支援）：驗證 `boundary_proof` 證明節點確實持有對應子空間的投影算子。
+3.  **指紋承諾一致性**：`fingerprint_commitment` 必須與該節點宣告服務的 CAID
+    symplectic 刻畫（SPEC_13 §1.3）相容。
+4.  **STARK 驗證**（若引擎支援）：驗證 `identity_proof` 證明節點確實持有與承諾
+    指紋一致的 $\omega/q$ 子空間資料（APP_02 §6 電路）。
+
+`mass_hint` **不在驗證義務內**——引擎不得因質量聲稱與任何承諾「不一致」而拒收
+（沒有這種一致性可驗），只得將其作為路由權重輸入。
 
 ### 7.3 信任分級
 
 | 驗證層級 | 要求 | 信任權重 |
 | :--- | :--- | :--- |
 | **Level 0** | 僅簽名驗證 | 0.1 |
-| **Level 1** | 簽名 + 時間 + 質量承諾 | 0.5 |
-| **Level 2** | 完整 STARK 驗證 | 1.0 |
+| **Level 1** | 簽名 + 時間 + 指紋承諾一致性 | 0.5 |
+| **Level 2** | 完整 $\mathbb{F}_2$ STARK 驗證（APP_02 §6） | 1.0 |
 
 *   **預設行為**：引擎在資源受限時可退至 Level 1，但必須明確記錄降級事件。
 *   **高安全模式**：對關鍵路徑（如 `@Auth` 或 `@StandardLibrary` 查詢），引擎**必須**要求 Level 2 驗證。
@@ -275,8 +285,9 @@ L2 使用 **Kademlia XOR 路由**尋找物理節點。這是工程妥協——�
 
 GPP 驗證是 LADD L3+ 層優化的**基礎依賴**：
 
-*   **[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)** §4.1 的引力路由算法使用 `node.gbb.mass` 計算轉發權重。
-*   **安全約束**：若節點的 GPP 驗證失敗，其 `mass` 必須被視為 **0**，該節點不得被納入測地線路由計算。
+*   **[APP_05](./APP_05_LADD_Global_Logic_Lattice.md)** §4.1 的引力路由算法使用 `mass_hint` 計算轉發權重（執行軌）。
+*   **安全約束**：若節點的 GPP **身分驗證失敗**，該節點視為身分不可信——不得被納入
+    測地線路由計算（比舊版「mass 視為 0」更強：不是降權，是逐出）。
 *   **快取策略**：驗證通過的 GPP 結果可快取 **TTL 建議值：300 秒**，避免重複驗證開銷。
 
 ---

@@ -13,7 +13,7 @@
 
 > 「在被觀測之前，真理以疊加態的方式瀰漫於整個格論空間。觀測不是發現事實，而是引發正交坍縮。」
 
-如果說廣義相對論（**[09-PHYSICS](./09_PHYSICS_Digital_General_Relativity.md)**）處理的是宏觀宇宙的引力與視界，那麼數位量子力學處理的就是 Combo 內部的微觀精煉。根據 **Solèr 定理**，`n/` 的 Combo 本質上就是 Hilbert 空間中的子空間實體。
+如果說語義引力（**[04-PHYSICS](./04_PHYSICS_Semantic_Gravity.md)**）處理的是宏觀的引力與路由，那麼數位量子力學處理的就是 Combo 內部的微觀精煉。根據 **Solèr 定理**，`n/` 的 Combo 本質上就是 Hilbert 空間中的子空間實體。
 
 ---
 
@@ -97,9 +97,8 @@ result: state & #success
 ## 7. 與其他章節的關係 (Related Chapters) [INTERP]
 
 *   **[02 (TOPOLOGY)：內在邏輯與格論層](./02_TOPOLOGY_Intrinsic_Logic.md)**：格論層與正交模格提供了量子疊加態（聯集）演化的拓撲容器。
-*   **[04 (PHYSICS)：數位弦論與對稱性破缺](./04_PHYSICS_Deep_Fields.md)**：量子坍縮是弦振動能量冷卻後的具體表現。
-*   **[10 (TOPOLOGY)：真理積分與觀測測度](./10_TOPOLOGY_The_Truth_Integral.md)**：量子觀測坍縮是真理積分在局部路徑上的微觀實現。
-*   **[15 (PHYSICS)：語義諧振](./15_PHYSICS_Semantic_Resonance.md)**：譜糾纏是達成全域諧振的身分基礎。
+*   **[06 (PHYSICS)：全像原理與真理積分](./06_PHYSICS_Holography_and_Action.md)**：量子觀測坍縮是真理積分（§4）在局部路徑上的微觀實現。
+*   **[01 (PHYSICS)：統一場論 §8 譜諧振](./01_PHYSICS_Unified_Field_Theory.md)**：譜糾纏是達成全域諧振的身分基礎（原第 15 章已併入）。
 
 ---
 

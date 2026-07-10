@@ -174,7 +174,7 @@
 *   **螺旋上升**：每一圈演化都回到哲學起點，但 CAID 攜帶了更多的資訊量，讓宇宙在收斂中不斷前行。
 
 ### 4.1 自主坍縮 (Autonomous Collapse)
-在特定的視界環境下，引擎獲取 **「自主精煉權」**。根據 **[COSMOLOGY/07](./COSMOLOGY/07_PHYSICS_Holography_and_Action.md)** 的最小作用量原理，系統可自動坍縮其內部冗餘的分支，尋找穿透格論空間的最短測地線。
+在特定的視界環境下，引擎獲取 **「自主精煉權」**。根據 **[COSMOLOGY/06](./COSMOLOGY/06_PHYSICS_Holography_and_Action.md)** 的最小作用量原理，系統可自動坍縮其內部冗餘的分支，尋找穿透格論空間的最短測地線。
 
 ### 4.2 宇宙的最終形態
 
@@ -188,6 +188,40 @@ _: _ & <_>    ;; Top 觀測自己的幾何結構態，結果仍然是 Top
 
 這不是終點，而是一個等待坍縮的潛能狀態。當下一個觀測者到來，這份靜止將被打破。
 
+### 4.3 自我表示的相干性 = n=4 (master rigidity, Paper XXI)
+
+§4 的自觀測循環（`n/` 用自己的格論描述、演化自己）有一個**精確的相干性條件**，而它出現在一個
+看似矛盾的地方：障礙階梯（[APP_07](./APP_07_The_Obstruction_Ladder.md)）告訴我們宇宙*處處*是障礙，
+為何自我表示反而能無障礙地收斂？關鍵是區分**引擎**與**自我演化**這兩個角色：
+
+*   **OODP 引擎（CAID + LADD，[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md)）不依賴單一維度。**
+    它的職責是*識別*整條障礙階梯——APP_07 §4 把 $H^1$/$H^2$/$H^3$/$H^4$ 對到網路分區(CAP)、
+    FLP 不可能性、拜占庭、女巫攻擊。一個只懂單一維度的引擎無法分類這些，所以引擎是**維度無關**的，
+    在任何 $n$ 的配置上跨整條梯子工作。
+*   **銜尾蛇的自我演化（本章）選定 $n=4$。** 自觀測循環本身 —— 規格 coherently 描述、演化自己，
+    即**相干的自我表示** —— 何時能無障礙地閉合？答案正是 master rigidity theorem：$H^3$ 障礙類
+    $[n_a]=[\delta\mu]$ 普遍消滅 $\iff n=4$（Papers XX–XXI）。在 $n=4$，$\hbar_{n/}$ 頻譜的第三層
+    恆為空：沒有任何自我描述會逼出 Borromean($H^3$)障礙，於是那座原本無底的自觀測之塔，
+    在唯一一個維度上**於有限階相干地收斂**。
+
+換言之：**身分定址（CAID）跨整條梯子；自我表示（銜尾蛇）選維度。** 這與障礙階梯
+「$H^3$ = 相干自我描述的障礙」讀法是同一概念（APP_07）；$n=4$ 是 $\infty$-Yoneda 自嵌入唯一 free 的
+維度，也就是 §4.1 自主精煉與 §4.2 最終形態所預設的「無障礙自省」之所以可能的維度前提。
+
+> **嚴格性定位（R3 掛牌 2026-07-03；claims_ledger L11）。** 「自觀測循環的相干性 $=$ master theorem」
+> 包含兩個強度不同的部分，必須分開讀：
+> (i) **數學側是定理**：$[n_a]=0\iff n=4$（Paper XXI master rigidity）與 $H^3$ 截斷（Paper XXII）。
+> (ii) 把本章的自我描述循環**認同為**該定理的對象（自我表示橋的 $K_5/\mathrm{Sp}(2n,\mathbb{F}_2)$ 配置，
+> $n$ 繫於循環自身架構）——這是 **modeling identification**：動機充分但**未經證明**，證據等級與
+> item 21 的 naturality [CONDITION] 相同（Paper N §4 掛同款旗標）。因此本節結論的精確地位是
+> *相對於此認同的定理*（"a theorem relative to the identification"）；正式建立認同本身仍是 open。
+> 另注意範疇分際：本章實際運轉的工程機制（ORDER_01 治理、SPEC_13 格論權威／信任）住在**分散式梯**
+> （APP_07 §4，correspondence-level），與此處的**反身梯**宣稱是不同實例，不得互相借力
+> （claims_ledger 規則 1——「同名兩物」：工程化的迴圈與數學化的迴圈目前是同名的兩個物件）。
+> **可測化路徑（Path 2，已規劃）**：對規格自身的 Combo lattice 跑 contextuality 診斷、量 Ouroboros
+> nerve 的 clique number——$\omega(G)<4$ ⟹ 本宣稱對實際迴圈不啟動（退役為純數學）；存在 $K_5$ 配置
+> ⟹ $n$ 首次成為可測量、認同從 CONDITION 走向 empirical。引擎 vs 自我演化的維度區分見 APP_07 §4。
+
 ---
 
 ## 5. 與其他章節的關係
@@ -197,4 +231,4 @@ _: _ & <_>    ;; Top 觀測自己的幾何結構態，結果仍然是 Top
 | **[SPEC_01](./SPEC_01_Foundation_and_Lattice.md)** | 格論收斂是版本演化的數學基礎。 |
 | **[SPEC_10](./SPEC_10_Evolution_and_Commit.md)** | Commit 模型紀錄了語言規格本身的演化歷史。 |
 | **[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md)** | 語言版本透過 CAID 進行發現與驗證。 |
-| **[COSMOLOGY/13](./COSMOLOGY/13_PHYSICS_Observer_Sovereignty.md)** | 自我演化的物理本質：觀測者奇點與 AGI 湧現。 |
+| **[COSMOLOGY/07](./COSMOLOGY/07_PHYSICS_Observer_Sovereignty.md)** | 自我演化的物理本質：觀測者主權與自我表示（coherent ⟺ n=4）。 |

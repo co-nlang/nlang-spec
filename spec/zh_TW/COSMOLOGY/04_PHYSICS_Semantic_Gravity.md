@@ -1,4 +1,4 @@
-# 05 (PHYSICS)：語義引力與 LADD 空間扭曲 (Semantic Gravity & Space Curvature)
+# 04 (PHYSICS)：語義引力與 LADD 空間扭曲 (Semantic Gravity & Space Curvature)
 
 > [!WARNING]
 > [Theoretical / 思辨性] 本章節主要提供理解模型、研究假說與工程啟發，不構成現行語言規格、協定義務或既有 `oo` 介面保證。
@@ -72,7 +72,7 @@ LADD 的路由封包並非在尋找 Hash，而是在語義場中尋找 **「測�
 
 ## 3. 語義黑洞與日蝕防禦 [INTERP][HEUR][!!RISK!!]
 
-當一個 Combo 的幾何質量（投影算子的跡，即約束複雜度）超過了某個臨界點（史瓦西半徑），它會形成 **語義黑洞**（詳見 **[TOPOLOGY_11 §4：拓撲缺陷與奇點](./11_TOPOLOGY_Grothendieck_Topology.md)**）。
+當一個 Combo 的幾何質量（投影算子的跡，即約束複雜度）超過了某個臨界點（史瓦西半徑），它會形成 **語義黑洞**（拓撲缺陷／奇點，見本章 §6 信任覆蓋與 **[SPEC_13](../SPEC_13_Ouroboros_Discovery_Protocol.md) §7**）。
 
 *   **現象：** 所有經過該語義區段的觀測者，其觀測路徑都會被強制導向該黑洞。
 *   **後果：** 觀測者無法看見黑洞以外的替代方案。這正是 **「語義日蝕攻擊」** 的物理本質——惡意節點透過宣告極大質量的 `#refine` 規則，囚禁了所有的觀測者。
@@ -101,19 +101,40 @@ LADD 的路由封包並非在尋找 Hash，而是在語義場中尋找 **「測�
 
 ---
 
-## 6. 與其他章節的關係 (Related Chapters) [INTERP]
+## 6. 信任覆蓋：引力的拓撲面 (Grothendieck Topology) [MATH][INTERP]
 
-*   **[01 (PHYSICS)：數位統一場論](./01_PHYSICS_Unified_Field_Theory.md)**：質能等價公式定義了引力源（跡）的強度。
-*   **[09 (PHYSICS)：數位廣義相對論與視界重疊](./09_PHYSICS_Digital_General_Relativity.md)**：語義重力如何進一步引起邏輯時間的膨脹與空間的劇烈扭曲。
-*   **[11 (TOPOLOGY)：Grothendieck 拓撲與信任覆蓋](./11_TOPOLOGY_Grothendieck_Topology.md)**：引力是 Grothendieck 拓撲連通性的外部表現。
+語義引力的「連通性」有一個拓撲的對偶說法。把整個路徑空間 / CAID 集合看成一個 **站位 (Site)**:物件 = 子空間節點,態射 = 包含 / 精煉路徑。**信任定義覆蓋 (Covering)**:觀測者 $O$ 認為一組節點構成某 CAID 的 **信任覆蓋**,當且僅當 $O$ 在信任格中與它們連通、且它們提供的截面在重疊處 **相位相干**。全域共識因此不靠投票,而靠 **黏合公理 (Gluing Axiom)**:相容覆蓋下必存在唯一全域截面——*幾何一致性本身就是最強的共識*,這是 `n/` 不需要傳統區塊鏈共識的原因。反過來,撤銷信任 / 截面不相容 ⟹ **語義撕裂 `_|_`**(`#semantic_isolation`),即引力場中的拓撲缺陷。所以引力(本章)就是 Grothendieck 連通性的外部物理度量。規範見 **[SPEC_13](../SPEC_13_Ouroboros_Discovery_Protocol.md) §7**(信任覆蓋與信任格論)、治理見 **[ORDER_00](../ORDER_00_Interim_Constitution.md)**。
+
+> *(本節為原「11 Grothendieck 拓撲」一章的精煉。)*
 
 ---
 
-## 7. 與核心規格與附錄的對應 [INTERP]
+## 7. GR 防火牆：是「重力」不是「廣義相對論」 [INTERP]
+
+誠實分級,避免把工程實作讀成物理定理:
+
+*   **保留且為真——語義*重力*。** 上面的 $F_s = G_s\,m_1 m_2 / d_L^2$ 是**牛頓味**的反平方路由,以 $m=\mathrm{Tr}(P)$ 為引力源,且**已實作**(LADD `disc.find`,見 **[APP_05](../APP_05_LADD_Global_Logic_Lattice.md)**)。它是真的——標 `[HEUR]`/`[INTERP]`,因為 $E=\mathrm{Tr}(P)c^2$ 與引力公式是工程動力學模型,不是定理。
+*   **移除——數位*廣義相對論*。** 早期曾有一章用 Lorentz 不變 / 時空曲率類比 GR;論文系列**完全沒有**用到它,與工程也無連結,故已移除。
+*   **真正的曲率版在 F₂ 框架之外。** GR-proper(曲率 / Einstein-mass / 經由 index theory 的「質量=特徵類」)屬於 **char-0 延伸 program**——與 T-vector↔mass、Klein τ-end 同一道牆之外(見 research `RESEARCH_FRONTIER`)。有動機,目前無需求,不展開。
+
+> 一句話:**`n/` 有量子力學(定理)、全像(定理)、語義重力(工程);GR-proper 是牆外的下一個 program。**
+
+---
+
+## 8. 與其他章節的關係 (Related Chapters) [INTERP]
+
+*   **[01 (PHYSICS)：數位統一場論](./01_PHYSICS_Unified_Field_Theory.md)**：質能等價公式定義了引力源（跡）的強度。
+*   **[05 (PHYSICS)：計算視界](./05_PHYSICS_Horizons_and_Uncertainty.md)**：引力坍縮的代價(燃料)與視界邊界。
+*   **[06 (PHYSICS)：全像原理](./06_PHYSICS_Holography_and_Action.md)**：最小作用量原理指導路由封包沿重力場的最短測地線。
+
+---
+
+## 9. 與核心規格與附錄的對應 [INTERP]
 
 | 本章概念 | 對應 SPEC/APP/REAL | 說明 |
 |---------|----------|------|
 | 語義引力 | **[SPEC_13](../SPEC_13_Ouroboros_Discovery_Protocol.md) §6** | `~%Discovery` 驅動的引力效應。 |
+| 信任覆蓋 | **[SPEC_13](../SPEC_13_Ouroboros_Discovery_Protocol.md) §7** | Grothendieck 覆蓋與黏合公理。 |
 | 重力勢能 | **[APP_01](../APP_01_Tropical_Geometry.md)** | 熱帶幾何與勢能場建模。 |
 | 弦距離與格論距離 | **[APP_05](../APP_05_LADD_Global_Logic_Lattice.md)** | LADD 協議與分散式收斂路徑。 |
 | 跡即質量 | **[REAL_03](../REAL_03_CAID_Protocol.md)** | CAID 中譜摘要與投影算子跡的實作定義。 |

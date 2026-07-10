@@ -1,4 +1,4 @@
-# APP_05：全球邏輯格與 LADD 協議 (Global Logic Lattice & LADD)
+# APP_05：全域邏輯格與 LADD 協議 (Global Logic Lattice & LADD)
 
 本文件定義 **OODP (Ouroboros Discovery Protocol)** **L3-L5 層**的譜幾何優化標準。
 
@@ -62,7 +62,7 @@ LADD (Lattice-Aware Distributed Discovery) 是 OODP 的**譜幾何優化擴充**
         overlaps:  [@caid]          ;; 與此 MASA 交集非空的鄰居 MASA 列表
     }]
 
-    ttl:        @int & < 16
+    ttl:        @int & ..15
     signature:  b""                 ;; 譜加密簽名
 }}
 ```
@@ -103,14 +103,14 @@ $$d_L(A, B) = \sqrt{\text{Tr}(P_A + P_B - 2P_A \sqcap P_B)}$$
 
 ---
 
-## 3.5 譜指紋提取與量子化 (Spectral Fingerprint Extraction)
+### 3.3 譜指紋提取與量子化 (Spectral Fingerprint Extraction)
 
-### 3.5.1 v2 複數譜架構
+#### 3.3.1 v2 複數譜架構
 
 CAID v2（REAL_03 §2.2）引入 `<masa_ref>` 和複數譜。Lattice Sketch 從實數特徵值擴充為複數譜 $[\lambda_1 e^{i\theta_1}, \lambda_2 e^{i\theta_2}, \ldots]$，
 其中 $\theta_i$ 是該特徵向量相對於 MASA 參考系的相位角。
 
-### 3.5.2 譜指紋計算流程
+#### 3.3.2 譜指紋計算流程
 
 **Lattice Sketch** 是 CAID 的「波動維度」，由投影算子 $P$ 的譜特徵及其 MASA 相位構成。
 
@@ -130,7 +130,7 @@ $$\vec{S}_{\mathbb{C}} = [\lambda_1, \theta_1, \lambda_2, \theta_2, \ldots, \lam
 
 振幅和相位各自獨立量化。
 
-### 3.5.3 量子化與編碼
+#### 3.3.3 量子化與編碼
 
 為確保跨 CPU 架構的穩定性，複數譜需進行量子化：
 
@@ -149,7 +149,7 @@ $$\theta_{q}(\phi) = \text{round}(\phi / \pi \cdot 2^{64}) \mod 2^{120}$$
 **複數譜向量：**
 $$\vec{S}_{\mathbb{C}} = [\lambda_{q}(v_1), \theta_{q}(\theta_1), \lambda_{q}(v_2), \theta_{q}(\theta_2), \ldots]$$
 
-### 3.5.4 Lattice Sketch 編碼
+#### 3.3.4 Lattice Sketch 編碼
 
 **壓縮流程：**
 
@@ -173,7 +173,7 @@ lattice_sketch = base64_encode(compressed_complex_spectrum)
 
 v1 相容：若相位全為 $0$（即無 MASA 相位資訊），退化为純實數譜。
 
-### 3.5.5 跨架構穩定性保障
+#### 3.3.5 跨架構穩定性保障
 
 為防止 IEEE 754 浮點精度差異導致的 CAID 漂移：
 
@@ -243,29 +243,36 @@ $$d_L^{\mathbb{C}}(A, B) = \sqrt{\text{Tr}(P_A^\dagger P_A + \hat{P}_B^\dagger \
 
 ## 5. 幾何機率證明 (GPP)
 
-**GPP (Geometric Probability Proof)** 是支撐「氣味搜尋」的零知識證明機制。它如同 **「譜儀量測」**——觀測者無需下載完整數據，僅透過比對譜指紋即可判斷目標的幾何相容性。
+**GPP (Geometric Probability Proof)** 支撐「氣味搜尋」的可信度。**兩軌修訂
+（2026-07-11，APP_02 §0）**：GPP 拆為兩個不同性質的部件——
 
-### 5.1 譜邊界證明
+| 部件 | 軌 | 內容 |
+| :--- | :--- | :--- |
+| **身分證明** | 驗證軌（$\mathbb{F}_2$） | 節點持有宣告子空間的 $\omega/q$-Gram 指紋一致性證明——電路、參數、流程**一律見 APP_02 §6**（一家一戶，本章不重複）；傳輸層義務見 REAL_02 §7 |
+| **氣味信心度** | 執行軌（$\mathbb{C}$） | 譜重疊的**啟發式估計**——不需要也不再有 ZK 證明；它只影響路由決策，謊報由反模式機制吸收（SPEC_15 §7） |
 
-當節點收到 `DiscoverRequest`，可回傳 GPP 證明：
+### 5.1 發現回應結構
+
+當節點收到 `DiscoverRequest`，回傳：
 
 ```nlang
-@GPP_Proof: {{
-    target_caid:    @caid           ;; 被請求內容的譜指紋
-    spectrum_hash:  @hash           ;; 譜摘要的雜湊承諾
-    boundary_proof: b""             ;; STARK 證明：此譜特徵位於請求邊界內
+@GPP_Response: {{
+    target_caid:            @caid   ;; 被請求內容的 CAID
+    fingerprint_commitment: @hash   ;; ω/q 指紋承諾（身分證明錨，APP_02 §6）
+    identity_proof:         b""     ;; F₂ STARK（可選；已驗過且在 TTL 內可省略）
 
-    ;; 信心度：基於譜重疊積分的機率估計
-    confidence:     @float & [0.0..1.0]
+    ;; 信心度：譜重疊的啟發式估計（執行軌——無證明義務）
+    confidence:             @float & [0.0..1.0]
 }}
 ```
 
-*   **物理意義**：GPP 證明 $P_{target}$ 與 $P_{query}$ 的譜重疊積分 $\text{Tr}(P_{target} P_{query}) > \theta$，無需揭露 $P_{target}$ 的完整結構。
-    v2 擴充為複數譜：$\text{Re}(\text{Tr}(P_{target}^\dagger P_{query})) > \theta$，其中 $P_{target}^\dagger$ 包含 MASA 相位共軛。
+*   **信心度的語義**：`confidence` 估計 $P_{target}$ 與 $P_{query}$ 的譜重疊（封套層
+    的 Lattice Sketch 比對，§3.3）。它是**導航訊號**：估錯或謊報只浪費路由 fuel，
+    不影響內容真實性——最終接受與否由 CAID 內容定址把守。
 
 ### 5.2 氣味路由決策
 
-節點可根據 GPP 的 `confidence` 決定是否轉發：
+節點根據 `confidence` 決定轉發（純執行軌決策）：
 *   **高信心度 (>0.8)**：本地可能包含目標，進入嚴格搜尋模式。
 *   **中等信心度 (0.3-0.8)**：繼續沿測地線轉發請求。
 *   **低信心度 (<0.3)**：譜特徵不相干，返回 `#not_found`。
@@ -276,49 +283,62 @@ $$d_L^{\mathbb{C}}(A, B) = \sqrt{\text{Tr}(P_A^\dagger P_A + \hat{P}_B^\dagger \
 
 ### 6.1 幾何預言機 (Geometric Oracle)
 
-當本地設備算力不足以執行巨大子空間的合併時，可委託給網路上的 **幾何預言機**——具備高計算能力的節點，專門處理複雜的譜收斂運算並生成 CIP 證明。
+當本地設備算力不足以執行大型觀測（深層 force 級聯、大宇宙合併）時，可委託給網路上
+的 **幾何預言機**——高算力節點，代為執行收斂運算並生成 CIP 證明。
 
-**譜計算委託流程**：
+**設計出身（正名）**：CIP 是拿 LADD 類比區塊鏈/乙太坊得到的機制，「預言機」之名
+即由此而來。這個類比是**結構性的**，不只是取名：
+
+| 乙太坊 | n/ | 為什麼同構 |
+| :--- | :--- | :--- |
+| gas | `%fuel`／CHS 視界參數 | 讓執行有界、可記帳，因此**可證** |
+| receipt / state root | CHS 封套、輸出 CAID | 執行結果的內容定址承諾 |
+| block chain | Commit 鏈（SPEC_10） | 離散、不可變的狀態轉移序列 |
+| rollup prover / sequencer | 幾何預言機 | 強算力方執行、弱算力方只驗證 |
+| rollup validity/fraud proof | **CIP** | 「這段狀態轉移確實照規則算的」 |
+
+**委託流程**：
 
 ```
 本地節點（低算力）               幾何預言機
     |                               |
-    |-- 委託: P_A & P_B --------> |
-    |                               |-- 執行投影算子 Meet
-    |<-- 結果 P_C + CIP ---------|
+    |-- 委託: (輸入 commit CAID, 查詢 q, 視界參數 H) --> |
+    |                               |-- 執行觀測收斂（force/unify 級聯）
+    |<-- 結果 V + CIP -----------|
     |
     |-- 本地驗證: verify(CIP) --> 確認計算正確
-    |-- 接受 P_C 作為本地觀測結果
+    |-- 接受 V 作為本地觀測結果
 ```
 
-### 6.2 CIP 的譜相位鎖定
+### 6.2 CIP 的 claim 格式與證明分級
 
-**CIP (Causal Integrity Proof)** 如同 **「相位鎖定 (Phase Locking)」**：
-*   **證明內容**：利用 STARK 證明 $P_C = P_A \sqcap P_B$ 的運算嚴格遵循正交模格公設。
-*   **相位連續性**：證明在精煉路徑（`#refine`）的轉遷過程中，子空間的幾何本質被連續且一致地鎖定在新的 CAID 中。
-*   **v2 複數譜**：CIP 現在鎖定的是複數譜（振幅 + 相位），相位資訊來自 CAID 的 `<masa_ref>`。驗證者需檢查 $\text{Re}(\text{Tr}(P_C^\dagger P_A))$ 和 $\text{Re}(\text{Tr}(P_C^\dagger P_B))$ 的相位連續性——跨 MASA 的相位躍遷記錄在 `%cause` 的 `%cocycle` 中。
-*   **非對稱性**：驗證者僅需比對複數譜摘要即可確認計算的幾何真實性，驗證成本 $O(1)$ 遠低於執行成本 $O(N)$。
+**兩軌修訂（2026-07-11）**：CIP 的證明對象是**離散求值語義**——引擎的 force/unify
+運行在 bn_serial 可雜湊的離散資料上，委託完整性本質上是**離散計算證明**；舊版的
+「複數譜相位鎖定」框架（對 $\text{Tr}(P_C^\dagger P_A)$ 的相位連續性檢查）退場。
 
-#### 6.2.1 理論基礎：多值古典作用量與密度路徑積分
+*   **claim 格式（收斂鏈粒度）**——委託方需要的是端到端語句，不是逐步證明
+    （委託方連分解都算不動，逐步證明服務不了它）：
 
-CIP 的設計深受 Lohmiller & Slotine (2024) 的量子-古典對應理論啟發。該論文證明了精確的量子波函數可以從**有限個古典極值路徑**重建：
+    $$\text{CIP claim}: \quad (\text{CAID}_{in},\; q,\; H) \;\longmapsto\; (\text{CAID}_{out},\; \text{fuel}_{consumed})$$
 
-$$\psi = \sum_{j \in J} \sqrt{\rho_j} \cdot e^{\frac{i}{\hbar}\phi_j}$$
+    其中 $\text{CAID}_{in}$ 為輸入 commit、$q$ 為觀測查詢、$H$ 為視界參數（fuel/
+    strategy/depth 上限）。**良定義性由視界決定論不變性（SPEC_00 Invariant 4）
+    承保**：同輸入＋同 $H$ ⟹ 同輸出——乙太坊靠 gas 讓執行可證，n/ 靠 fuel/CHS
+    讓觀測可證。
+*   **memo 透明性**：claim 蓋的是語義求值關係，非引擎的快取執行——預言機用不用
+    觀測 memo（GUIDE_03 §11）不影響證明對象。
+*   **證明分級**（接 REAL_02 §7.3 的分級慣例；規格押注 claim 格式，不押注證明系統）：
 
-其中 $\phi_j$ 是第 $j$ 條古典極值路徑的作用量，$\rho_j$ 是沿該路徑計算的古典密度。
+| 層級 | 機制 | 乙太坊對應 | 狀態 |
+| :--- | :--- | :--- | :--- |
+| **Level 1（樂觀）** | 預言機承諾求值 trace 的 Merkle 根；委託方抽查若干步，或於挑戰期內由任意節點提出反證 | optimistic rollup | 先落地（無需遞迴證明系統） |
+| **Level 2（有效性）** | 遞迴 STARK 蓋整條收斂鏈，驗證 $O(1)$ | zk-rollup validity proof | 終態（工具鏈成熟後） |
 
-**對 CIP 的設計啟示**：
-
-1.  **有限路徑原則**：如同論文取代 Feynman 無窮路徑積分，CIP 不需要傳輸所有中間計算狀態，只需傳遞**極值路徑的最終結果**加上完整性證明。
-
-2.  **密度加權的幾何質量**：論文中的 $\sqrt{\rho_j}$ 對應 LADD 的**幾何質量** $m = \text{Tr}(P_C)$。每個分支的「信任權重」正比於其幾何體積（資訊豐富度）。
-
-3.  **在傳輸中解決**：論文的核心洞見是「波函數計算可以在古典路徑上解析完成」，這正是 CIP 的運作模式——幾何預言機在轉發路徑上執行計算，本地節點只驗證結果。
-
-**相位鎖定的物理類比**：
-CIP 確保了在分散式環境中，不同節點對同一子空間的觀測結果具有**相位相干性**——如同論文中多條古典路徑的相位 $e^{i\phi_j/\hbar}$ 在測量時正確干涉，產生精確的量子機率。
-
-**最終洞見**：計算不再發生在某台機器上，而是**在傳輸過程中被解決**。網路成為一個具備格論計算能力的量子流體。每一條 LADD 路由路徑，同時也是一條計算管道。
+*   **非對稱性**（兩級共通）：驗證成本遠低於執行成本——Level 1 為 $O(\text{抽查數}\cdot\log)$，
+    Level 2 為 $O(1)$。
+*   **`#refine` 跨接**：精煉路徑（SPEC_10 §2.5）上的委託同格式——輸入輸出換成
+    refine 前後的 CAID，單調性判定（$ID_{new}\sqsubseteq ID_{old}$）本身就是一次可委託
+    的離散計算。
 
 ---
 
@@ -413,8 +433,8 @@ $$S(CAID) = -\text{Tr}(P \log P)$$
 | §2 譜協議架構 | **[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md)** §6（`~%Discovery`）、**[REAL_02](./REAL_02_Ouroboros_Protocols.md)** |
 | §3 數學基礎 | **[APP_04](./APP_04_Mathematical_Foundations.md)** 投影算子、譜幾何 |
 | §4 引力路由 | **[GUIDE_03](./GUIDE_03_Incremental_Convergence.md)** §2（路線分析） |
-| §5 GPP | **[COSMOLOGY/15](./COSMOLOGY/15_PHYSICS_Semantic_Resonance.md)** 譜諧振 |
-| §6 CIP | **[APP_02](./APP_02_Formal_Verification.md)** ZKP、形式化驗證；**[COSMOLOGY/15](./COSMOLOGY/15_PHYSICS_Semantic_Resonance.md)** 相位鎖定；**[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)** §4.1.1 `#branching`（多值幾何的判定與處理） |
+| §5 GPP | **[COSMOLOGY/01 §8](./COSMOLOGY/01_PHYSICS_Unified_Field_Theory.md)** 譜諧振 |
+| §6 CIP | **[APP_02](./APP_02_Formal_Verification.md)** ZKP、形式化驗證；**[COSMOLOGY/01 §8](./COSMOLOGY/01_PHYSICS_Unified_Field_Theory.md)** 相位鎖定；**[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)** §4.1.1 `#branching`（多值幾何的判定與處理） |
 | §7 視角消融 | **[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md)** §5.3（別名消融） |
 | §7.2 部分觀測 | **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** §4.2（`#blur`）、**[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md)** §5.1 |
 | §7.3 日蝕攻擊 | **[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md)** §5.3（別名消融）、§7（信任格論） |

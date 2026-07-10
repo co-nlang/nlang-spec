@@ -757,7 +757,7 @@ hash:sha256:v1:abc123...:PIN|SQUASH:ed25519:signature...
 | 位元 | 權限 | 說明 |
 | :--- | :--- | :--- |
 | 0 | `PIN` | 允許直接覆蓋節點值 (#pin)。 |
-| 1 | `COMMIT` | 允許提交含有 `_|_` 的內容。 |
+| 1 | `COMMIT` | 允許提交含有 `_\|_` 的內容。 |
 | 2 | `SQUASH` | 允許執行歷史壓縮 (#squash)。 |
 | 3 | `ROLLBACK` | 允許回滾至任意歷史提交。 |
 | 4 | `EFFECT` | 允許強制標記效果 (#effect_override)。 |

@@ -64,8 +64,9 @@ field_sep  = _{ "," | ";" | WHITESPACE+ }
 ```
 
 **設計原則**：
-- **欄位層級**：`,` `;` `␣` `\n` 在 Combo/Cocoon 欄位之間完全等價
-- **表達式層級**：不支援 `,` 作為運算式分隔（如 `/add a, /sub b` 非法），避免與態射應用運算子 `␣` 衝突
+- **欄位層級**：`,` `;` `␣` `\n` 在 Combo/Cocoon 欄位之間完全等價（`key:` 已界定元素邊界，故空白即可分隔）
+- **集合元素層級**：`list [ ]`／`tuple ( )` 的元素是**裸 expr**，**必須**以非空白分隔符 `,`／`;`（`list_sep`）分隔——whitespace-alone 不足以界定裸 expr 的邊界（例：`[1 |> /double, 2 |> /double]` 若無逗號會被解讀為單一表達式）。分隔符前後可有任意空白（含換行），**尾隨分隔符可省略**
+- **表達式層級**：不支援 `,` 作為運算式分隔（如 `/add a, /sub b` 非法）；`,`／`;` 只作為**集合元素**分隔，不作為子運算式分隔
 - **JSON 互操作**：緊湊輸出時可選擇保留 `,` 以提升外部可讀性
 
 ### 2.2 識別碼與前綴
@@ -77,11 +78,14 @@ numeric    = @{ ASCII_DIGIT+ }
 *註：`n/` 採用 `XID_START` 與 `XID_CONTINUE` 標準，確保中文、日文、韓文等非拉丁字元皆可作為合法的座標名稱。*
 
 ```ebnf
-prefix         = @{ (prefix_system | prefix_local | prefix_meta | prefix_type | prefix_logic)+ }
+;; 前綴本體論（2026-06 收緊）：三位一體 {Data, @Type, /Logic} 可加隱藏修飾 ~（→ ~a, ~@a, ~/a）；
+;; %（元資訊）與 ~%（系統）為獨立維度，僅 Combo/Data，無 Type/Logic 子面向。
+;; 有序選擇：prefix_system 先於 prefix_local（~% 最長匹配）。
+prefix         = @{ prefix_system | prefix_meta | (prefix_local ~ (prefix_type | prefix_logic)?) | prefix_type | prefix_logic }
 prefix_type    = { "@" }
 prefix_logic   = { "/" }
 prefix_meta    = { "%" }
-prefix_system  = { "~%" }
+prefix_system  = { "~%" }   ;; atomic
 prefix_local   = { "~" }
 
 ;; 命名鍵：包含可組合前綴的識別碼，或純數字鍵
@@ -94,9 +98,10 @@ named_key = @{
 ;; 引用鍵：包含空格或運算子的鍵
 quoted_key = @{ "\"" ~ (!"\"" ~ ANY)* ~ "\"" }
 
-;; 欄位鍵：解析優先序為 匿名集合 > 路徑 > 命名鍵
-field_key = { anon_set | path | named_key | quoted_key }
-field     = { field_key ~ ":" ~ expr }
+;; 欄位鍵：解析優先序為 匿名集合 > 路徑 > 命名鍵；tag 鍵用於分派表（2026-07-05 自引擎現況收編）
+field_key = { anon_set | path | named_key | quoted_key | tag }
+;; spread-as-field：{ a: 1, ...~c } 的展開欄位（語義見 SPEC_03 §3.1；2026-07-05 補上位文法）
+field     = { (field_key ~ ":" ~ expr) | spread_expr }
 ```
 
 ### 2.3 表達式優先權 (遞歸下降)
@@ -108,20 +113,21 @@ expr          = { morphism_expr }
 morphism_expr = { ternary_expr ~ (!field_start ~ "->" ~ ternary_expr)* } ;; Level 15: Morphism
 ternary_expr  = { pipe_expr ~ (!field_start ~ "?" ~ pipe_expr ~ ":" ~ pipe_expr)? } ;; Level 14: Ternary
 pipe_expr     = { join_expr ~ (!field_start ~ "|>" ~ join_expr)* } ;; Level 13: Pipe
-join_expr     = { meet_expr ~ (!field_start ~ join_op ~ meet_expr)* } ;; Level 12: Union / Diff
+join_expr     = { cmp_expr ~ (!field_start ~ join_op ~ cmp_expr)* } ;; Level 12: Union / Diff
 join_op       = { "|" | "\\" }
-meet_expr     = { cmp_expr ~ (!field_start ~ "&" ~ cmp_expr)* } ;; Level 11: Merge
-cmp_expr      = { add_expr ~ (!field_start ~ cmp_op ~ add_expr)? } ;; Level 10: Comparison
-cmp_op        = { "<=" | ">=" | "==" | "!=" | "<" | ">" }
+cmp_expr      = { meet_expr ~ (!field_start ~ cmp_op ~ meet_expr)? } ;; Level 11: Comparison
+;; 兩個家族：格論/集合關係 < <= = >= >（不塌縮，適用疊加態）；原子比較 == !=（須塌縮）
+cmp_op        = { "<=>" | "<=" | ">=" | "==" | "!=" | "=" | "<" | ">" }   ;; "<=>" 方向探測（序位，回傳標籤聯集；SYNTAX_10）——最長匹配在前
+meet_expr     = { add_expr ~ (!field_start ~ "&" ~ add_expr)* } ;; Level 10: Merge（& 比 cmp 緊；與 C 相反）
 add_expr      = { mul_expr ~ (!field_start ~ add_op ~ mul_expr)* } ;; Level 9: Additive
 add_op        = { "+" | "-" }
 mul_expr      = { infix_expr ~ (!field_start ~ mul_op ~ infix_expr)* } ;; Level 8: Multiplicative
-mul_op        = { "*" | "/" | "%" }
+mul_op        = @{ "*" | ("/" ~ !ident) | ("%" ~ !ident) }   ;; !ident：`a /f`／`a %len` 非除法／取餘（2026-07-05 對齊引擎）
 infix_expr    = { apply_expr ~ (!field_start ~ logic_infix ~ apply_expr)* } ;; Level 7: Infix Logic
-logic_infix   = @{ "/" ~ ident }
-apply_expr    = { unary_expr ~ (!field_start ~ unary_expr)* } ;; Level 6: Morphism Apply
+logic_infix   = @{ "/" ~ ident }   ;; atomic：`a /f b` 中綴態射（/ 與 ident 間不得有空白）；`a / b`（有空白）是除法
+apply_expr    = { unary_expr ~ (!field_start ~ !add_op ~ !mul_op ~ !cmp_op ~ !logic_infix ~ unary_expr)* } ;; Level 6: Morphism Apply（護欄：運算元後的 -/*… 讓位給中綴層——`a -1` 是減法非應用，SYNTAX_02 §4.3；2026-07-05 補齊。!logic_infix：`a /f b` 須上浮至 L7 中綴層，juxtaposition 不得吞 `/f` 為運算元——2026-07-05 引擎同步時發現原護欄不足，補齊；代價：以態射為 apply 運算元須括號 `f (/g)`）
 unary_expr    = { (unary_op ~ unary_expr) | spread_expr } ;; Level 5: Unary
-unary_op      = { "!" | "-" }
+unary_op      = { "!" }   ;; 2026-07-05 W1-1：負號自 unary 移除——負數屬字面量（int_lit/float_lit/complex_lit 內建 "-"，見 SYNTAX_02 §4.3）；識別碼取負非原語（寫 0 - x 或 stdlib）
 spread_expr   = { ("..." ~ type_ann_expr) | type_ann_expr } ;; Level 4: Spread
 
 type_ann_expr = { postfix_expr ~ (!field_start ~ "@" ~ postfix_expr)* } ;; Level 3: Type Annotation
@@ -134,9 +140,10 @@ field_start   = _{ field_key ~ ":" }
 ### 2.4 導航與原子 (Navigation & Atoms)
 
 ```ebnf
-primary = { range | context | structural | tuple | "(" ~ expr ~ ")" | combo | cocoon | anon_set | list | interp_str | atom | path }
+primary = { range | complex_lit | context | structural | tuple | "(" ~ expr ~ ")" | combo | cocoon | anon_set | poset_lit | list | interp_str | atom | path }
 
-tuple = { "(" ~ expr ~ ("," ~ expr)+ ~ ")" }
+;; tuple 由「至少一個逗號」界定：(x) 是分組，(x,) 是 1-tuple，(x, y) 是 2-tuple
+tuple = { "(" ~ WHITESPACE* ~ expr ~ list_sep ~ (expr ~ (list_sep ~ expr)* ~ list_sep?)? ~ WHITESPACE* ~ ")" }
 
 atom = {
     bottom
@@ -169,8 +176,9 @@ range_bound = { atom | path }
 ;; 上下文符號 (Context)
 context = @{ "$" }
 
-;; 水晶括號 (Structural)
-structural = { "<" ~ expr ~ ">" }
+;; 水晶括號 (Structural)：雙角括號（與 cocoon {{}} 同為「雙括號＝特殊視角」慣例）；
+;; 不與比較 < > 衝突（最長匹配：<< 先於 <）
+structural = { "<<" ~ expr ~ ">>" }
 
 ;; Combo
 combo = { "{" ~ WHITESPACE* ~ (field ~ field_sep?)* ~ "}" }
@@ -178,11 +186,19 @@ combo = { "{" ~ WHITESPACE* ~ (field ~ field_sep?)* ~ "}" }
 ;; Cocoon
 cocoon = { "{{" ~ WHITESPACE* ~ (field ~ field_sep?)* ~ "}}" }
 
-;; 匿名集合
-anon_set = { "@{" ~ expr ~ "}" }
+;; 匿名集合（空體合法：`@{}` ≡ `_|_`，SYNTAX_02 §4.2/§8；2026-07-10 文法行同步 prose 既有裁決）
+anon_set = { "@{" ~ expr? ~ "}" }
+
+;; Poset 字面量（Enum 序位；SYNTAX_10，2026-07-05 自 discussion/008 定案）
+poset_lit   = { "#{" ~ WHITESPACE* ~ (order_chain ~ field_sep?)* ~ "}" }
+order_chain = { poset_node ~ (order_op ~ poset_node)+ }
+order_op    = { "<=" | ">=" | "=" | "<" | ">" }   ;; 格論家族五符號（同序位用 =，非 ==；2026-07-05 裁決）
+poset_node  = { tag_start | tag_end | tag }
 
 ;; List
-list = { "[" ~ WHITESPACE* ~ (expr ~ ("," ~ expr)*)? ~ "]" }
+list     = { "[" ~ WHITESPACE* ~ (expr ~ (list_sep ~ expr)* ~ list_sep?)? ~ WHITESPACE* ~ "]" }
+;; 集合元素分隔符：非空白（裸 expr 邊界需明確）；尾隨分隔可省略
+list_sep = _{ "," | ";" }
 
 ;; 內插字串
 interp_str = ${ "`" ~ interp_part* ~ "`" }
@@ -190,8 +206,8 @@ interp_part = { interp_expr | interp_literal }
 interp_expr = { "${" ~ expr ~ "}" }
 interp_literal = @{ (!("`" | "${") ~ ANY)+ }
 
-;; 路徑
-path = { (root_path | parent_path | bare_path) ~ ("." ~ named_key | "[" ~ expr ~ "]")* }
+;; 路徑（段可為 tag：Enum 成員存取 Status.#draft——2026-07-05 收編）
+path = { (root_path | parent_path | bare_path) ~ ("." ~ (named_key | tag) | "[" ~ expr ~ "]")* }
 root_path = @{ "_." }
 parent_path = @{ "^"+ ~ "." }
 bare_path = @{ named_key }
@@ -204,6 +220,17 @@ top = @{ "_" }
 unit = @{ "(" ~ ")" }
 float_lit = @{ "-"? ~ numeric ~ "." ~ numeric ~ (("e" | "E") ~ ("+" | "-")? ~ numeric)? }
 int_lit = @{ "-"? ~ numeric }
+
+;; 複數字面量（SPEC_02 §2.2 正典；atomic 無空白——`2+3i` 是單一複數，`2 + 3i`（帶空白）是加法）
+;; 置於 primary（range 之後、context 之前）而非 atom：區間邊界／序關係不取複數。
+;; 尾端 !(XID_CONTINUE | "-") 護欄（2026-07-06 補齊）：`io`／`it`／`i-1` 是識別碼，
+;; 不得被拆成「複數 i ＋ apply」；裸 `i`／`-i` 仍為虛數單位。含 `-` 與 kebab 識別碼規則一致。
+complex_lit = @{
+    ( "-"? ~ numeric ~ ("." ~ numeric)? ~ (("e" | "E") ~ ("+" | "-")? ~ numeric)? )
+      ~ ("+" | "-") ~ numeric ~ ("." ~ numeric)? ~ (("e" | "E") ~ ("+" | "-")? ~ numeric)? ~ "i" ~ !(XID_CONTINUE | "-")
+    | "-"? ~ numeric ~ ("." ~ numeric)? ~ (("e" | "E") ~ ("+" | "-")? ~ numeric)? ~ "i" ~ !(XID_CONTINUE | "-")
+    | "-"? ~ "i" ~ !(XID_CONTINUE | "-")
+}
 tag = @{ "#" ~ ident }
 
 regex_lit  = @{ "r\"" ~ (!"\"" ~ ANY)* ~ "\"" }
@@ -220,8 +247,8 @@ multiline_str = @{ "\"\"\"" ~ ( ("\\" ~ "\"\"\"") | (!"\"\"\"" ~ ANY) )* ~ "\"\"
 ## 3. 字串內插與特殊字面量
 
 *   **內插字串 (interp_str)**：`` `...` `` 內部可包含 `${expr}`。
-*   **匿名集合 (anon_set)**：`@{ expr }` 強制將表達式解析為集合邊界。
-*   **水晶括號 (structural)**：`<expr>` 觀測結構態。
+*   **匿名集合 (anon_set)**：`@{ expr }` 強制將表達式解析為集合邊界；空體 `@{}` 即 `_|_`（SYNTAX_02 §8）。
+*   **水晶括號 (structural)**：`<<expr>>` 觀測結構態（雙角括號，不與比較 `<`／`>` 衝突）。
 
 ---
 

@@ -1,0 +1,2 @@
+/recursive: x -> /recursive (x + 1)
+out: (/recursive 1).%cause

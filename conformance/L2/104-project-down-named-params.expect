@@ -1,0 +1,7 @@
+{
+  %kind: #blur
+  %masa: "hash:sha256:v2:_:sketch:0000000000000000000000000000000000000000000000000000000000000000"
+  %projection: #down
+  x: 1
+  y: 2
+}  ;; %effect: #state

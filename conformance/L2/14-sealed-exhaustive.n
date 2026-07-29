@@ -1,0 +1,2 @@
+@StrictUser: {{ name: @str }}
+out: @StrictUser & { name: "Alice", age: 30 }

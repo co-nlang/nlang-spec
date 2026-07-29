@@ -1,0 +1,2 @@
+@Adult: { age: 18.. }
+out: { name: "Bob", age: 25 } & @Adult

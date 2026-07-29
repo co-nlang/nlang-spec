@@ -1,0 +1,3 @@
+q: {...later, b: 1}
+later: {a: 7}
+out: q.a

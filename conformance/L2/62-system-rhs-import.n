@@ -1,0 +1,2 @@
+m: ~%Math
+out: 2 |> m.abs

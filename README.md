@@ -17,9 +17,9 @@
 **Example: Type as Data, Merge as Verification**
 ```nlang
 ;; 1. Define a "Type" (Boundary)
-@Adult: {{
+@Adult: {
     age: @int & 18..
-}}
+}
 
 ;; 2. Acquire "Data" (Existence)
 ~payload: { name: "Alice", age: 25 }

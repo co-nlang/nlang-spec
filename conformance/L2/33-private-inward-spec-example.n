@@ -1,0 +1,5 @@
+factory: {
+    ~secret_seed: 42
+    product_a: { val: ~secret_seed + 1 }
+}
+out: factory.product_a.val

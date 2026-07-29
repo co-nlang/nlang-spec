@@ -1,0 +1,2 @@
+/mysum: (x -> (y -> x + y))
+out: mysum 3 5

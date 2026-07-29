@@ -81,7 +81,7 @@
 
 | 本章概念 | 對應 SPEC/APP/REAL | 說明 |
 | :--- | :--- | :--- |
-| `~%repl` | **[SPEC_11](../SPEC_11_Reflection_and_Synthesis.md)** | 觀測者的交互介面 (`~%repl`)。 |
+| `~%Repl` | **[SPEC_11](../SPEC_11_Reflection_and_Synthesis.md)** | 觀測者的交互介面 (`~%Repl`)。 |
 | 自舉演化 | **[SPEC_17](../SPEC_17_Self_Evolution.md)** | 系統的自我定義與自舉演化。 |
 | 自我表示相干性 = n=4 | **[SPEC_17](../SPEC_17_Self_Evolution.md) §4.3** + Paper N §4 / Paper XXI | coherent self-representation 的維度判準(master theorem)。 |
 | 信任視角 | **[SPEC_13](../SPEC_13_Ouroboros_Discovery_Protocol.md) §7** | 權威與信任格論。 |

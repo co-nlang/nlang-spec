@@ -14,64 +14,80 @@
 
 ---
 
-## 1. 標準結構 (Standard Structure)
+## 1. 標準結構 (Standard Structure) — 調和裁定 2026-07-19
 
-`%cause` 是一個 **Cocoon**（封閉結構）。為了支援對偶觀測，它必須包含 `%val` 欄位。
+`%cause` 是一個 **Cocoon**(封閉結構)。**正典核**:
 
 ```nlang
 %cause: {{
-    ;; 核心對偶欄位 (Duality Core)
-    %val:       #Tag           ;; 衝突型別標籤 (如 #conflict)。直接觀測 %cause 時返回此值。
-    message:    @str           ;; 人類可讀的錯誤描述
-    
-    ;; 定位欄位 (Location)
-    path:       @str           ;; 觸發衝突的絕對路徑 (如 "_.user.profile.age")
-    source:     @str           ;; 來源標識，檔案路徑或 CAID (如 "file:./main.n" 或 "hash:sha256:v1:...")
-    line:       @int           ;; 行號 (若適用)
-    column:     @int           ;; 欄號 (若適用)
-    
-    ;; 語境欄位 (Context)
-    operation:  #Tag           ;; 觸發衝突的操作型別 (如 #merge, #observe, #lift)
-    operands:   [@any]         ;; 參與運算的節點值或路徑 (用於重現)
-    
-    ;; 鏈結欄位 (Chaining)
-    parent:     %cause | #none ;; 父層因果 (用於複雜合併的遞迴診斷)
-    trace:      [@str]         ;; 堆疊追蹤 (用於遞迴或管道鏈)
-    
-    ;; 擴展欄位 (Extension)
-    details:    {{}}           ;; 特定標籤的額外封閉資訊 (結構依 %val 而定)
+    ;; 核心對偶欄位 (Duality Core) —— 唯一必備欄
+    %val:       #Tag    ;; 因果標籤 (如 #conflict)。直接觀測 %cause 時
+                        ;; 依值語境律 (SYNTAX_06 §4 #6) 坍縮返回此值;
+                        ;; <<path>> 結構視圖保全整繭。
+
+    ;; 診斷欄位 (Diagnostics) —— 全部可選、%-前綴 (meta 軸),
+    ;; 依 ERROR_CODES 類別容許變形 (不同因果類鑄不同欄集)
+    %message:   @str    ;; 人類可讀描述
+    %expected:  @any    ;; 期望值/形 (衝突類)
+    %found:     @any    ;; 實際值/形 (衝突類)
+    %involved:  [@str]  ;; 參與節點 CAID (重現用)
+    %path:      @str    ;; 觸發座標路徑 (座標缺失類,如 #missing_key)
+    %members:   [@str]  ;; 環成員 (來歷類,如 #static_cycle)
 }}
 ```
+
+**三條調和法**(2026-07-19 裁定,A 案):
+
+1. **欄位走 meta 軸**:診斷欄一律 `%`-前綴。因果是 meta,裸名欄
+   會把診斷資料放進封閉繭的資料軸。
+2. **`%type` 廢止**(設計考古:`%type` 是舊代節點模型殘欄——
+   型別內容曾放 `%type` 欄,後由同構原理 SPEC_03 §4 的
+   `%kind` + `%super`〔+ `%name`;`%predicate` 退場→R2〕取代;
+   cause 繭的 `%type` 與
+   `%val` 恆同值,是化石雙帳)。`%val` 為唯一對偶核;`.%type`
+   讀法一併退役——⊥ 上的 `.%type` 依 ⊥ 合成性原樣傳出,
+   `#blur` 上依座標吸收律吸收(SPEC_08 §3.2.2 同步)。
+3. **鷹架不可見**:引擎為防剝殼等目的所需之內部墊欄(如
+   `_: _`)是實作細節,**不得出現在任何用戶可見投影**(結構視圖
+   `<<x>>` 含);用戶自定欄(含名為 `_` 之欄)不受影響。
+
+> **非規範性附註(未來診斷擴充)**:定位欄(path/source/line/
+> column)、語境欄(operation/operands)、鏈結欄(parent/trace)、
+> 擴展欄(details)曾列於舊版本節——引擎從未鑄造,現降級為
+> 未來擴充候選;引擎開始追蹤時再立法,屆時亦走 `%`-前綴。
 
 ---
 
 ## 2. 因果標籤分類 (Cause Tag Taxonomy)
 
-所有標準 `#cause` 標籤分為六大類別：
+> **正典登記簿 = [ERROR_CODES](./ERROR_CODES.md)**(2026-07-17 裁定):標籤
+> 清單的**唯一維護點**。本節只立**類別法**,不再重複列表——雙帳必漂移,
+> 本節舊表曾落後法典多輪(缺 `#missing_key`/`#private_access_violation`/
+> `#no_context`/`#system_reserved`/`#static_cycle` 等)即為病例。
 
-### 2.1 格論衝突 (Lattice Conflicts)
+所有標籤分為**六大類別**:
 
-| 標籤 | 定義 | 典型觸發場景 | 關聯章節 |
-| :--- | :--- | :--- | :--- |
-| `#conflict` | 靜態邏輯不相容 | `1 & 2`、`@int & @str` (不相交型別) | **[SPEC_06](./SPEC_06_Unification_Logic.md)** |
-| `#numerical_error` | 數值運算異常 | `NaN` 產生、浮點數溢位 | **[SPEC_02](./SPEC_02_Lexical_Structure.md)** |
-| `#divergent` | 動態非終止 | `a: a + 1` (無限遞迴)、循環定義無法收斂 | **[SPEC_12](./SPEC_12_Logic_Validation_and_Recursion.md)** |
-| `#incomplete` | 視界內無法完全收斂 | 燃料耗盡但結果仍為聯集狀態 | **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** |
+| 類別 | 定義 | 例(詳見 ERROR_CODES) |
+| :--- | :--- | :--- |
+| **格論衝突** | 靜態邏輯不相容、動態非終止 | `#conflict`、`#numerical_error`、`#divergent`、`#order_conflict` |
+| **視界與資源邊界** | 觀測預算耗盡;`#blur` 快照之 `%cause` 同拼此類(視界傳播律=本體地位不可互鑄、runaway 誠實 `#fuel_exhausted`,SPEC_08 §3.2.2) | `#fuel_exhausted`、`#timeout`、`#out_of_horizon` |
+| **存取與所有權違規** | 幾何邊界/所有權侵犯 | `#private_access_violation`、`#system_reserved`、`#missing_key`、`#no_context` |
+| **來歷類(非錯誤)** | 觀測性來歷標籤,值本身合法 | `#static_cycle`(Top)、BlurCause 家族 |
+| **引擎作業錯誤** | 不鑄 `_|_`,走 Err 通道/CLI exit | `#invalid_target`、`#privileged_required`、`#ffi_panic` |
+| **登記在案未鑄** | 法典保留,引擎現以他標籤覆蓋或未實作 | `#incomplete`、`#max_*` 家族(現以 `#fuel_exhausted` 覆蓋,G3 之 R3 法理)、`#effect_violation` |
 
-### 2.2 視界與資源邊界 (Horizon Boundaries)
-
-| 標籤 | 定義 | 典型觸發場景 | 關聯章節 |
-| :--- | :--- | :--- | :--- |
-| `#fuel_exhausted` | 觀測燃料耗盡 | `%fuel` 配額用完，中斷收斂 | **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** |
-| `#timeout` | 時間半徑超標 | 運算耗時超過 `%timeout` 或時鐘限制 | **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** |
-| `#max_nodes_exceeded` | 匹配節點數超標 | `%max_pattern_nodes` 限制觸發 | **[SPEC_06](./SPEC_06_Unification_Logic.md)** |
-| `#max_depth_exceeded` | 統一化深度超標 | `%max_unification_depth` 限制觸發 | **[SPEC_09](./SPEC_09_Standard_Library.md)** |
-| `#max_branches_exceeded` | 聯集分支數超標 | `%max_branches` 限制觸發 | **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** |
-| `#out_of_horizon` | 視界過度穿透 | 導航符號 `^` 超出實際嵌套層級 | **[SPEC_07](./SPEC_07_Logic_and_Pipe.md)** |
+> 註:`#invalid_path` 為未立法之引擎誤鑄,2026-07-14 廢止(座標缺失=開放
+> `_`;`^` 溢出=`#out_of_horizon`;聯集全 `_|_`=§4 主因果);存量宇宙解碼
+> 保留讀取。`#not_found` 屬**發現與內容驗證類**(ERROR_CODES §1.3,LADD
+> 語境)——不屬值收斂因果,故自 §4 主因果優先級移出(非除籍)。
 
 ---
 
 ## 3. 標籤特定詳細結構 (Tag-Specific Details)
+
+> **非規範性(2026-07-19 調和註)**:本節 `details` 結構屬舊版理想形,
+> 引擎從未鑄造(同 §1 附註之未來擴充候選);現行診斷欄=§1 正典核。
+> 保留作未來擴充藍圖;立法時走 `%`-前綴。
 
 ### 3.1 `#conflict` 詳細結構
 ```nlang
@@ -96,8 +112,11 @@ details: {{
 
 ## 4. 因果鏈組合規則 (Causal Chain Composition)
 
-當收斂過程中多個衝突同時發生時，引擎必須選出一個作為「主因果標籤」返回。優先級如下：
-1. `#divergent` > 2. `#effect_violation` > 3. `#conflict` > 4. 資源邊界標籤 > 5. `#not_found`。
+當收斂過程中多個衝突同時發生時,引擎必須選出一個作為「主因果標籤」返回。優先級(2026-07-17 重立法,對齊實作五階;舊列 `#effect_violation` 屬登記未鑄類、`#not_found` 屬發現類非值收斂因果,俱移出):
+
+1. `#divergent` > 2. 存取與所有權違規(`#private_access_violation`/`#system_reserved`)> 3. 格論衝突族(`#conflict`/`#numerical_error`/…)> 4. 視界資源族(`#fuel_exhausted`/`#timeout`/`#out_of_horizon`)> 5. 座標缺失(`#missing_key`)。
+
+> **工程補充(2026-07-17,G4 惰性 ⊥ 收帳)**:聯集全 ⊥ 支坍縮時,結果為**主因果位階最高成員的 `_|_` 原樣傳出**(訊息/座標/涉入項保全;同位階取相遇序最左)——不得改鑄僅存標籤的新 `_|_`(blur 吸收原樣先例 + 誠實訊息方向,cause 正典審計 T3 同族)。
 
 ---
 

@@ -1,0 +1,2 @@
+c: { a: ~%Time.now _, b: ~%Math./random _, c: ~%Engine./equivalence_map _ }
+out: c.%effect

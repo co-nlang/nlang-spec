@@ -1,0 +1,2 @@
+base: {a: {b: 42}}
+out: base.a.b

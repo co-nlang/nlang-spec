@@ -1,0 +1,2 @@
+user: {name: "A"}
+out: user |> { res: $.name }

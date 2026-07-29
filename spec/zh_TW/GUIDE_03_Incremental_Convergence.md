@@ -308,9 +308,7 @@ message ProjectionEvent {
 
 ## 11. Call-by-Observation 求值模型（2026-07-07 補章）
 
-> 本節是「惰性引擎半邊」（ENGINE_SYNC #16 殘留）的施工圖。語義依據：SPEC_07 §4.2
-> （`$` P1–P5）、SYNTAX_12 §4 定案註記；代數依據：docs/discussion/018（管道定律）、
-> 019（重跑安全三層分類）。本節為工程建議，語義以 SPEC 為準。
+> **本節定位（2026-07-22 升規範層後）**：CbO 的**語義本體**已升為 **[SPEC_04](./SPEC_04_Navigation_and_Duality.md) §6「按需觀測」**（與 CAID 平起——CAID 語義在 SPEC_13 §1、協議在 REAL_03；CbO 語義在 SPEC_04 §6、**本節為其工程協議層**）。本節是「惰性引擎半邊」（ENGINE_SYNC #16 殘留）的施工圖：thunk／memo／force 點／fuel 記帳。語義依據：SPEC_04 §6、SPEC_07 §4.2（`$` P1–P5）、SYNTAX_12 §4 定案註記；代數依據：docs/discussion/018（管道定律）、019（重跑安全三層分類）。本節為工程建議，語義以 SPEC 為準。
 
 ### 11.1 為什麼惰性是語義要求，不是最佳化
 

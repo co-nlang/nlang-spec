@@ -1,0 +1,1 @@
+out: { %effect: #pure, v: 42 }.%effect

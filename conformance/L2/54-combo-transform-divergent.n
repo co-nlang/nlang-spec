@@ -1,0 +1,2 @@
+c: { d: d + 1 }
+out: (c.d).%cause

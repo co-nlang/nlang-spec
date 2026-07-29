@@ -1,0 +1,2 @@
+c: { a: ~%Time.now _, b: ~%Math./random _ }
+out: c.%effect

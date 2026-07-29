@@ -1,0 +1,2 @@
+p: { ~s: 5, add: (x -> x + ~s) }
+out: 3 |> p.add

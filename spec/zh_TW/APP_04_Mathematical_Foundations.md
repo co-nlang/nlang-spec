@@ -95,7 +95,7 @@ Papers VII–XXII 之後，本章的圖景需補上一層：上述 Hilbert 空�
 本節僅為指針，不重複闡述（一家一戶原則）：
 
 *   **本體/封套裁決**：**[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md) §1.3**（$\omega/q$-Gram = 數學本體；複數譜 = 物理封套）。
-*   **兩軌原則與 ZK 電路**：**[APP_02](./APP_02_Formal_Verification.md) §0、§6**（驗證軌 $\mathbb{F}_2$ / 執行軌 $\mathbb{C}$；`GPP_Verify_F2` 電路）。
+*   **兩軌原則與 ZK 電路**：**[APP_02](./APP_02_Formal_Verification.md) §0、§6**（驗證軌 $\mathbb{F}_2$ / 執行軌 $\mathbb{C}$；`GPP_Verify_F2` 電路，現稱 **ω/q 指紋知識證明**）。
 *   **數學出處**：**[APP_07](./APP_07_The_Obstruction_Ladder.md)**（工程辭典）與 **Paper N**（規格↔論文系列橋接）；嚴格證明見 Papers VII–XXII。
 
 本章 §1–§4 不因此失效：$\mathbb{C}$ 投影仍是執行與導航（引力、氣味、熱帶加速）的幾何居所——只是它不再承擔證明義務。

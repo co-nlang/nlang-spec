@@ -1,0 +1,2 @@
+t: ~%Time.now _
+out: t.%effect

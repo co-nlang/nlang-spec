@@ -1,0 +1,2 @@
+@int: { hacked: 1 }
+out: @int & 10

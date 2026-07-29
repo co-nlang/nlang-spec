@@ -1,0 +1,2 @@
+b: 123
+out: b.%cause

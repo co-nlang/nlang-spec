@@ -1,0 +1,2 @@
+c: { ~%Math: 9 }
+out: (c.~%Math).%cause

@@ -42,7 +42,7 @@
 | `@` | **Type** (型別) | `@nat: 0..` | 邊界、約束、集合 |
 | `/` | **Morphism** (態射) | `/add: x y -> x + y` | 變換、規律、映射 |
 | `%` | **Meta** (元資訊) | `%len`, `%id` | 元數據、系統自省 |
-| `~%` | **System** (系統) | `~%repl.auto_commit` | 系統物件、標準庫介面 |
+| `~%` | **System** (系統) | `~%Repl.auto_commit` | 系統物件、標準庫介面 |
 | `~` | **Local** (私有) | `~tmp: 123` | 私有空間、詞法作用域 |
 
 **結構化組合（SPEC_14 §2.2）**：合法形式共八種——無前綴、`@`、`/`、`%`、`~%`、`~`、
@@ -78,7 +78,7 @@
 | `%concat` | `@morphism` | 幺半群合併介面 (映射至 `+`) |
 | `%bind` | `@morphism` | 單子鏈結介面 |
 | **`%compat`** | `@list \| @str` | 相容性宣告 (舊版 CAID 集合) |
-| `%effect` | `#Tag` | 代數效果標記 (如 `#io`, 預設: `#pure`)——tuple 不屏蔽效應，Cocoon 才屏蔽（SYNTAX_04 §2.5） |
+| `%effect` | `#Tag` | 代數效果標記 (如 `#io`, 預設: `#pure`)——tuple 不屏蔽效應，Cocoon 才屏蔽（SYNTAX_04 §2.5）；`.%effect` 可讀（SPEC_08 §4.1），顯示尾註 `;; %effect:` 屬診斷註解層（SPEC_11 §3.4） |
 | `%termination_proof` | `#Tag \| @morphism` | 遞迴終止性的形式化證明 |
 | `%migration` | `@morphism` | 版本遷移態射 |
 | `%privilege_token` | `@str` | 特權模式訪問憑證 |

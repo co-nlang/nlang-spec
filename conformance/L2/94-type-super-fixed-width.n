@@ -1,0 +1,1 @@
+out: (@u8).%super = @int

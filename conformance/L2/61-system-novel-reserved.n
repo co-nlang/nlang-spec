@@ -1,0 +1,2 @@
+d: { ~%Mine: 5 }
+out: (d.~%Mine).%cause

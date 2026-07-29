@@ -30,7 +30,7 @@
 
 **裁決：快照 ＝ Commit／CAID，不新增 source-level 語法。** 宇宙在某刻的凍結像即該刻
 Commit 的 CAID（§1、§1.1——不可變、內容定址、可 `#diff`）；引用歷史快照 ＝ 引用該
-Commit（引擎／REPL 層操作：`~%repl./commit`、於 Commit 上下文 `~%Engine./observe`、`#diff`）。
+Commit（引擎／REPL 層操作：`~%Repl./commit`、於 Commit 上下文 `~%Engine./observe`、`#diff`）。
 此結論不為同一概念開第二種拼寫，符合語法極簡原則（一字一義）；且快照本是一個 Commit
 序列（格論 meet 單調鏈）中唯一的**非單調**需求——欲在 $C_{n+1} \sqsubseteq C_n$ 精煉之後仍取
 $C_n$ 的較粗值，任何 meet 皆無法回復，唯有 CAID 釘選——CAID-pin 是其理論正位，非權宜。
@@ -55,7 +55,7 @@ $C_n$ 的較粗值，任何 meet 皆無法回復，唯有 CAID 釘選——CAID-
 - **語義**：將新的定義注入當前宇宙的 **Staged (暫存區)**。
 - **邏輯公式**：$Staged_{new} = Staged_{old} \sqcap Definition$。
 
-### 2.3 `~%repl./commit` (提交)
+### 2.3 `~%Repl./commit` (提交)
 - **語義**：將當前 Staged 的內容與當前 Commit $C_n$ 合併，產生新的不可變快照 $C_{n+1}$。
 - **原子性保證**：提交操作必須是事務性的。若合併結果產生 `_|_`，則提交失敗，HEAD 維持不變，且 Staged 區自動回滾至提交前的狀態。
 
@@ -90,8 +90,10 @@ $C_n$ 的較粗值，任何 meet 皆無法回復，唯有 CAID 釘選——CAID-
     3.  **因果一致性義務**：引擎必須確保重定向後的物件在所有與舊物件相關的格論運算中，產生的結果與原意圖相容。
     4.  **權威簽署驗證**：`#refine` Commit 必須包含有效的 `%authority` 結構。
         - **簽署對象**：該 Commit 的 CAID（計算雜湊時排除 `%authority` 欄位本身）。
-        - **權威判定**：`signer` 必須存在於當前紀元的 `~%Official.architects` 集合中。
+        - **權威判定**：`signer` 必須存在於當前紀元的 `~%Official.architects` 集合中。該集合**必須**經帶外通道供給（**[REAL_01](./REAL_01_Ouroboros_Engineering.md)** §7.2 公鑰白名單 / 工作區斷言層）。引擎**不得**自行鑄入任何本地金鑰以充實該集合——由被檢查者供給檢查名單者，其檢查恆真，是**會說謊的審計面**而非驗證（**[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** §6.1.2 裁定 P1 之同形：權威不得自授）。
         - **引導期特殊性**：引導期（Epoch < 0）之 Commit 預設不具備 `%authority`。其身分承襲由 **[ORDER_00](./ORDER_00_Interim_Constitution.md)** 定義之「創世精煉」清單硬編碼解決。
+        - **名單必須是可滿足的** **[Core Requirement，2026-07-27 新增]**：實作**必須**使「非空白名單」成為一個**可通過**的檢查。若引擎的簽署身分逐行程重生，則不存在任何可寫入名單而該引擎會出示之值——此時非空名單使 `#refine` 於**兩個方向皆被拒**（帶簽章者「簽署者不在名單中」，未帶簽章者「非引導期缺 `%authority`」）。**無法被滿足的名單不是比無法失敗的名單更嚴格,而是同一個檢查**：兩者皆為恆定值，只是常數不同。故本條之前提是 **[REAL_01](./REAL_01_Ouroboros_Engineering.md)** §7.5 的穩定操作者身分；操作者以該節所定介面取得自身公鑰，經帶外通道置入名單，方構成一次真正的宣告。
+        - **未驗證必須留痕** **[Core Requirement，2026-07-27 新增]**：白名單為空（無人宣告權威）時，引擎**得**接受未經驗證之 `#refine` 並繼續，但**必須**於該 Commit 上記錄「未經驗證」之事實，且該記錄**必須**可與「已對非空白名單完成密碼學驗證」相區分。**空白名單下即使附有有效簽章亦記為未驗證**——無可比對之集合時，簽章證明的是「某人簽了」，不是「有權者簽了」。記錄落於 Commit 審計面（非值），且不得改變既有 Commit 之 CAID。**理由**：本條為 §6.2 審計可查驗性與 **[REAL_03](./REAL_03_CAID_Protocol.md)** §6.6 條款四之同一律——不可憑檢視區分的審計面不成其為審計面。
 
 ---
 
@@ -135,7 +137,7 @@ $C_n$ 的較粗值，任何 meet 皆無法回復，唯有 CAID 釘選——CAID-
 | :--- | :--- |
 | **[SPEC_01](./SPEC_01_Foundation_and_Lattice.md)** | 格論收斂是演化與 Commit 的數學基礎。 |
 | **[SPEC_06](./SPEC_06_Unification_Logic.md)** | 所有的演化操作（#evolve, #commit）皆遵循統一化算法。 |
-| **[SPEC_11](./SPEC_11_Reflection_and_Synthesis.md)** | `~%repl` 是觀測與控制演化狀態的系統介面。 |
+| **[SPEC_11](./SPEC_11_Reflection_and_Synthesis.md)** | `~%Repl` 是觀測與控制演化狀態的系統介面。 |
 | **[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md)** | 定義了 `#refine` 如何驅動觀測視窗內的自動重定向。 |
 | **[SPEC_16](./SPEC_16_Testing_and_Proof.md)** | 測試與證明可作為 `#commit` 前的自動化守門員。 |
 | **[REAL_02](./REAL_02_Ouroboros_Protocols.md)** | 定義了引擎如何透過協定交換 Commit 與解決競爭。 |

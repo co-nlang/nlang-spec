@@ -1,0 +1,3 @@
+@Tree: { v: @int, next: @Tree | () }
+t: { v: 1, next: () } & @Tree
+out: t.v

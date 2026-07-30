@@ -1797,6 +1797,32 @@ refine signer 必在其中;引擎鑄的是**字串**、**本地隨機自任**、
 > (可對照:規格中留下的量測皆為**論證性**——§4.2.3 的「求值早於檢查」與 §4.3.5 的
 > 67.1 MB/143 MB,拿掉之後那兩條 MUST 就只剩斷言。)
 
+**引擎 v0.6.0 定版(2026-07-30)= 撥號需要同意弧,破壞性(Layer 1)條目 #8**:
+top `a5ec63b`(squash 同意閘弧 + oo 0.6.0 bump;故事提交 **"A sentence that
+describes an intention is not a gate"**)。squash 後先驗樹逐位元等同 dev
+(`12639df`),再提交;候選重測 workspace **1701/0/3**、conformance
+**143/143**、genesis **11/11**;條件閘一次成功;tag 後重建 `oo --version`
+= `oo v0.6.0` ✓、`git describe --exact-match` = `v0.6.0` ✓。dev tie-back
+`7714977`。規格同步切 **v0.6.0-draft.1**。**90 天時鐘自本日重啟**(距條目 #7
+僅一日;那是深水期的正常代價,非疏失)。
+
+**符合性量測(v0.6.0)**:
+* **能力語義四例**(直接量測,非由套件轉綠推論):無旗標 → `⊥
+  #privileged_required` 且訊息指名 `connect requires --grant connect
+  (privilege.connect capability)`;`--grant connect` → `#true`;
+  `--privileged` → `#true`(全授權涵蓋,與其文件意義一致);
+  **`--grant pin` → 拒絕** ⟹ SPEC_08 §6.1.4「出示某個能力不等於出示該能力」
+  被遵守。
+* **閘先於效果**:被拒之 `./connect` + `./fetch` 耗時 **0.046 秒**(×3),與
+  **完全無來源的 0.040 秒**同量級;帶授權之控制組 **5.05 秒** ⟹ 拒絕確實發生
+  在連線嘗試之前,而非僅低於門檻。此即 §4.2.6.1「判定法」所要求者。
+* **破壞面之計數**:全樹呼叫 `~%Discovery./connect` 者共 **6 個探針套件 + 2 支
+  `tests/pending/`**;其中遠端形式 3 個套件需加授權(`node_identity`、
+  `peer_fetch_verification`、`oodp_packet_format`),`wire_says_why` 本就使用
+  `--privileged` 故不需改,`store_boundary` 與 `universe_determinism` 為本地
+  形式故不受影響。**conformance 語料零命中** ⟹ 無任何符合性向量需要 CLI 旗標。
+* 線上協定未動,故跨版本互通不受本弧影響(破壞面在**語言面**)。
+
 **引擎 v0.5.0 定版(2026-07-30)= 哪八個弧,增量**:top `6a616f5`(squash
 `#discover` 抽樣弧 + oo 0.5.0 bump;故事提交 **"The same question does not
 have to get the same answer"**)。squash 後先驗樹逐位元等同 dev(`3e159d3`),

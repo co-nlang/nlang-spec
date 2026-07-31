@@ -1797,6 +1797,42 @@ refine signer 必在其中;引擎鑄的是**字串**、**本地隨機自任**、
 > (可對照:規格中留下的量測皆為**論證性**——§4.2.3 的「求值早於檢查」與 §4.3.5 的
 > 67.1 MB/143 MB,拿掉之後那兩條 MUST 就只剩斷言。)
 
+**引擎 v0.7.0 定版(2026-07-31)= 歸屬信任根弧,增量**:top `b28d353`
+(squash 信任根弧 + oo 0.7.0 bump;故事提交 **"A public key does not say what
+question it answers"**)。squash 後先驗樹逐位元等同 dev(`25b34d0`),再提交;
+候選重測 workspace **1721/0/3**(177 suites)、conformance **143/143**、genesis
+**11/11**;條件閘一次成功;tag 後清除 oo 建物重建,`oo --version` = `oo v0.7.0`
+✓、`git describe --exact-match` = `v0.7.0` ✓。dev tie-back `02e8260`。規格同步
+切 **v0.7.0-draft.1**。本弧為**增量**,故依 VERSIONING §5/§6 走 minor;
+不重啟 90 天時鐘。
+
+**歸屬信任根弧結案(2026-07-31,一件代修)**:工單+校準探針 tools dev
+`1f39e64`,交付 `820ddb4`,驗收代修 `6891c02`。引擎新增工作區局部
+`.oo/discovery.n` 之 `affiliation_roots`,以閉合 n/ 資料載入(不求值),並提供
+`oo node trust list|add|remove`;缺席為空,存在但讀不懂則具名失敗。此弧**只建立
+信任根而不消費**:新增 Rust 行之靜態掃描對 `peers.insert`/advert 寫入/TCP connect/
+routing 建構/身分呼叫皆 **0 命中**。
+
+**一件代修=「閉合」仍留四個別名,且物理缺席仍有一個別名**:交付版直接量測
+空檔、純空白、tuple 代 list、引號欄名皆 exit 0;另 `Path::exists()` 將一個
+**實際存在但目標缺席的符號連結**壓成「檔案缺席」。修法為只收裸
+`affiliation_roots` + list,存在檔必有該欄,並以 `symlink_metadata` 先判目錄項、
+解析後必為一般檔案。兩支驗收探針入永久套件。交付另對 legacy `lib.rs`/`main.rs`
+全檔 rustfmt,使三處接線膨脹成 2,879 行 diff;驗收還原既有格式後重施語義接線,
+此為純度整治,非第二件行為代修。
+
+**符合性量測(v0.7.0)**:
+* discovery_trust **20/20**(交付 18 + 驗收 2)、workspace **1721/0/3**
+  (177 suites)、conformance **143/143**、genesis **11/11**。
+* **工作區作用域**:同 HOME 兩工作區,A 新增根後 B 仍為空且不造檔。
+* **跨版本**:v0.6.0 引擎開啟含有效 `discovery.n` 之新工作區 exit 0(未知可選檔
+  被忽略);新引擎開啟無該檔之舊工作區 exit 0、列出空集合且不造檔。
+* **耐久成本**:1 root **95 B**;100 roots **7,223 B**。兩者皆字典序,成功後
+  `discovery.n.tmp` 缺席。信任管理前後物件數與 `.oo/format` 逐位元不動,亦不鑄
+  操作者/節點金鑰、不建 `.oo/peers/`。
+* 本弧為**增量**:所有既有工作區走「缺席=空集合」且行為不變;無線上格式、CAID、
+  語言語義或網路政策變更。依 VERSIONING §5/§6,切版時應走下一個 minor。
+
 **引擎 v0.6.0 定版(2026-07-30)= 撥號需要同意弧,破壞性(Layer 1)條目 #8**:
 top `a5ec63b`(squash 同意閘弧 + oo 0.6.0 bump;故事提交 **"A sentence that
 describes an intention is not a gate"**)。squash 後先驗樹逐位元等同 dev

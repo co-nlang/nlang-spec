@@ -8,6 +8,20 @@
 
 (無)
 
+## [0.8.0-draft.1] — 2026-07-31
+
+引擎對應版本 **v0.8.0**(nlang-tools top `5a030f3`; tag `v0.8.0`; dev tie-back
+`f15558c`)。
+
+### 增量
+
+- **直接觀察來源性**(2026-07-31;REAL_02 **§4.2.5、§4.2.6、§4.3.3–§4.3.4、§5.1.2**):
+  receiver-local 的 `direct` / `relayed` / `unknown` 三值綁定同一筆 exact signed
+  advertisement,同一筆依 `direct > relayed > unknown` 合併;`%hops: 0`、非空
+  relay host 與連到中繼者都不構成 direct。原地重啟還原觀測半邊,複製、owner 不符與
+  legacy 缺欄保守為 `unknown`;對等點目錄仍與取物來源集合分離,本版不加入 automatic
+  admission。**fmt v2、`.oo/format 1`、線上位元與 CAID 不變**。
+
 ## [0.7.0-draft.1] — 2026-07-31
 
 引擎對應版本 **v0.7.0**(nlang-tools top `b28d353`)。

@@ -1797,6 +1797,27 @@ refine signer 必在其中;引擎鑄的是**字串**、**本地隨機自任**、
 > (可對照:規格中留下的量測皆為**論證性**——§4.2.3 的「求值早於檢查」與 §4.3.5 的
 > 67.1 MB/143 MB,拿掉之後那兩條 MUST 就只剩斷言。)
 
+**引擎 v0.8.0 定版(2026-07-31)= 直接觀察來源性弧,增量**:top `5a030f3`
+(故事提交 **"A receiver can tell presence from hearsay"**),tag `v0.8.0`,dev
+ tie-back `f15558c`。候選與定版閘:`cargo fmt --all -- --check` 綠、workspace
+**1732/0/3**(178 result blocks)、直接來源性 **11/11**、既有 owner suites
+全綠、conformance **143/143**、genesis **11/11**;tag 後清除建物重建,
+`oo --version` = `oo v0.8.0` ✓、`git describe --exact-match` = `v0.8.0` ✓。
+本弧只新增 receiver-local `direct`/`relayed`/`unknown` 觀測半邊及其耐久
+合併語義;**fmt v2、`.oo/format 1`、CAID、線上位元與取物來源政策不變**。
+
+**引擎 v0.7.1 定版(2026-07-31)= 全 Rust 工作區 rustfmt 正規化,引擎 patch**:
+格式提交 `2d6bde2`,bump `107c251`,top `13d0899`(故事提交 **"Formatting debt
+is paid once or charged to every change"**),dev tie-back `62e6cd5`。固定工具鏈
+rustfmt **1.9.0-stable**(`31fca3adb2`,rustc/cargo 1.96.1);216 個 Rust 檔之
+機械轉換 `+20,039/-8,502`,無非 Rust 原始碼。實際 staged tree 與獨立 clean archive
+經同版 formatter 所得 tree **逐位元同為 `224da115`**;bump 後 top/dev tree 同為
+`b8e3eb2`。候選與定版閘:`cargo fmt --all -- --check` 綠、workspace
+**1721/0/3**(177 suites)、conformance **143/143**、genesis **11/11**;tag 後清除
+建物重建,`oo --version` = `oo v0.7.1` ✓、`git describe --exact-match` =
+`v0.7.1` ✓。僅排版與引擎 patch 版號移動,無規格、語言、CAID、線上格式或引擎判定
+變更;依 VERSIONING §2 引擎 patch 位自有,規格維持 **v0.7.0-draft.1**。
+
 **引擎 v0.7.0 定版(2026-07-31)= 歸屬信任根弧,增量**:top `b28d353`
 (squash 信任根弧 + oo 0.7.0 bump;故事提交 **"A public key does not say what
 question it answers"**)。squash 後先驗樹逐位元等同 dev(`25b34d0`),再提交;

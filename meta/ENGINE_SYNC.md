@@ -1797,6 +1797,44 @@ refine signer 必在其中;引擎鑄的是**字串**、**本地隨機自任**、
 > (可對照:規格中留下的量測皆為**論證性**——§4.2.3 的「求值早於檢查」與 §4.3.5 的
 > 67.1 MB/143 MB,拿掉之後那兩條 MUST 就只剩斷言。)
 
+**引擎 v0.11.0 定版(2026-08-06)= 原子寫入弧,增量**:top `86b1bc2`(squash
+atomic_writes 弧 + oo 0.11.0 bump;故事提交 **"A write must not leave a half
+file"**)。squash 後先驗樹逐位元等同 dev(`f613c551`),再提交。
+**缺陷**:所有耐久寫入皆為 `fs::write`(O_TRUNC 後寫),並行讀者看得到半截檔;
+實測 94 KB staged、60 次 evolve、連續解析讀者 ⟹ **63,769 次讀取中 12 次解析失敗
+(每次寫入 0.2 次)**。`storage.rs` 全檔 `rename`/`create_new` 命中數為 0。
+**交付**:`storage::atomic_write` — 同目錄 temp + `fsync` + `rename`;
+接上 staged / pin_pending / effect_pending / abandoned / HEAD / CAS 物件 /
+`architects.json` / `.oo/format`。順帶消掉 `write_object` 的 check-then-write
+TOCTOU(`rename` 原子冪等)。
+**探針不靠競態**:先量了競態紅(0.02%/讀取)並否決——**紅在機率上的閘教讀者去重跑
+而不是去看**;改用 **inode 簽名**(就地 rewrite 重用 inode,rename 每次換一個),
+基線每趟必紅、交付後每趟必綠。
+**一件代修** `2d301ee`:**P1 對它守的實作是瞎的**——交付把臨時檔命名為
+`.partial-*`,而 P1 篩的是含 `tmp` 的名字;植入兩個洩漏檔(一個在 `.oo/`、
+**一個在物件分片內**)舊篩法一個都沒抓到,而分片內那個正是 `local_gc` 的
+`store_map` 會算成幻影物件者。**交付從未動探針,它只是選了一個釘看不見的名字。**
+修法改為釘性質:分片內用精確規則(62 個小寫十六進位字元),平面層維持啟發式並明說。
+**驗收**:workspace **1760/0/3**(181 blocks)、conformance **143/143**、
+genesis **11/11**、arc suite 8/8 ×3 穩定;`local_gc` 17 / `advert_persistence` 19 /
+`history_ops` 15 / `store_boundary` 20 全綠;殘留 scratch 目錄 0。
+規格同步切 **v0.11.0-draft.1**。
+
+**符合性量測(v0.11.0)**:
+* **競態,交付樹三趟**:約 16 萬次讀取,**解析失敗 0、檔案不存在 0**。
+  後者是必要的:**新 inode 是必要不是充分**——delete-and-recreate 也會換 inode,
+  只是把「截斷窗口」換成「不存在窗口」,而只計解析失敗會讓它讀起來像乾淨通過。
+* **跨版本為〔讀〕不是〔量〕**:每個呼叫點皆 `fs::write(p, X)` → `atomic_write(p, X)`,
+  X 完全不變、無任何序列化改動 ⟹ 位元組依構造相同。未建舊二進位實跑,此處明記。
+* **物件撕裂量測未做**:物件與 staged 共用同一個 `atomic_write`,機制已由 staged
+  三趟證實。說出來比默默跳過好。
+* **工單漏列兩處(非交付失誤)**:`peers.rs:452` 的 `.oo/peers/directory` 壓實
+  已有手寫 temp+rename **但無 `fsync`** 且 `.ok()?` 吞錯誤;`oodp.rs:639` 的
+  `~/.oo/nodes/<hash>.affiliation` 仍是裸 `fs::write`。
+  **漏的成因**:工單的路徑表由 grep `join(".oo")` 建出,結構上看不見用別種方式
+  構造路徑的寫入(`peers.rs` 走常數、`oodp.rs` 從 `node_key_path` 衍生)。
+  ⟹ **「掃描不得截斷」不夠——掃描的形狀也決定了它看得見什麼。**
+
 **引擎 v0.10.0 定版(2026-07-31)= 在席是誰弧,增量**:top `b094fdd`(squash
 seat_order 弧 + oo 0.10.0 bump;故事提交 **"Arrival order is a fact about you,
 not a fact about them"**)。squash 後先驗樹逐位元等同 dev(`15f5f308`),再提交;

@@ -1797,6 +1797,59 @@ refine signer 必在其中;引擎鑄的是**字串**、**本地隨機自任**、
 > (可對照:規格中留下的量測皆為**論證性**——§4.2.3 的「求值早於檢查」與 §4.3.5 的
 > 67.1 MB/143 MB,拿掉之後那兩條 MUST 就只剩斷言。)
 
+**引擎 v0.12.0 定版(2026-08-08)= W3′-a「矛盾在哪」弧,增量**:top `0328319`
+(squash where_the_conflict_is 弧 + oo 0.12.0 bump;故事提交 **"Say where the
+conflict is, not where you were typing"**)。squash 後先驗樹逐位元等同 dev
+(`21a69299`),再提交。tie-back `6e8beee`。規格同步切 **v0.12.0-draft.1**。
+
+**版號:走 minor,與前一弧的 patch 相反**。W0′/v0.11.1 是符合性(規格一字未改);
+本弧**新增 SPEC_10 §2.2.1**,是語義變更,故依 VERSIONING §6「語義變更逐 minor」。
+
+**缺陷**:evolve 撞 ⊥ 時,操作者看到的是
+`Conflict at Path(Path { anchor: Bare, segments: ["app"], span: Span { start: 0, end: 3 } })`
+——**該次演化所寫的頂層欄位名**,以 Rust 除錯格式印出;而矛盾實際在
+`app.db.opts.retries`(四層深、六個葉子中的一個)。互動式階段更少:
+`Evolution Conflict: Conflict`,連欄位都沒有。
+
+**偵察三次被實測推翻,全部同一個方向——讀碼讓我把事情想得比實際壞或比實際簡單**:
+① 「引擎從來沒算過座標」→ **算了**,`unify_combo` 在回程逐層累積,直接呼
+`engine.unify` 量到 `path = Some("p.q.deep")`,丟棄點是 `Value::Bottom(d) => Err(d.cause)`
+兩行(`universe.rs:396/495`),`d` 就在手上。② 「完整座標 = `f.key` ＋ `path`」→
+**`path` 已是絕對的**,加前綴會印出 `app.app.db…`。③ 「頂層衝突的 `path` 是 `None`」→
+**也有值**(`Some("x")`),`None` 在型別上可達而**未能造出**。
+⟹ 連同 W0′ 的「沒人讀 integrity」→「讀了但不擋」,**本週共四次**。
+
+**W3′ 同時被拆為 a/b**:「evolve 邊界說得出矛盾在哪」與「提交時報告 ⊥ 座標」
+是兩件不同的事。**b 阻塞於 W12** ——〔量〕§4.1.2 的 MUST **不是在被違反,是在等 W12**:
+合併型 ⊥ 在 evolve 邊界就被攔(`staged` 從未寫出),明寫的 `_|_` 被射程 MUST NOT
+明文排除,並發型需要 commit 重讀 HEAD 而它不重讀(D32)。**驗收方先前把它記為
+「現況為不合規」係誤判,已於 STATUS.md 更正。**
+
+**交付**:`Universe::evolve` 的錯誤型別由 `BottomCause` 換成 `BottomDetail`;
+`universe.rs:435` 那條路徑的 `unify` 跑在**欄位值**上故 `path` 為相對,交付以
+`p == *c || p.starts_with(&format!("{c}."))` 分流絕對化,**不會雙重前綴**
+——**那正是驗收方第一版裁定寫錯的那一格**。兩個回報面同形:
+`#conflict at app.db.opts.retries`。
+
+**驗收:通過,零代修**(OODP 系列第四次)。探針 9/9;workspace **1781/0/3**
+(183 blocks)×5 穩定;conformance **143/143**;genesis **11/11**;
+**跨版本為實跑**——v0.11.1 二進位建立的 30 提交倉,交付版讀之 `log` 30 筆、
+`gc` 60/60/0 不變。探針完整性以機械法證明(刪 4 行 `#[ignore]` → rustfmt → diff
+⟹ IDENTICAL)。
+
+**對抗逼出了工單自己預告的裁定,而責任不在交付**:
+`{ "a.b": 1 }` 與 `{ a: { b: 1 } }` 兩個**結構不同**的宇宙給出**同一個座標字串**
+`cfg.a.b`。追下去:`cfg."a.b"` **不可解析**、`cfg.a.b` **靜默回 Top**、
+`cfg.0` 可導航。⟹ **n/ 的路徑語法沒有「含點或含空白之鍵」的拼法;引號鍵寫得進去、
+讀不回來。** 交付印的是唯一可印的東西。已寫成 SPEC_10 §2.2.1 的**自陳缺口**。
+
+**掛帳(非缺陷)**:
+1. **路徑語法沒有引號鍵的拼法**,而鍵可以是引號的——寫面與讀面不對稱,**語言層缺口**,歸 SYNTAX。
+2. **導航到不存在的巢狀路徑靜默回 `_`**,使「照座標走」不可靠;與 1 合起來才是完整危害。
+3. **值的顯示印表機不加引號**(`--observe` 印 `a.b: 2`)而 **`oo fmt` 會加**且
+   **round-trip 實測成功** ⟹ **fmt v2 未被違反**,但兩個印表機對同一個鍵給出不同的字。
+4. `message` 仍是 Rust Debug(`Atom(Int(1), EffectTag(0), None)`);工單列為加分不列要求,未做。
+
 **引擎 v0.11.1 定版(2026-08-07)= W0′ 弧,引擎 patch**:top `22b1957`(squash
 verdict_must_gate 弧 + oo 0.11.1 bump;故事提交 **"What you could not read, you
 may not collect"**)。squash 後先驗樹逐位元等同 dev(`80018a6d`),再提交。
@@ -1808,6 +1861,8 @@ tie-back `f0ecb21`。
 規格維持 `v0.11.0-draft.1`。**驗收方原本建議 v0.12.0,係以「使用者可見行為
 改變」推理,而本政策的軸是「規格語義有沒有移動」。** 消耗一個 minor 會讓
 `oo v0.12.0` 宣稱實作一份不存在的規格 `0.12`——那正是 §6.2 那筆錯的鏡像。
+(**按語 2026-08-08**:`0.12` 其後確實成立,但是**另一個理由**——W3′-a 新增了
+SPEC_10 §2.2.1。本段記的是 v0.11.1 當時的判斷,該判斷不因此失效。)
 
 **缺陷(§6.6 不合規三處)**:`gc.rs` 的 `mark` 對不可解碼的**可達**物件
 `continue`(把它當葉子),而 `run_gc` 取得 `report.integrity` 後從不讀它,照刪。

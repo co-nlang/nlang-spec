@@ -1797,6 +1797,42 @@ refine signer 必在其中;引擎鑄的是**字串**、**本地隨機自任**、
 > (可對照:規格中留下的量測皆為**論證性**——§4.2.3 的「求值早於檢查」與 §4.3.5 的
 > 67.1 MB/143 MB,拿掉之後那兩條 MUST 就只剩斷言。)
 
+**引擎 v0.13.0 定版(2026-08-09)= W8′-a「印出來的東西要能被讀回去」弧,增量**:
+top `e36706d`(squash print_what_can_be_read 弧 + oo 0.13.0 bump;故事提交
+**"What the engine prints, it must be able to read"**)。squash 後先驗樹逐位元
+等同 dev(`4f9ffa1e`)才提交;tag 於實測 commit(workspace 1793/0/3、
+conformance 143/143、genesis 11/11 皆於候選上重測)。規格同步切
+`v0.13.0-draft.1`。以下為該弧驗收全文。
+
+**驗收(2026-08-09)**:
+交付 `3dfdd1f`,開弧 `e6ba836`,基線 `6e8beee`(v0.12.0)。**零代修**。
+規格側新增 **REAL_01 §1.3**(四條 MUST／MUST NOT ＋ 論證性量測 ＋ 自陳缺口),
+並在 **SPEC_10 §2.2.1** 留下升格註記。**新增規範條文 ⟹ 語義變更 ⟹ 走 minor**。
+
+**符合性紀錄(此弧引擎做到了什麼)**:`Value::to_nlang` 與 `Value::to_string_plain`
+兩者的 `_ => format!("{:?}", self)` 收尾均被移除,改為明列全部十一個變體
+(Thunk → `expr.to_nlang`;Ref → `<<path>>`;Code → `expr.to_nlang`);
+`oo log` 的日期改 RFC-3339。量測:探針 12/12、重複 ×5 全同、workspace
+**1793/0/3**、conformance **143/143**、genesis **11/11**、
+`display_order`/`union_dedupe`/`union_absorption` = 17/14/7 全綠。
+
+**跨版本量測(非破壞性由量測確立,非由推理)**:同一份來源在 v0.7.0 與本版
+分別建倉,根 CAID **逐位元組相同**(`…9d99e5b8cc5e146a`);本版讀 v0.7.0 的倉
+讀得出,v0.7.0 讀本版的倉**算出同一個根 CAID** 並印出它自己的 Debug 形——
+**同一批位元組、兩種呈現、一個身分**。`~%Discovery./identify` 於新舊引擎回同一 CAID。
+
+**驗收方掛的兩筆**:
+(1) 交付射程比工單寬一項——工單只點名 `to_nlang`,交付連 `to_string_plain`
+一起修。判定為在射程之內(同檔案、同一個收尾、同一個缺陷),但**記為超出而非默認**;
+`to_string_plain` 有 64 個呼叫點,絕大多數作用於 `force` 之後的結果。
+(2) 交付回報的三個數字有一處對調(17/7/14 實為 17/14/7)。無實質影響,
+但驗收不照抄交付的數字,故記。
+
+**一件量到而不宣稱的事**:把 `oo status` 印出的區塊剝殼後在另一個空倉重新
+evolve+commit,根 CAID 相同——即**語義往返在本例成立**。但工單只宣稱「可剖析」,
+且**造不出反例不等於不存在反例**(相對錨點 `^.` 隨巢狀一起被印出,把最可能的
+一類擋掉了),故 REAL_01 §1.3 的自陳缺口照舊保留。
+
 **引擎 v0.12.0 定版(2026-08-08)= W3′-a「矛盾在哪」弧,增量**:top `0328319`
 (squash where_the_conflict_is 弧 + oo 0.12.0 bump;故事提交 **"Say where the
 conflict is, not where you were typing"**)。squash 後先驗樹逐位元等同 dev

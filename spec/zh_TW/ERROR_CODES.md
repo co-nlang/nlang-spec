@@ -103,6 +103,7 @@
 | **`#no_matching_branch`** | 原因·⊥ | 模式匹配無匹配分支 | 在態射分派或條件收斂中，輸入值不符合任何定義的分支條件。請檢查 `@Type` 約束或增加 `_` 預設分支。 |
 | **`#out_of_horizon`** | 原因·⊥ | 視界過度穿透 | 路徑導航符號 `^` 超出了實際的嵌套層級。請檢查 `details.requested_depth` 與 `details.actual_depth` 以對齊結構。 |
 | **`#routing_budget_exceeded`** | 原因·⊥ | 多跳路由預算用盡 | 多跳取物／發現耗盡跳數預算（§2.7.1，2026-08-09 新設）。**這是資源邊界，不是攻擊**——請檢查對端是否可達、拉近路由距離，或提高跳數上限。**不得**與 `#semantic_isolation` 混用。 |
+| **`#stack_overflow`** | 原因·⊥ | 實作遞迴上限 | 實作自身的遞迴天花板（§2.7.3，2026-08-09 登記）。**這不是你設的上限**——`max_unification_depth` 調再高也不會過。請攤平結構、改寫遞迴，或換一個能走更深的實作。**實作不得以此名回報操作者設定的上限**，亦**不得**以 `#blur` 鑄之。 |
 
 > **廢止標籤注記(2026-07-14)**:`#invalid_path` 為引擎曾誤鑄之未立法
 > 標籤(2026-07-12 G4 裁定文沿用,從未入本表)。已廢止:座標缺失依
@@ -170,9 +171,9 @@
 > 二者皆為規範性，內容由 §1 各列的「軸·載體」欄決定。
 > 「一個標籤掛在什麼上」在本版之前**在規格裡不可回答**。
 
-### 2.1 載體：⊥（47 個）
+### 2.1 載體：⊥（48 個）
 
-`#conflict` `#arithmetic_on_anchor` `#numerical_error` `#divergent` `#tropical_approximation_failed` `#order_conflict` `#h1_split` `#h2_split` `#fractional_bitwise` `#fuel_exhausted` `#timeout` `#max_nodes_exceeded` `#max_depth_exceeded` `#max_lifting_exceeded` `#max_branches_exceeded` `#no_matching_branch` `#out_of_horizon` `#routing_budget_exceeded` `#caid_mismatch` `#object_undecodable` `#peer_not_implemented` `#peer_unknown_status` `#peer_refused` `#peer_timeout` `#compat_conflict` `#unsupported_ca_algo` `#unsupported_fmt_version` `#ambiguous_refinement` `#refine_authority_missing` `#refine_authority_invalid` `#refine_signer_unknown` `#refine_source_unverifiable` `#refinement_cycle` `#semantic_isolation` `#verification_failed` `#private_access_violation` `#cocoon_isolation_violation` `#missing_key` `#lifting_failed` `#effect_violation` `#type_mismatch` `#projection_conflict` `#no_context` `#privileged_required` `#store_boundary` `#ffi_panic` `#ffi_malformed`
+`#conflict` `#arithmetic_on_anchor` `#numerical_error` `#divergent` `#tropical_approximation_failed` `#order_conflict` `#h1_split` `#h2_split` `#fractional_bitwise` `#fuel_exhausted` `#timeout` `#max_nodes_exceeded` `#max_depth_exceeded` `#max_lifting_exceeded` `#max_branches_exceeded` `#no_matching_branch` `#out_of_horizon` `#routing_budget_exceeded` `#stack_overflow` `#caid_mismatch` `#object_undecodable` `#peer_not_implemented` `#peer_unknown_status` `#peer_refused` `#peer_timeout` `#compat_conflict` `#unsupported_ca_algo` `#unsupported_fmt_version` `#ambiguous_refinement` `#refine_authority_missing` `#refine_authority_invalid` `#refine_signer_unknown` `#refine_source_unverifiable` `#refinement_cycle` `#semantic_isolation` `#verification_failed` `#private_access_violation` `#cocoon_isolation_violation` `#missing_key` `#lifting_failed` `#effect_violation` `#type_mismatch` `#projection_conflict` `#no_context` `#privileged_required` `#store_boundary` `#ffi_panic` `#ffi_malformed`
 
 ### 2.2 載體：#blur（4 個）
 
@@ -230,13 +231,44 @@
 *   **`#fuel_exhausted` 不得用於深度耗盡（MUST NOT）**：燃料與深度是兩個獨立的
     預算，補救也不同（加燃料 vs 攤平結構）。以前者回報後者，等於把一個
     **可行的**補救換成一個**無效的**補救。
-*   **`#stack_overflow` 不入本登記簿**：它與 `#max_depth_exceeded` 說的是同一件事，
-    而**一個概念一種正準拼法**。實作若有此名，**不得**以之對外回報。
+*   ~~**`#stack_overflow` 不入本登記簿**：它與 `#max_depth_exceeded` 說的是同一件事~~
+    **⚠ 2026-08-09 更正：該判斷不成立。** 見 §2.7.3——二者是**政策／無能為力**這一對，
+    不是同一件事的兩種拼法。`#stack_overflow` **已登記**（§1.2）。
 
 > **論證性量測（2026-08-09，參考實作 v0.13.0）**：同一個條件在該實作中有**三個**
 > 名字——規格的 `#max_depth_exceeded`（該實作從未鑄造）、其內部列舉的
 > `#stack_overflow`（不可達：深度閘刻意改回燃料）、以及**實際跑出來的**
 > `#fuel_exhausted`。三者之中，會被操作者看到的那一個指向錯誤的補救。
+
+#### 2.7.3 政策的上限與實作的上限是兩件事 **[Core Requirement，2026-08-09 新設]**
+
+**§2.7.2 當時判斷 `#stack_overflow` 與 `#max_depth_exceeded` 是同一件事。那是錯的。**
+它們回答的是兩個不同的問題：
+
+| | 誰決定 | 意思 | 操作者能做什麼 |
+| :--- | :--- | :--- | :--- |
+| **`#max_depth_exceeded`** | **操作者**（`~%Config.max_unification_depth`） | 「**我選擇**在這裡停」 | 調高那個旋鈕，或攤平結構 |
+| **`#stack_overflow`** | **實作** | 「**我到不了**那裡」 | 換一個實作，或攤平結構。**調旋鈕沒有用** |
+
+*   **實作上限必須存在（MUST）**：實作**必須**有一個自己的遞迴上限，
+    且**必須**嚴格小於它實際能承受的深度。**操作者設定的任何政策值，
+    都不得使實作異常終止。**
+*   **實作上限不得以政策之名回報（MUST NOT）**：撞到實作上限時，
+    `%cause` **不得**是 `#max_depth_exceeded`——那會把一個**無效的**補救
+    （「調高上限」）遞給操作者。§2.7.1 是同一條規則的另一個實例。
+*   **實作上限不得鑄 `#blur`（MUST NOT）**：`#blur` 宣稱一個**可定址的快照**
+    （**[SPEC_08](./SPEC_08_Meta_and_Runtime.md) §3.2.1**），而一次因無能為力
+    而中止的遞迴產生不出來。Strict 與 Blur 策略下**皆為 `_\|_`**。
+*   **實作上限不是旋鈕（MUST NOT）**：它**不得**出現在 **[SPEC_09](./SPEC_09_Standard_Library.md) §6**
+    的封閉旋鈕表裡。旋鈕表是**操作者的介面**；實作能走多深是**實作的事實**。
+
+> **論證性量測（2026-08-09，參考實作 v0.15.0）**：`max_unification_depth`
+> 在 v0.15.0 才第一次在演化期生效，副作用是**操作者調大它就能讓引擎 dump core**——
+> 預設 `256` 與 `488` 退出碼 0，**`499` 起 `thread 'oo-main' has overflowed its stack`**，
+> 沒有 `_\|_`、沒有 `#blur`、沒有訊息。該實作跑在 64 MiB 的執行緒上，
+> 64 MiB ÷ ~490 層 ≈ **134 KB／層**。
+> ⟹ **在此之前，那個上限不是政策，是實作把自己的天花板租給了操作者。**
+> 拿掉這個量測，上列四條就只是分類學。
 
 ---
 

@@ -122,6 +122,8 @@
 
 #### 3.2.1 每一個非成功回應都必須說出為什麼 **[Core Requirement,2026-07-29 新設]**
 
+> **軸的定義已移出本節(2026-08-09)**:「狀態／原因」之分與「狀態集不得增長、原因集得增長」的通則,規範性定義在 **[ERROR_CODES](./ERROR_CODES.md) §0**。本節保留的是該通則在**線上面**的具體形(`%status` 五者與 `%reason` 開放集)。此前本節與 **[SPEC_08](./SPEC_08_Meta_and_Runtime.md) §3.2.1** 各自獨立地定義了同一個二分。
+
 *   **`%reason` 於 `%status` 非 `#success` 時必須出現(MUST)**,於 `#success` 時**不得**出現。
 *   **`%status` 集合不得為此增長(MUST NOT)**:仍為 `#success` / `#not_found` / `#conflict` / `#not_implemented` / `#rejected` 五者。新增 op 或新增可分情況一律以 `%reason` 承載。
 *   **本節點不服務之 op 回 `#not_implemented`(MUST)**,而非 `#conflict`——不論該 op 名是「未知」或「已知而未實作」。二者對提問者是同一件事:**換一台問**。而 `#conflict` 說的是另一件事:**修你自己的封包**。

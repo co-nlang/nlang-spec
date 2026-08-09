@@ -1797,6 +1797,112 @@ refine signer 必在其中;引擎鑄的是**字串**、**本地隨機自任**、
 > (可對照:規格中留下的量測皆為**論證性**——§4.2.3 的「求值早於檢查」與 §4.3.5 的
 > 67.1 MB/143 MB,拿掉之後那兩條 MUST 就只剩斷言。)
 
+**引擎 v0.14.0 定版(2026-08-09)= W4 ＋ W4′ 兩弧,破壞性**:top `1d9681d`
+(squash the_name_points_at_the_remedy 弧 + oo 0.14.0 bump;故事提交
+**"A resource boundary is not an attack"**)。squash 後先驗樹逐位元等同 dev
+(`63351de5`)才提交;tag 於實測 commit。規格同步切 `v0.14.0-draft.1`。
+**破壞性條目 #9**,90 天時鐘自本日重啟(距 #8 十日)。
+W4 為純規格弧、無引擎交付,故與 W4′ 併入同一版。
+
+**W4′「名字要指向補救」弧驗收(2026-08-09,尚未切版)**:交付 `feee5ee`,
+開弧 `1d23f31`,基線 `72c5fa8`(v0.13.0)。**引擎側零代修。**
+**破壞性條目 #9**(只動因深度耗盡而生的 `#blur` 之 CAID)。
+
+**量測**:探針 9/9、重複 ×5 全同、workspace **1802/0/3**、genesis 11/11、
+conformance **143/143**(語料六向量已由驗收方更新,見下)。
+深度 blur 的 CAID 如預期移動 `6ebb46d7…` → `6b537130…`;
+**燃料 blur 的 `e4dc016e…` 逐位元組不變**(釘 P2)——破壞面就是工單畫的那條線。
+
+**交付比工單多做對一處**:`BottomCause::obstruction_degree` 的 `=> 3` 分支
+也必須收新變體,工單未列,交付自己補上。連同 `as_tag`／`as_cause_combo`／
+`oo/src/main.rs`,**一個新 cause 要改四處,而漏掉任何一處都不會有測試變紅**。
+
+**驗收方的工單有兩處錯,根因記在工單側**:
+(1) §7 的例外授權只列了 `semantic_eclipse_test.rs`,漏了 `disc_multihop_test.rs`
+——**掃了鑄造點,沒掃測試裡的期望點**(與 v0.6.0「工單列舉漏兩個套件」同型)。
+(2) 成功標準寫「反向盤點 3 降為 2」,但 §2.7.1 **明文允許保留讀取能力**,
+列舉分支必須留著 ⟹ 盤點必然仍看得到它。**標準與自己的裁定衝突**;
+正確的檢查是探針 R4(鑄造點 = 0),而它是綠的。
+
+**規格側收尾(驗收方)**:合規語料六個向量的期望由 `#fuel_exhausted` 改為
+`#max_depth_exceeded`——**它們原本編碼的就是這個缺陷**。其中 `L2-21`
+需要用戶裁定才改,見 CHANGELOG「SPEC_08 §3.2.2 第 3 款改寫」。
+
+---
+
+**W4″(新開,尚未動工):`max_unification_depth` 這個旋鈕是壞的**
+
+W4′ 的對抗量測抓到,**與本交付無關且早於它至少六個 minor**:
+
+| 量測 | 結果 |
+| :-- | :-- |
+| 臨界值二分(`1 + 1 + …` 之項數) | **n=256 通過 / n=257 失敗**——正是預設值 |
+| 設 `~%Config.max_unification_depth: 4000` | 臨界值**仍是 256/257** |
+| 同一次執行讀回該旋鈕 | **4000**(寫進去了、讀得到、**沒有被用**) |
+| 提交後再讀 | **256**(連值都沒存活) |
+| v0.7.0 同一組量測 | **同樣忽略該旋鈕** ⟹ 先於 W4′ |
+
+⟹ W4′ 使名字指向了**正確的**旋鈕,而**那個旋鈕不動**。
+本弧的論旨(名字要指向補救)因此只兌現了一半。
+`~%Config` 的其他旋鈕是否同樣不生效**尚未逐一量測**——W4″ 應先做這件事。
+
+**W4 完成後的殘留(2026-08-09,引擎 v0.13.0)**:規格側已落 ERROR_CODES §0／
+「軸·載體」欄／§2 逐載體索引／§2.7 兩則命名裁定,**引擎尚未跟上**。反向盤點
+自 5 降為 **3**,且三者皆為刻意:
+
+| 標籤 | 現況 |
+| :-- | :-- |
+| `#invalid_path` | 已廢止(2026-07-14),登記簿有注記無列;引擎保留讀取能力 |
+| `#semantic_eclipse` | **§2.7.1 廢止**,引擎仍在鑄——**W4′** |
+| `#stack_overflow` | **§2.7.2 決定不入登記簿**,引擎列舉仍有(不可達) |
+
+**引擎待辦(W4′)**:(a) 路由跳數用盡改鑄 `#routing_budget_exceeded`;
+(b) 深度耗盡改鑄 `#max_depth_exceeded` 而非 `#fuel_exhausted`;
+(c) `#stack_overflow` 不再對外(其 variant 在 `BlurCause::as_bytes` 內進 `#blur` 的
+CAID,**刪 variant 屬 fmt 紀律,不在 W4′ 射程**)。三者皆改變操作者看到的字串。
+
+**`#incomplete` 的符合性事實**:規格保留該狀態(§3.2.1 給了它「不可內容定址」
+這個硬理由),而**參考實作 v0.13.0 未實作**——`ObservationState` 有匯出、
+`to_tag()` 有 `"incomplete"` 字串,但**全樹沒有任何一處建構它**。
+`handle_resource_exhausted` 只有三支:Strict→`⊥`、Blur→`#blur`、Approximate→`#approximate`。
+⟹ **規格描述的暫態在跑著的引擎裡不存在**;此為符合性缺口,不改規格。
+
+**ERROR_CODES ↔ 引擎 標籤盤點(2026-08-09,引擎 v0.13.0;W4 偵察)**:
+新增 `scripts/error-code-inventory.py`(唯讀,不改語料;自帶雙控制——
+`#conflict` 必須判為 `enum`、一個假標籤必須判為 `absent`,控制失敗即中止)。
+
+    python3 scripts/error-code-inventory.py --engine-src ../nlang-tools/crates
+
+**它回答的是「引擎裡有沒有這個名字」,不是「引擎做得對不對」**,也不是
+「引擎鑄不鑄得出來」——用戶 2026-08-09 明確如此界定射程。
+
+| 判別 | 數 | 意思 |
+| :-- | --: | :-- |
+| `enum` | **22** | 出現在 cause 列舉的標籤對映(`BottomCause`／`BlurCause`／`TopCaused`) |
+| `literal` | 5 | 以字串字面值出現在非註解程式行 |
+| `comment` | 1 | 只在註解裡(`#recursive_lazy`) |
+| `absent` | **33** | 四種形狀都找不到 |
+| **合計** | **61** | ERROR_CODES §1 的表格列數 |
+
+逐節 `absent`:§1.1 六、§1.2 五、§1.3 十一、§1.4 五、§1.5 六。
+
+**反向(引擎列舉中而 ERROR_CODES 未收錄)= 5**:
+`#h1_split`／`#h2_split`／`#invalid_path`(已廢止,有注記無列)／
+**`#semantic_eclipse`**／**`#stack_overflow`**。
+
+**判別強度的界線要說清楚**:`#incomplete` 被判為 `literal`,因為
+`observation.rs:48` 有 `"incomplete"` 這個字串;但 `ObservationState`
+**全樹沒有任何一處建構它**(`ObservationState::` 於該檔之外零命中)⟹
+**「有這個名字」不等於「鑄得出來」**,而本盤點只答前者。
+
+**三套 cause 詞彙表互不相同(這是 W4 的承重量測)**:
+`BottomCause` 24 個(enum,封閉,fmt v2 append-only)／`BlurCause` 4 個
+(3 固定 + 1 開放 `String`)／帶因 `Top` 為裸 `String`(實得 2 個)。
+**三者交集只有 `fuel_exhausted` 與 `timeout` 兩個。**
+`#stack_overflow` 只活在 `BlurCause`,`#semantic_eclipse` 只活在 `BottomCause`。
+⟹ ERROR_CODES 把它們攤成一張 61 列平表,**表格的形狀宣稱了一種實作沒有、
+規格也從未陳述的統一性**。
+
 **引擎 v0.13.0 定版(2026-08-09)= W8′-a「印出來的東西要能被讀回去」弧,增量**:
 top `e36706d`(squash print_what_can_be_read 弧 + oo 0.13.0 bump;故事提交
 **"What the engine prints, it must be able to read"**)。squash 後先驗樹逐位元

@@ -159,7 +159,7 @@ _: v                       ;; 全量觀測 → 自我迴歸至 %fuel 視界
 
 ### 6.5 force 與固化邊界
 
-- **force ＝ 觀測原語**；`%fuel` 只在 force 點消耗（thunk 建立免費——「不觀測就不坍縮」的資源版）。**路徑導向觀測**逐段 force，自動成為「只付走過的路」的成本模型；**全量觀測**掛 fuel 視界，自指結構於視界誠實截斷為 `_|_ #fuel_exhausted`（**[SPEC_08](./SPEC_08_Meta_and_Runtime.md) §3**）。
+- **force ＝ 觀測原語**；`%fuel` 只在 force 點消耗（thunk 建立免費——「不觀測就不坍縮」的資源版）。**路徑導向觀測**逐段 force，自動成為「只付走過的路」的成本模型；**全量觀測**掛 fuel 視界，自指結構於視界誠實截斷（**[SPEC_08](./SPEC_08_Meta_and_Runtime.md) §3**）。**截斷成什麼是策略相依的，不是一種**（2026-08-09 更正）：`%strategy: #strict` 下得 `_|_`，其 `%cause` 為 `#fuel_exhausted`；`%strategy: #blur` 下**提升（Lift）**為 `#blur`，其 `%cause` 同拼 `#fuel_exhausted` 而**載體不同**——`#blur` 可內容定址且其 CAID **必須**含視界參數，`_|_` 不是。此處的「原因」與「你手上握著什麼」是兩條軸，見 **[ERROR_CODES](./ERROR_CODES.md) §0**。本句原文只寫了 strict 那一半。
 - **cocoon ＝ 固化邊界**：本徵態封閉 ⟹ 內容於封箱時定案——cocoon 欄位在**構造時** force（語義，非最佳化；SPEC_03／SPEC_08 §3.5）；tuple 同理（定長密封）。
 - **evolve／commit**：開放項可儲存（P3），固化推遲到觀測。
 

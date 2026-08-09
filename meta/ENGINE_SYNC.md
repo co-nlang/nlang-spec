@@ -1797,6 +1797,93 @@ refine signer 必在其中;引擎鑄的是**字串**、**本地隨機自任**、
 > (可對照:規格中留下的量測皆為**論證性**——§4.2.3 的「求值早於檢查」與 §4.3.5 的
 > 67.1 MB/143 MB,拿掉之後那兩條 MUST 就只剩斷言。)
 
+**引擎 v0.15.0 定版(2026-08-09)= W4″ 弧,增量**:top `4586223`
+(squash a_knob_that_does_nothing 弧 + oo 0.15.0 bump;故事提交
+**"A knob that changes nothing is worse than no knob at all"**)。
+squash 後先驗樹逐位元等同 dev(`e3fd4b6b`)才提交;tag 於實測 commit
+(workspace 1812/0/3、conformance 143/143、genesis 11/11 皆於候選上重測,
+且**先驗過 `target/debug/deps` 無非 ELF 壞檔**——見 v0.14.0 切版的教訓)。
+規格同步切 `v0.15.0-draft.1`。**非破壞性**。
+
+**W4″「一個不做事的旋鈕」弧驗收(2026-08-09,尚未切版)**:交付 `86efa7d`,
+開弧 `4211a47`,基線 `9cff223`(v0.14.0)。**零代修。** 非破壞性(P1 根 CAID 不動)。
+
+**量測**:探針 10/10、重複 ×5 全同、workspace **1812/0/3**、conformance 143/143、
+genesis 11/11。commit 實測輸出:
+`note: ~%Config was not committed (horizon parameters stay staged as session state)`。
+**P2 從空過變成真的在比對**:有 `~%Config` 那側的根 = `aa1b70f7…`,與無者相同。
+
+**§6.3 那個數字是零,而工單說零本身要解釋(交付未回報,驗收方補)**:
+1807 → 1812 恰好 +5,**沒有任何既有測試改變行為**。原因:全 workspace 會**設定**
+旋鈕的只有 `config_validation_probe_test`(23 處全在驗證壞值被拒)與
+`system_axis_probe_test`(2 處)。**沒有人依賴「上限不生效」——也沒有人在測它們**,
+這正是五個旋鈕能長期失效而無人發現的原因。
+
+**驗收方偵察有一處太寬,已更正**:我把 `max_unification_depth` 記為平坦的
+「不生效」。實測(交付前後皆然)**combo 合併路徑一直 respect 旋鈕**——
+`depth: 2` → `#max_depth_exceeded`、`depth: 64` → 收斂,而那正是 **W4′ 探針
+R1/R2/C2 的形狀,它們在 v0.14.0 就是綠的**。**反證躺在上一弧自己的探針檔裡。**
+真正的缺陷是「求值路徑不 respect、unify 路徑 respect」。
+**方法論**:兩點法控制的是「這個輸入有沒有碰到那道閘」,**控制不了「有沒有
+另一條路徑會碰到」**;一個旋鈕一個 fixture 得出的「不生效」是**關於那條路徑的**。
+
+**符合性殘留(→ W4‴)**:
+(a) **暫存只剩 `~%Config` 時 `oo commit` 會鑄空提交**——兩次提交的根皆
+`aa1b70f7…`,各鑄一個 commit 物件。**本交付引入**,而**工單 R4 未涵蓋
+「只有 Config」的情形,缺口在驗收方**。
+(b) **磁碟上的 `~%Config` 在新行程不生效**——`.oo/staged` 有它、`oo status`
+顯示 `fuel: 7`、`oo run` 讀回 `10000`。**v0.7.0 同一實驗結果相同 ⟹ 既存**;
+但 O37 把它變成持久的工作階段狀態之後,這個落差變得顯眼。
+(c) **`timeout` 只在明設時生效**——未設時創世的 `timeout: 1000` 未武裝,
+實測 2144 ms 的運算跑完。交付明文說明理由(武裝它＝給每次 stdlib 觀測套上一秒的牆),
+判為**合理的射程收窄**,但**記為「未完成」而非「已完成」**。
+
+**一項刻意的不對稱**:evolve 套用 `max_branches`／`max_unification_depth`／
+`max_lifting_depth`／`max_pattern_nodes`,**不套用 `fuel`／`strategy`**
+(理由:於 evolve 套 fuel 會以 evolve 的 salt 鑄 `#blur`,移動燃料側 CAID)。
+實測 `fuel: 5` 下淺算術照常算出 5。⟹ 已入 **SPEC_09 §6.0.2 的自陳缺口**。
+
+**引擎已知未實作項(2026-08-09 掛帳,用戶裁定 O39)**:
+`~%Config.max_lifting_depth` 與 `~%Config.max_pattern_nodes` **全樹從未被讀**
+——宣告、預設、驗證、兩處賦值、旋鈕表俱全,消費點為零;
+對應的 `#max_lifting_exceeded`／`#max_nodes_exceeded` 亦從未被鑄。
+
+**裁定:不廢止,之後實作。** 用戶理由:廢止之前要先論證「當初的設計沒有必要」,
+而那個論證沒有做;引擎本來就還有許多未實作項,這只是其中一個。
+⟹ **規格側維持現狀**(旋鈕與錯誤碼都留在登記簿),**本檔記其為已知未實作**。
+**不在 W4″ 射程。**
+
+**W4″ 偵察:`~%Config` 七個旋鈕逐一量測(2026-08-09,引擎 v0.14.0)**
+
+每個旋鈕都用**兩點法**——同一份輸入、兩個旗鼓相當的旋鈕值,看門檻是否移動。
+只設一個值而「沒事發生」不算量測(那分不出「旋鈕無效」與「輸入沒碰到那道閘」)。
+
+| 旋鈕 | 暫存後讀得回? | 生效? | 證據 |
+| :-- | :-- | :-- | :-- |
+| `fuel` | ✓ | **✓** | `5` → `#fuel_exhausted`;`100000` → `_` |
+| `strategy` | ✓ | **✓** | 同輸入:`#strict` → `_\|_`;`#blur` → `#blur` |
+| `timeout` | ✓ | **✗** | `timeout: 1`(毫秒)下,一個 **2286 ms** 的運算**正常跑完** |
+| `max_branches` | ✓ | **✗** | 上限 `2`,分支算術 11 支**全部存活**(此即 `eval.rs:2043` 那道閘) |
+| `max_unification_depth` | ✓ | **✗** | 二分臨界恆為 **256**(＝預設值),旋鈕設 8／64／256／4000 **皆不動** |
+| `max_lifting_depth` | ✓ | **✗** | **全樹從未被讀**——只有宣告、預設、驗證、兩處賦值、旋鈕表 |
+| `max_pattern_nodes` | ✓ | **✗** | 同上 |
+
+**⟹ 七個旋鈕有五個不做事。** 其中兩個(`max_lifting_depth`／`max_pattern_nodes`)
+連消費點都沒有——**寫入端俱全、讀取端為零**,與 W8′ M7 的 `legacy_fields` 同類。
+對應的 `#max_lifting_exceeded`／`#max_nodes_exceeded`／`#max_branches_exceeded`
+在 W4 盤點中亦為 `absent`:**旋鈕、閘、錯誤碼,三者一起不存在。**
+
+**且七個旋鈕一個都提交不了。** `~%Config.<任何旋鈕>` evolve 成功、`oo commit`
+**一律失敗**,訊息是裸的 `Error: Commit failed`(控制:同一個倉 `x: 1` 提交成功)。
+⟹ **視界參數只能活在暫存區,活不過一次提交。**
+
+**提交失敗的訊息是 W3′-a 那個缺陷的同一個實例,在提交邊界上**:
+`universe.rs` 的 `commit` 對 `engine.unify(root, staged)` 只 match `Value::Combo`,
+其餘一律 `Err(anyhow!("Commit failed"))`——**`BottomDetail` 整個被丟棄**,
+沒有 cause、沒有座標、沒有錯誤碼。**這推翻了先前「W3′-b 阻塞於 W12」的判定**:
+當時的理由是「合併型 ⊥ 在 evolve 邊界就被攔,不會到 commit」,
+而這裡就是一個**到得了 commit 的 ⊥**,而且是使用者一寫 `~%Config` 就會撞到的。
+
 **引擎 v0.14.0 定版(2026-08-09)= W4 ＋ W4′ 兩弧,破壞性**:top `1d9681d`
 (squash the_name_points_at_the_remedy 弧 + oo 0.14.0 bump;故事提交
 **"A resource boundary is not an attack"**)。squash 後先驗樹逐位元等同 dev

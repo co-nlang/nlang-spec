@@ -509,9 +509,8 @@ status: /match @http_code {
 *   **自陳缺口（2026-08-09）**：本節**尚未裁定**正確的階段歸屬表本身。
     參考實作 v0.14.0 之後的現況是：`max_branches`／`max_unification_depth`
     治理兩期；`fuel`／`strategy` 只治理觀測期（於演化期套用 `fuel` 會以演化期的
-    salt 鑄 `#blur`，移動燃料側 CAID）；`timeout` 僅在操作者明設時生效
-    （創世的 `timeout: 1000` 未武裝——武裝它等於給每一次對 stdlib 根的觀測
-    套上一秒的牆）。**這三種不同的歸屬各有其理由，而規格還沒有裁定它們是對的。**
+    salt 鑄 `#blur`，移動燃料側 CAID）；`timeout` 僅在操作者明設有限值時生效
+    （創世預設為 `#_`，即未綁定）。**這三種不同的歸屬各有其理由，而規格還沒有裁定它們是對的。**
 
 | 欄位 | 型別 | 創世預設值 | 說明 |
 | :--- | :--- | :--- | :--- |
@@ -523,7 +522,7 @@ status: /match @http_code {
 | **`%max_unification_depth`** | `@int` | `256` | 限制遞迴合併深度。 |
 | **`%max_lifting_depth`** | `@int` | `32` | 限制算子升寫深度。 |
 | **`%max_pattern_nodes`** | `@int` | `1024` | 限制模式匹配涉及的最大節點數。 |
-| **`%timeout`** | `@int` | `1000` | 最大觀測時長（ms）。 |
+| **`%timeout`** | `@int` \| `#_` | `#_` | 最大觀測時長（ms）；`#_` 表示未綁定。 |
 | **`%len`** | `@int` | N/A | 容器長度或字串字元數。 |
 | **`%effect`** | `#Tag` | `#pure` | 副作用糾纏標籤（#pure, #io, #nondet, #state, #cached）。 |
 | **`%fmap`** | `@morphism` | N/A | 函子態射介面。 |

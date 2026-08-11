@@ -1797,6 +1797,41 @@ refine signer 必在其中;引擎鑄的是**字串**、**本地隨機自任**、
 > (可對照:規格中留下的量測皆為**論證性**——§4.2.3 的「求值早於檢查」與 §4.3.5 的
 > 67.1 MB/143 MB,拿掉之後那兩條 MUST 就只剩斷言。)
 
+**引擎 v0.17.1 定版(2026-08-10)= D1 弧,引擎 patch,規格不動**:top `82fd10d`
+(squash nesting_doubles 弧 + oo 0.17.1 bump;故事提交
+**"Every level of nesting doubles the universe"**)。
+squash 後先驗樹逐位元等同 dev(`fce973a8`)才提交;tag 於實測 commit
+(workspace **1849/0/3**、conformance 143/143、genesis 11/11 皆於候選上重測)。
+dev tie-back `fc6d333`。
+
+**版號位階的判定**:VERSIONING §2 明文「**引擎 patch ＝ 引擎自己的 bugfix／效能,
+與規格 patch 無對應義務**」。本弧零規格變更、零語義變更、非破壞性
+(v0.17.0 的倉 root 逐位元不變,已實測 `7cbf0865…`)⟹ **走 patch,規格側不切版**。
+
+**這一版的引擎做到了沒有**(符合性,非義務):
+
+* 巢狀 combo 的求值代價由 **2^depth** 降為約 **n²**。
+  實測:nest=16 由「不會結束」→ 0.072 s;nest=100 → 0.688 s;
+  nest=14 峰值 RSS 由 **503,684 KB** → **22,384 KB**(22×)。
+  成因:`seal_defining_scope` 把整個 combo 深複製為 frame 並塞進每個 thunk 的閉包,
+  而第 n 層的 frame 已含第 n−1 層塞入者 ⟹ 每層加倍。frame 現以參考計數共享。
+* **止於 n² 不是線性**——frame 複製仍會複製該層自身的結構。已寫入交付文件,
+  避免日後被誤讀為線性。
+* `~%Config.timeout` 於任意深度皆可終止觀測(探針 R4)。
+
+**代修一件,記其類別**:首次交付為了讓循環偵測維持便宜,把鍵改成
+**frame 的配置位址**(`Arc::as_ptr`)。結構相同而各自配置的兩個 thunk 因此不再認出再入,
+87 層以上引擎不再回應操作者設定的 `timeout`——**牆搬走了,新牆沒有門**。
+量測:n=88 配 `timeout: 3000`,代修前退出 0(5.0 s),交付後 150 秒未結束。
+**位址是情境不是內容**,正是本倉四天前對 span 與鹽所裁定的同一件事
+(SPEC_01 §2.4.1 禁止條明列記憶體位址)。循環鍵已改為內容導出,53 支既有循環守衛全綠。
+
+**仍在前方的一道更老的牆**:約 **140 層**原生堆疊溢位,行程 abort 而非回報
+(130 ok / 140 abort;`~%Config.timeout` 無效)。**既有缺陷**——同一 fixture 於
+v0.16.0 與 O42 兩支二進位皆 exit 134,只是先前被指數與掛死擋著走不到。
+**違反 ERROR_CODES §2.7.3 第一條 MUST**(實作上限須嚴格小於原生天花板,方能回報)。
+列為下一弧的正面。
+
 **引擎 v0.17.0 定版(2026-08-10)= O42 弧,破壞性**:top `71cc709`
 (squash snapshot_not_a_reading 弧 + oo 0.17.0 bump;故事提交
 **"A snapshot is not a reading of the ruler"**)。squash 後先驗樹逐位元
@@ -3594,4 +3629,51 @@ tie-back 見 dev log。
 0.2.8 bump),tag 於實測 commit(871/0/3、語料 74/0、61/61 皆重測;
 tag 後重建 `oo --version` = `oo v0.2.8` ✓)。dev tie-back `ace1dc5`。
 
+**剖析器天花板弧(a_limit_you_cannot_catch,2026-08-11,引擎交付
+`dev def7157`)**:規格側新增 ERROR_CODES §2.7.4(上限住在每一個遞迴
+階段)、§1.3 登記 `#request_too_large`、REAL_02 §3.2.3(收方必須在
+處理之前先設界)。
 
+*符合性量測(某版引擎做到了沒有,故歸此檔而不入規格)*:
+
+- 交付前:`oo fmt` 於 `{{a: …}}` 巢狀 **debug 131 層 / release 1336 層**
+  exit 134 abort,無 ⊥、無 `%cause`;分組 `(…)` 每層 ×2,24 層 >120 秒;
+  線上 69 位元組請求使節點停擺 >90 秒且並行合法客戶端餓死,8000 個 `!`
+  的請求使 serve 行程中止;單行讀取無位元組上限。
+- 交付後:文法左因子分解(`paren_expr` 共享 `( expr` 前綴)、`unary_expr`
+  改迭代(AST fold 亦迭代)、剖析前深度閘 **256**、剖析後 AST 深度閘
+  **4096**(顯式 worklist)、線上讀取上限 **64 KiB**。
+- 餘裕(驗收方 spike,量後即撤):剖析器執行緒完整閉包(pest 剖析 +
+  `parse_expr`)每層 **525–532 KB**,線性;堆疊 64/128/256/512 MiB 對應
+  可達深度 **123/248/498/997**。出貨堆疊 **512 MiB** ⟹ 閘 256 對天花板
+  997 = **3.89×**。剖析延遲 3.8 ms(64 MiB 時 4.2 ms),256 層巢狀峰值
+  RSS 141 MB ⟹ 保留為位址空間,惰性提交。
+- 線上對抗(實測):兩種攻擊向量皆 **0.01 秒**回 `#stack_overflow`,節點
+  存活;128 KiB 單行 **20/20** 回 `#request_too_large`。
+- 閘:本弧探針 15/15、全 workspace **1869/0/3**、×5 穩定、跨版本雙向
+  (新讀舊、舊讀新所寫)。
+
+*掛帳(未修,留待下一個剖析器弧)*:`with_parser_stack_using` 將
+**剖析器執行緒的 panic** 與 spawn 失敗一併映射為 `#stack_overflow`。
+真正的堆疊溢位會 abort 而到不了 `join()`,故 join 失敗意味內部 bug——
+**把 bug 報成無能為力**正是 §2.7.1/§2.7.3 要消除的那類錯標,且使剖析器
+panic 變靜默。
+
+*跨弧回退(驗收方修復)*:AST 閘使 `limit_you_cannot_choose`(v0.17.0)
+的 `chain(5000)` 於剖析即被拒 ⟹ C1 紅、**R2 空綠**(其三個斷言全為
+「不存在」,空宇宙盡數滿足,求值器硬上限未被執行到)。兩處 fixture 改為
+可抵達求值器之長度,並依常設規則為 R2 補「存在」斷言(反事實已驗)。
+另 `nesting_doubles_the_universe`(v0.17.1)之 R5 因首輪閘設 100 而紅
+——**低於前一版已交付之能力**,為選定上限時未先 grep 全樹釘住該量之
+斷言所致;裁定改為「先定承諾(256)再配資源(512 MiB)」。
+
+**引擎 v0.18.0 定版(2026-08-11)**:top `5e1b9e3` 故事提交
+"A limit you cannot catch"(squash 剖析器天花板弧 + oo 0.18.0 bump),
+tag `v0.18.0` 於實測 commit(workspace **1869/0/3**、conformance
+**143/143**、genesis **11/11** 皆於候選上重測;tag 前驗倉別+branch;
+tag 後 `touch build.rs` 重建,`oo --version` = `oo v0.18.0` ✓、
+`git describe --exact-match` = `v0.18.0` ✓)。dev tie-back `3975350`,
+dev 與 top 樹逐位元同一。規格同步切 **v0.18.0-draft.1**。
+**增量,零破壞性**——身分面完全不動,故走 minor 而非 major
+(VERSIONING §6「語義變更逐 minor」)。切版清單一筆:deps 全零頭檢查
+命中一個 `.tmp*` 殘留(中斷建置留下),清除後複驗零命中。

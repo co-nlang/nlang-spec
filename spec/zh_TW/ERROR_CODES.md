@@ -103,7 +103,7 @@
 | **`#no_matching_branch`** | 原因·⊥ | 模式匹配無匹配分支 | 在態射分派或條件收斂中，輸入值不符合任何定義的分支條件。請檢查 `@Type` 約束或增加 `_` 預設分支。 |
 | **`#out_of_horizon`** | 原因·⊥ | 視界過度穿透 | 路徑導航符號 `^` 超出了實際的嵌套層級。請檢查 `details.requested_depth` 與 `details.actual_depth` 以對齊結構。 |
 | **`#routing_budget_exceeded`** | 原因·⊥ | 多跳路由預算用盡 | 多跳取物／發現耗盡跳數預算（§2.7.1，2026-08-09 新設）。**這是資源邊界，不是攻擊**——請檢查對端是否可達、拉近路由距離，或提高跳數上限。**不得**與 `#semantic_isolation` 混用。 |
-| **`#stack_overflow`** | 原因·⊥ | 實作遞迴上限 | 實作自身的遞迴天花板（§2.7.3，2026-08-09 登記）。**這不是你設的上限**——`max_unification_depth` 調再高也不會過。請攤平結構、改寫遞迴，或換一個能走更深的實作。**實作不得以此名回報操作者設定的上限**，亦**不得**以 `#blur` 鑄之。 |
+| **`#stack_overflow`** | 原因·⊥／**邊界** | 實作遞迴上限 | 實作自身的遞迴天花板（§2.7.3 登記於 2026-08-09；§2.7.4 於 2026-08-11 擴及**每一個**遞迴階段）。**載體隨階段而異**：求值期為節點級 `_\|_`；**剖析期**尚無宇宙可言，故為**邊界**錯誤——軸不變，仍是原因（§0.2）。**這不是你設的上限**——`max_unification_depth` 調再高也不會過。請攤平結構、改寫遞迴，或換一個能走更深的實作。**實作不得以此名回報操作者設定的上限**，亦**不得**以 `#blur` 鑄之。 |
 
 > **廢止標籤注記(2026-07-14)**:`#invalid_path` 為引擎曾誤鑄之未立法
 > 標籤(2026-07-12 G4 裁定文沿用,從未入本表)。已廢止:座標缺失依
@@ -133,6 +133,7 @@
 | **`#refinement_cycle`** | 原因·⊥ | 精煉重定向循環 | 偵測到 `#refine` 宣告形成了因果循環（如 A->B->A）。受影響的路徑自動失效。 |
 | **`#semantic_isolation`** | 原因·⊥ | 語義隔離警告 | 檢測到不同信任路徑下的觀測結果存在幾何不連續性，疑似遭受語義日蝕攻擊。 |
 | **`#verification_failed`** | 原因·⊥ | 證明/測試驗證失敗 | 邏輯節點不滿足指定的 `%termination_proof` 或 `%contract` 約束。請修正邏輯或更新證明。 |
+| **`#request_too_large`** | 原因·**邊界** | 請求超出位元組上限 | 單一請求行超出收方所設之位元組上限，於**讀滿之前**即被拒（**[REAL_02](./REAL_02_Ouroboros_Protocols.md)** §3.2.3，2026-08-11 新增）。**依大小拒絕，不依內容**：收方尚未剖析、亦未對內容下任何裁決，故**不得**記入完整性紀錄，客戶端側收斂為 `#peer_refused`（§3.2.2）。與 `#stack_overflow`（形狀太深）可分：此條治**太大**，該條治**太深**，兩者皆須先於處理成立。請縮小請求，或分次取得。 |
 
 ### 1.4 幾何與存取違規 (Geometric & Access Violations)
 
@@ -173,7 +174,7 @@
 
 ### 2.1 載體：⊥（48 個）
 
-`#conflict` `#arithmetic_on_anchor` `#numerical_error` `#divergent` `#tropical_approximation_failed` `#order_conflict` `#h1_split` `#h2_split` `#fractional_bitwise` `#fuel_exhausted` `#timeout` `#max_nodes_exceeded` `#max_depth_exceeded` `#max_lifting_exceeded` `#max_branches_exceeded` `#no_matching_branch` `#out_of_horizon` `#routing_budget_exceeded` `#stack_overflow` `#caid_mismatch` `#object_undecodable` `#peer_not_implemented` `#peer_unknown_status` `#peer_refused` `#peer_timeout` `#compat_conflict` `#unsupported_ca_algo` `#unsupported_fmt_version` `#ambiguous_refinement` `#refine_authority_missing` `#refine_authority_invalid` `#refine_signer_unknown` `#refine_source_unverifiable` `#refinement_cycle` `#semantic_isolation` `#verification_failed` `#private_access_violation` `#cocoon_isolation_violation` `#missing_key` `#lifting_failed` `#effect_violation` `#type_mismatch` `#projection_conflict` `#no_context` `#privileged_required` `#store_boundary` `#ffi_panic` `#ffi_malformed`
+`#conflict` `#arithmetic_on_anchor` `#numerical_error` `#divergent` `#tropical_approximation_failed` `#order_conflict` `#h1_split` `#h2_split` `#fractional_bitwise` `#fuel_exhausted` `#timeout` `#max_nodes_exceeded` `#max_depth_exceeded` `#max_lifting_exceeded` `#max_branches_exceeded` `#no_matching_branch` `#out_of_horizon` `#routing_budget_exceeded` `#stack_overflow` `#caid_mismatch` `#object_undecodable` `#peer_not_implemented` `#peer_unknown_status` `#peer_refused` `#peer_timeout` `#request_too_large` `#compat_conflict` `#unsupported_ca_algo` `#unsupported_fmt_version` `#ambiguous_refinement` `#refine_authority_missing` `#refine_authority_invalid` `#refine_signer_unknown` `#refine_source_unverifiable` `#refinement_cycle` `#semantic_isolation` `#verification_failed` `#private_access_violation` `#cocoon_isolation_violation` `#missing_key` `#lifting_failed` `#effect_violation` `#type_mismatch` `#projection_conflict` `#no_context` `#privileged_required` `#store_boundary` `#ffi_panic` `#ffi_malformed`
 
 ### 2.2 載體：#blur（4 個）
 
@@ -191,13 +192,15 @@
 
 `#not_found` `#caid_mismatch`
 
-### 2.6 載體：邊界（7 個）
+### 2.6 載體：邊界（9 個）
 
-`#system_reserved` `#invalid_config` `#blocking` `#invalid_target` `#already_exists` `#nothing_to_undo` `#blocked_by_policy`
+`#system_reserved` `#invalid_config` `#blocking` `#invalid_target` `#already_exists` `#nothing_to_undo` `#blocked_by_policy` `#stack_overflow` `#request_too_large`
 
 > **同名跨載體者**：`#fuel_exhausted`、`#timeout` 同時是 ⊥ 與 `#blur` 的原因；
 > `#caid_mismatch` 同時是線上的 `%reason` 與客戶端 ⊥ 的 `%cause`
-> （REAL_02 §3.2.2 之對映）。依 §0.2，其**軸不因載體而改變**。
+> （REAL_02 §3.2.2 之對映）；**`#stack_overflow` 同時是 ⊥ 與邊界的原因**
+> ——求值期有宇宙可鑄節點，剖析期沒有（§2.7.4，2026-08-11）。
+> 依 §0.2，其**軸不因載體而改變**。
 
 ### 2.7 兩則命名裁定 **[Core Requirement，2026-08-09 新設]**
 
@@ -269,6 +272,37 @@
 > 64 MiB ÷ ~490 層 ≈ **134 KB／層**。
 > ⟹ **在此之前，那個上限不是政策，是實作把自己的天花板租給了操作者。**
 > 拿掉這個量測，上列四條就只是分類學。
+
+#### 2.7.4 上限住在每一個遞迴階段，不只在求值器 **[Core Requirement，2026-08-11 新設]**
+
+§2.7.3 寫的是「**實作**必須有一個自己的遞迴上限」。那句話說的是實作，
+不是求值器；而一個實作通常在**多個**階段以原生堆疊遞迴——剖析、AST 走訪、
+求值。上限**必須逐階段成立**，缺一個階段，該階段就是沒有底的那一個。
+
+*   **每個遞迴階段各有其上限（MUST）**：任一以原生堆疊遞迴且其深度由**輸入**
+    決定的階段，都必須有自己的上限。**求值器有上限不代表剖析器有。**
+*   **上限必須先於遞迴檢查（MUST）**：**不得**以「先跑，爆了再回報」實作。
+    在主流原生實作上，堆疊耗盡不是可攔截的例外而是行程中止
+    （護衛頁失效 → `abort`），事後補救**不存在**。
+    ⟹ **一道接不住的極限，必須先檢查。**
+*   **載體隨階段而異，標籤不變（MUST）**：撞到求值期上限者為節點級 `_\|_`；
+    撞到**剖析期**上限時尚無宇宙可言，故為**邊界**錯誤（比照 §1.4
+    `#invalid_config` 之先例）。兩者 `%cause` **皆為 `#stack_overflow`**——
+    同一種無能為力，兩個階段。
+*   **保證最小巢狀深度（MUST）**：本規格宣告一個**保證最小巢狀深度 = 256**。
+    符合性實作接受的巢狀深度**必須 ≥ 256**；其自身上限得更高，但**不得更低**。
+    此數字使「上限」成為一個**可被依賴的承諾**，而不是建置設定的副產物。
+*   **上限與其所保護的資源是同一個決定（MUST）**：實作**必須**將其堆疊
+    （或等價資源）配置到足以在**其最壞語法形式**下清空自己宣告的上限。
+    先定上限而不配資源者，其上限若高於實際天花板則**形同不存在**，
+    若低於已交付之能力則是**能力回退**。
+
+> **論證性量測（2026-08-11，參考實作）**：同一份原始碼、同一條 64 MiB 執行緒，
+> 其可達巢狀深度隨**建置設定檔**而變：debug 每層 **504–532 KB**（約 130 層），
+> release 每層 **49 KB**（約 1,335 層）——**相差逾十倍**。
+> ⟹ 若不宣告一個保證最小深度，「這個實作能巢多深」就不是語言的性質，
+> 而是使用者所拿到的建置的性質；同一份程式在開發者機器上通過、在測試建置上崩潰。
+> 拿掉這個量測，上列「保證最小巢狀深度」與「同一個決定」兩條就只是偏好。
 
 ---
 

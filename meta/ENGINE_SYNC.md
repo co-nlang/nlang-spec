@@ -1,4 +1,12 @@
-# ENGINE_SYNC — n.pest 對 SPEC_14 的同步清單
+# ENGINE_SYNC — 參考引擎符合性與交付紀錄
+
+> **文件角色（2026-08-13 釐清）**：本檔起於 n.pest／SPEC_14 同步清單，後來成為
+> 參考引擎的 append-only 交付史。它回答「哪一版做到了什麼、當時量到什麼」，
+> **不回答下一弧做什麼**。現行施工排序只在 [`WORK_QUEUE.md`](WORK_QUEUE.md)。
+>
+> 文中的「掛帳／殘留／下一弧」是**當時的發現紀錄**，可能已被後續版本修掉或改變
+> 前提；搜尋命中不得直接升為待辦。每次新結案仍追加在本檔，但新發現必須另進
+> `WORK_QUEUE` Inbox，經現版重現與依賴判定後才取得排序權。
 
 > 2026-07-05，SYNTAX 全系列定稿 pass 的產物；同日引擎同步（RECONSTRUCTION 15），
 > 2026-07-06 #16 收尾——**#1–#16 急切引擎範圍全數完成**。SPEC_14 為權威；
@@ -3734,3 +3742,61 @@ dev tie-back `2976522`,dev 與 top 樹逐位元同一。規格同步切
 位址移動;快取暖度離開燃料帳),90 天時鐘自本日重啟——距 #11(v0.17.0,
 2026-08-10)一日,深水期的正常代價。**破壞性走 minor 而非 major**
 (major 保留給 v0.500.0 委員會錨點,VERSIONING §6)。
+
+---
+
+## Q-010a — every byte or none(2026-08-13,尚未切版)
+
+**主張**:同一個 CAID 的 CAS 物件,磁碟位元組必須相同。規格側落於
+**REAL_03 §6.7**(§6.6 的對偶:那節治「位元組決定位址」,本節治「位址決定
+位元組」;二者合起來才是雙射)。
+
+**⚠ 符合性主張的正確措辭**——**不得**只寫「O48 成立」:
+
+> **O48 對本版之後寫入的 CAS 物件成立;原地升級的倉沿用其 format-1 物件的
+> 位元組。**
+
+理由是用戶 2026-08-13 裁定 **(a) 宣告限制,不遷移**:`write_object` 在位址已
+存在時提早返回,故舊物件永不改寫。〔量〕把帶 span、pretty 的物件與 `format: 1`
+偽造成舊倉再提交一次:`format` 升到 `2` 而**舊物件原封不動(4 個物件裡 1 個
+仍帶 span)**。Q-010b 是紀元弧、會以新位址重寫全部,今日寫的遷移程式兩弧後即為
+丟棄品——**這是排程判斷,不是「已解決」**。
+
+**交付**:CAS 專用正準 JSON(字典序、緊湊)＋型別驅動的 span 剝除
+(`Value::for_cas_storage()` 複製後沿型別走訪,置 `Span::unknown()`,由 AST 的
+serde 省略)＋`STORE_FORMAT_VERSION` 1→2。**`.oo/staged` 未動**(O51:工作階段
+保留 Thunk,強制發生在 commit)。
+
+**量測**:本弧探針 14/14;形狀覆蓋掃描(14 種值形一次提交)全樹 `"span"` 零命中
+且 14/14 欄位讀得回來;**workspace 1897/0/0(零 ignored),五次全同**;根物件
+**252,435 → 67,913 B(−73.1%)**、換行 0、**位址 `16ba5683…` 未動**。跨版本以
+**真的 v0.19.0 二進位**(worktree＋獨立 target)雙向實測:舊倉→新引擎讀得開且
+值正確;新倉→舊引擎回
+`store format version 2 is not supported by this engine (understands format 1);
+refusing to open`——**誠實拒絕,不是 serde 錯誤**。
+
+**破壞軸**:**格式／讀相容,非身分**。P1 釘住根 CAID 未移動;而 `ast.rs` 四處
+`pub span: Span` 零 serde 屬性 ⟹ 舊引擎無法讀無 span 的物件,**這不是相容層能
+補的**。切版時須記一條破壞性條目並註明其軸別與 #12 不同。
+
+**一件代修**:首版以**序列化後的 JSON 形狀**判定語法節點(帶 `span` 且帶
+`kind`／`key`+`value`／`left`+`op`+`right`／`anchor`+`segments`),而**使用者
+Combo 的欄位名恰好落在同一位置**——四個判別式全部摧毀使用者資料,`commit`
+回報成功而物件從此 `#caid_mismatch`。判例已入 REAL_03 §6.7 實作註記。
+
+**驗收方自動的三支釘**(皆為「倒數計時器型」而非不變量):
+`atomic_write_probe_test` 的 `p2`(釘 `.oo/format == "1"`)、`local_gc_probe_test`
+的 `r7`(同上,且以 `"2"` 當未知格式的對抗值——而 O48 剛好把 2 變成現行值)、
+以及新增 `p4`(釘 `serde_json::Map` 的字典序:正準序**依賴無人開啟
+`preserve_order`**,cargo feature 跨圖統一,一個新相依即可靜默推翻 R2)。
+`affiliation_claim` 與 `seat_order` 的同類釘用的是**相對**寫法(讀 before →
+動作 → 斷言未變),全域升版動不到——**那是對的寫法**。
+
+**規格 v0.20.0-draft.1 / 引擎 v0.20.0 定版(2026-08-14)**:引擎 top `55e5975`
+故事提交 "The address decides the file",tag `v0.20.0` 於實測 commit(候選上重測
+workspace **1897/0/0**〔零 ignored〕、conformance **143/143**、genesis **11/11**;
+tag 前驗倉別＋branch;tag 後 `touch build.rs` 重建,`oo --version` = `oo v0.20.0` ✓、
+`git describe --exact-match` = `v0.20.0` ✓;deps 全零頭檢查零命中)。dev tie-back
+`4cb85a0`,dev 與 top 樹逐位元同一。**破壞性條目 #13:軸別為格式／讀相容,非身分**
+——根 CAID 一位元未動(`app: { k1: 1 }` 前後皆 `16ba5683…`),故 **90 天時鐘不因本條
+重啟**(時鐘所防者為使用者的 CAID 失效);前次身分破壞為 #12(v0.19.0,2026-08-11)。

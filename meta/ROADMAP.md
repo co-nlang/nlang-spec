@@ -2,6 +2,11 @@
 
 > 更新：2026-07-05。取代 `spec/zh_TW/README.md` §4 的舊 TODO 表（其 P0「銜尾蛇量子化」
 > 早已完成，見「已完成」節）。狀態標注若與現況不符，以使用者修正為準。
+>
+> **角色釐清（2026-08-13）**：本檔只保存里程碑與長程 gate，不再兼任引擎施工
+> 佇列；其中「進行中／排隊中」是歷史策展，可能落後於現版。當前工作與唯一
+> 下一弧見 [`WORK_QUEUE.md`](WORK_QUEUE.md)，引擎實際交付史見
+> [`ENGINE_SYNC.md`](ENGINE_SYNC.md)。
 
 ---
 
@@ -102,6 +107,7 @@ diff → 產出「待裁清單」：品味決定歸使用者、機械修正直�
 
 | 項目 | 狀態 |
 | :--- | :--- |
+| **取代 pest 剖析器** | 長期。自成專案，不是一弧——v0.18.0 的 fence 已把輸入界擋住，故非安全項；動機是文法可控性與 v0.18.0 殘留的錯標（`WORK_QUEUE` Q-002 只治錯標，不治剖析器選型）。**2026-08-13 落檔**：此前只活在對話與記憶裡 |
 | Paper XXIII（item 21 的 arity-5 lid 正式證明） | PARKED（reduction 已到位，等 M5/FFT 級投入） |
 | comparison map 的 16-cell 腿（frontier items 1＋7＋DD lift） | open（2026-07-03 自 item 23 名下析出） |
 | 𝔽₂→char-0 之牆（item 11/12 τ-end、amplituhedron 線） | 刻意不開（新 program，非 backlog） |

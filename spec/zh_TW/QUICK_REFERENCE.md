@@ -59,8 +59,10 @@
 | `%branches` | `@int` | 聯集分支的數量（分歧度） |
 | `%kind` | `#Tag` | 本體論角色 (`#data`, `#type`, `#logic` 等) |
 | `%rank` | `@int` | Poset 序位（引擎衍生屬性；使用者應經 `<=`/`<=>` 讀取，SYNTAX_10 §2.4） |
-| `%rules` | `@combo` | 態射的座標變換規則集（按 Pattern 規範排序） |
-| `%closure` | `@combo` | 態射捕獲的外部作用域快照（閉包） |
+| `%rules` | `@combo` | 態射的分支規則集，Key 是輸入 Pattern（排序見 REAL_03 §5.2；語義見 SPEC_05 §3.3） |
+| `%closure` | `@combo` | 態射捕獲的外部作用域快照（閉包）——承重，不得省略（SPEC_05 §3.3） |
+| `%code` | `@any` | 某一分支的被引述本體；引述不是求值（SPEC_05 §3.3） |
+| `%builtin` | `@str` | 引擎本地的原生實作名；**使用者資料不得含之**（SPEC_05 §3.3） |
 | `%cause` | `@any` | 衝突或發散的因果溯源鏈 |
 | `%strategy` | `#Tag` | 視界策略 (`#blur`, `#strict`, `#approximate`) |
 | `%fuel` | `@int` | 觀測容許的空間半徑 (燃料 / MBU) |

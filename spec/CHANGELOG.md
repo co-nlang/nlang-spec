@@ -6,6 +6,41 @@
 
 ## [Unreleased]
 
+## [0.25.0-draft.1] — 2026-08-16
+
+引擎對應版本 **v0.25.0**。**無破壞性條目**——〔量〕磁碟寫入與編碼路徑逐字未動，
+同一份程式的根位址仍為 `6e5ad5e374ded76b…`,與 v0.24.1 相同 ⟹ **身分軸未移動,
+90 天時鐘不重啟**;線上是既有 `%status` 底下的新 `%reason`,而 §3.2 已規定不認得的
+理由須視為不透明字串。
+
+### 增量
+
+*   **REAL_02 §3.2 共用理由表新增 `#not_found` ／ `#standard_root_unavailable`**:
+    節點**持有那些位元組,而接不回它所指名的標準根**(REAL_03 §6.8)。**狀態不變**——
+    補救確實是換一台問,且 §3.2 逐字規定狀態集不得增長(理由集得增長)。
+    **不得改回 `#not_held`**:那是一句關於自己持有什麼的假話。
+
+    〔量,真節點真封包〕修前對這種物件回 `#not_held`,與「真的沒有」**逐字無法區分**;
+    修後兩者分別為 `#standard_root_unavailable` 與 `#not_held`,`%status` 同為 `#not_found`。
+
+*   **該表現有兩列說的是「收方做不到」,而它們刻意落在不同的 `%status` 上**:
+    `#entropy_unavailable` 是 `#rejected`(**我不作答**),本列是 `#not_found`
+    (**我交不出來,去問別台**)。其餘各列說的都是「你的請求有問題」或「我沒有」。
+
+### 編輯性
+
+*   更正 `#entropy_unavailable` 一列的「本表上唯一一列說的是收方做不到」——
+    新增第二列後不再為真。
+
+### 明文未做
+
+*   **`#standard_root_unavailable` 未登記於 `ERROR_CODES`**,刻意如此:〔量 2026-08-16〕
+    該檔今日只收了本表理由的一個**不一致子集**(`#request_too_large`、
+    `#entropy_unavailable` 在,`#unparseable_caid`／`#not_held`／`#missing_field`／
+    `#unknown_op` 不在)。逐筆補會讓下一個新理由再問一次同樣的問題;
+    「`ERROR_CODES` 到底收不收 OODP 的 `%reason`」已進 `meta/WORK_QUEUE.md` Inbox 待裁。
+    **在那之前,REAL_02 §3.2 是這些理由唯一的家**,規格已於該處明文寫下。
+
 ## [0.24.0-draft.1] — 2026-08-16
 
 引擎對應版本 **v0.24.0**。**無破壞性條目**——磁碟格式未動〔量：`encode_record_line`

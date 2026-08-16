@@ -4131,3 +4131,187 @@ REAL_02 **§4.3.5.1 新增正面條款**(該節原本只有「不得靜默退回
     `git diff --stat` 回空被誤讀為「還原成功」,實意為「與 HEAD 無差異」。僅因完整 diff 恰在紀錄裡而得以重建。
 *   **全跑進行中不得改動樹**。〔本弧實例〕第三輪電池執行期間加入 P6,run 4／5 重編譯後多出一個 ignored,
    該次 ×5 因此不算數。
+
+---
+
+## Q-029 — a refusal that only covers reading（第一層，2026-08-16）
+
+**交付 `nlang-tools 30abd55`（第一層）。規格零變更。裁定 O59。**
+
+**論旨**：REAL_03 §6.8 第三條的拒絕**只蓋住了讀取路徑**。
+
+〔量，兩個真二進位、未竄改任何位元組：`q025-plus`（標準根 `a63ef70b…`）建倉，
+`v0.24.0`（只有 `65f52e2d…`）操作它〕——`log`／`inspect` 正確拒絕，而 `evolve` 靜默 staged、
+`commit` 回報成功、`refine` 提交並移動 HEAD、`squash` 回答 `no HEAD to squash`。
+事後倉裡有**兩個 `app` 相同、標準根摘要不同的根**與**兩個 `parent: null` 的提交**，
+HEAD 在後者，**原引擎從此讀不了自己建的倉**。
+
+### 成因是一行，六個症狀
+
+`crates/oo/src/main.rs:1538`：
+
+```rust
+Err(_) => Universe::new(None, engine.root_with_system()),
+```
+
+`Universe::new(None, engine.root_with_system())` **就是「自身的標準根」**、`Err(_) =>`
+**就是「代入後繼續」**——§6.8 第三條的 MUST NOT 被寫成了一個 fallback。
+`Universe::load`（`universe.rs:275`）本身是對的（它呼 `get_root(…)?`），
+**`oo rollback` 也一直是對的**——`Universe::rollback` 自己又呼了一次
+`get_root(&target_commit.root, &engine.standard_roots)?`，繞過了那個 fallback。
+⟹ 工單因此寫成「讓其他幾支得到 rollback 已經有的東西」，不是發明新機制。
+
+### 驗收
+
+探針 **10/10、0 ignored**，diff 純度乾淨（探針檔逐位元組只少六個 `#[ignore]`）；
+workspace **1943/0/0（198 套件）五次全同**，conformance 143/143，genesis 11/11。
+**主證據是兩個真二進位**：四條寫入路徑全部具名拒絕、HEAD 未動、物件數 2→2、
+無任何根帶入侵引擎的摘要、**原引擎照常讀得回自己的倉**。
+另驗**首次使用無迴歸**（全新目錄無 `.oo/`：`status`／`evolve`／`commit`／`log` 皆正常）——
+那是拿掉 fallback 最容易打破的一格。
+
+### 未完成（第二、三層）
+
+*   §2.2 五個 `| None` 分類點（`universe.rs:989`／`:1063`／`:1082`、`disc.rs:200`、`oodp.rs:388`）
+*   §2.3 線上那一格（`not_held` 仍為假）
+
+**且第一層蓋不住它們**〔量〕：把一個外來根物件放進**一個開得起來的倉**，
+`oo refine --source <該外來根> --target <我自己的根>` **照常提交**——
+閘裝在**宇宙**上，而單調性檢查讀的是**運算元**。
+**對照組**：運算元真的不在時 refine 亦照常提交（REAL_03 §9.1 的不透明設計）
+⟹ **壞的是混同，不是跳過本身**。
+
+---
+
+## Q-030 — a digest that was not there（2026-08-16）
+
+**交付 `nlang-tools 1ceff6c`。規格零變更（工單即如此預測）。裁定 O60。**
+
+**論旨**：`hash:sha256:v1:`——digest 為空的 CAID——**parse 得過**。
+`ContentHash::parse` 只檢查冒號段數 ≥ 4、前綴、hex 可解碼性，而 `hex::decode("") == Ok(vec![])`，
+**全程無人驗長度**；`storage.rs:476` 隨後切它的前兩個字元。
+
+〔量，真節點真封包〕`{ %op: #fetch, %hash: "hash:sha256:v1:", %from: "x" }`——
+**47 個位元組、遠端、未認證、單一封包**，`oo node serve` 行程消失（rc=101）。
+同一次執行的控制組（64 hex）得到正常的 `#not_held`。
+**非交付所致**——對交付前的 v0.24.0 基線二進位逐字重現。
+
+### 射程量到的，比 Inbox 那一列準
+
+| | 到得了 | 到不了 |
+| :--- | :--- | :--- |
+| 線上 | **`#fetch`** | `#discover`（正常回應）、`#find_node`（**已經**回 `#malformed`） |
+| CLI | `inspect`、`rollback`、`refine` | `squash`（先被祖先檢查擋下）、`node discover/find-node` |
+
+洞比「空」大：**`hash:sha256:v1:ab` 被當成合法 sha256 CAID 收下並查倉**；
+v1 與 v2 是**兩個各自的 `hex::decode` 呼叫**，只修 v1 會留下 v2。
+
+### 修法幾乎是自己浮出來的
+
+〔量〕`oodp.rs` 全檔 `unwrap`／`expect`／切片／`panic!`／`unreachable!` **共 0 處**——
+協定層是防禦性寫成的，panic 來自它底下的儲存層。
+而**正確的線上答案早就寫在那裡且只是到不了**：`oodp.rs:371` 的
+`(None, Some(raw)) => refuse(Conflict, "unparseable_caid")`。
+⟹ 工單明文禁止「把防禦加回協定層」，並讓 **P1 逐字斷言 `unparseable_caid`**。
+交付即一個 `parse_sha256_digest` helper（decode ＋ `len() != 32` 即 bail），v1／v2 各呼一次。
+
+**規格因此變成真的，而不是被改**：REAL_02 §3.2 第 141 行早已寫著
+「`#conflict` ／ `#unparseable_caid` ／ `%hash` / `%target` 存在但不是 CAID」——
+在此之前，`hash:sha256:v1:` 對 `parse` 而言**就是**一個 CAID，故該列對這個輸入不可達。
+
+### 驗收
+
+探針 **7/7、0 ignored**，diff 純度乾淨（探針檔只少五個 `#[ignore]`）；
+workspace **1950/0/0（199 套件）五次全同**，conformance 143/143，genesis 11/11。
+另掃全樹剩餘 `[0..n]` 切片：`lattice_sketch.rs`×2 與 `disc.rs`×1 皆在
+`Sha256::finalize()` 的固定 32 位元組上，安全；`storage.rs:193` 的孿生依指示未動。
+
+### 一個順帶的證據
+
+`bohr_test.rs` 有**四個 fixture 在用 `hash:sha256:v1:00` 與 `:ff`**（一個位元組的 digest），
+本弧後加寬為 64 hex。**它們四個之所以能存在，就是因為型別沒有履行它名字的承諾。**
+
+### 常設規則（本弧賺到一條，是驗收方的錯）
+
+*   **探針要釘性質，不要釘拼法——而「訊息含某子字串」就是拼法。**
+    〔本弧實例〕探針斷言 `contains("Invalid CAID")`，而產品訊息是
+    `"Invalid rollback CAID"`／`"Invalid source CAID"`／`"Invalid target CAID"`
+    ——**不含**那個子字串。交付方唯一能滿足它的辦法就是改產品，於是三個使用者面訊息
+    被合併成 `"Invalid CAID"`。**射程裡沒有這一項。**
+    用戶裁定保留該合併（違規的 CAID 本身仍印在訊息裡，角色標籤因此冗餘；
+    且新的內層理由 `expected 32 bytes, got 1` 比舊的 `Invalid CAID format` 有用）——
+    **但探針已改為釘行為**：命令失敗 ＋ **從未到達倉**（`not found in local store` 不得出現）。
+    改寫後逐一手工對基線二進位重新校準：長度那支**不靠 panic 就在基線上是紅的**，
+    控制組三個形在基線上是綠的。
+
+---
+
+## Q-031 — held but unopenable（＝ Q-029 第二、三層，2026-08-16）
+
+**交付 `nlang-tools 2ca1d2f`。規格：REAL_02 §3.2 共用理由表新增一列。裁定沿用 O59，無新裁定。**
+
+**論旨**：Q-029 第一層把閘裝在**宇宙**上；閘的底下，**五個呼叫點**仍把
+「我持有這些位元組，而我打不開它」折進另一個答案。成因同一個——拒絕是 `anyhow!` 字串
+而非 `StoreReadError`，`downcast_ref` 得 `None`，五處都把 `None` 併進 `NotFound`。
+
+### 一輪通過，五格各自處理
+
+交付採建議做法（新增 `StoreReadError::StandardRootUnavailable`，**讓編譯器找齊**）：
+
+| 點 | 落到哪 |
+| :--- | :--- |
+| `universe.rs:989`（refine 運算元） | `Err("refine operand cannot be opened")` |
+| `universe.rs:1063`（shadow-scan 讀 commit） | `return Err(…)`，中止 |
+| `universe.rs:1082`（shadow-scan 讀 root） | `return Err(…)`，中止 |
+| `disc.rs:200` | 新 `enum LocalRead { Mismatch, Absent, StandardRootUnavailable }` |
+| `oodp.rs:388` | `refuse(NotFound, "standard_root_unavailable")` |
+
+**〔量，真節點真封包，驗收方獨立複驗〕**
+
+```
+持有但開不起來 → %status=#not_found  %reason=#standard_root_unavailable
+真的沒有       → %status=#not_found  %reason=#not_held
+```
+
+**狀態集未增長**（REAL_02 §130；O57-C 已據此裁過一次）。
+
+### 驗收
+
+探針 **6/6、0 ignored**，diff 純度乾淨（探針檔逐位元組只少四個 `#[ignore]`）；
+workspace **1956/0/0（200 套件）五次全同**，conformance 143/143，genesis 11/11。
+
+**最重要的是那支綠的**：控制組 `C1`——運算元**真的不在**時 refine 仍照常提交
+（REAL_03 §9.1 的不透明設計）。**修的是混同，不是跳過**；工單 §3 明文標出這是唯一
+能毀掉本弧的方向，而它沒有被毀掉。
+
+### 探針怎麼在樹內造出「持有但開不起來」
+
+樹內無第二個二進位。靠兩個實測到的、互相對稱的事實：
+
+*   **root 物件在驗位址之前先解標準根** ⟹ 放在錯位址上的根仍回
+    `refusing root: … is unavailable` 而非 `#caid_mismatch`。**C0 逐字斷言這一點**——
+    這個順序若變了，C0 先紅，而不是讓另外四支安靜地測別的東西。
+*   **commit 物件會驗位址**〔量：`#caid_mismatch`〕 ⟹ 混合歷史走兩趟，**祖先先定址**
+    （head 的內容含祖先的位址）。
+
+**兩支紅一開始紅在 harness 上**（`own_root` 把探針自己種下的算成第二個根；一個暫時
+位址用了非 hex 的 `h`），開單前修掉——**紅在 harness 上什麼都不證明**。
+
+### 規格側
+
+REAL_02 §3.2 新增 `#not_found` ／ `#standard_root_unavailable` 一列，並附註
+**本表現有兩列說「收方做不到」而刻意落在不同 `%status` 上**：`#entropy_unavailable`
+是 `#rejected`（我不作答），本列是 `#not_found`（我交不出來，去問別台）。
+順帶更正 `#entropy_unavailable` 那列的「本表上唯一一列」——加了第二列後不再為真。
+
+**`ERROR_CODES` 刻意未加**，並在規格裡寫明理由：〔量〕該檔今日只收了本表理由的一個
+不一致子集，逐筆補會讓下一個新理由再問一次同樣的問題；一般性問題已進 Inbox。
+
+### 兩則記錄（非缺陷，但要有人知道）
+
+*   `disc.rs` 把「開不起來」映到 `BottomCause::Conflict`。**工單未指定該值**（只要求
+    「不得判為不存在」）⟹ 那是交付方選的。下次有人問「為什麼是 conflict」，答案是
+    **沒有人裁過**。
+*   交付新增**兩個 `unreachable!()`** 到 `universe.rs`（真不可達：外層 arm 先 return，
+    內層 match 只為窮盡性）。在剛確立「`oodp.rs` 全檔 panic 形為 0」之後，
+    **方向相反**，記一筆。它們在 CLI 的 refine 路徑上，不在節點的 serve 路徑上。

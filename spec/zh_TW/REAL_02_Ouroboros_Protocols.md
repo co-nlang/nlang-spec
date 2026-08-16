@@ -135,11 +135,22 @@
 | :-- | :--- | :--- |
 | `#not_implemented` | `#unknown_op` | 本節點不服務此 op |
 | `#not_found` | `#not_held` | 明確的缺席 |
+| `#not_found` | **`#standard_root_unavailable`** | **持有那些位元組,而接不回它所指名的標準根**(REAL_03 §6.8;2026-08-16 新增)。**狀態不變**:補救確實是換一台問,而本節上方逐字規定狀態集不得增長。**不得改回 `#not_held`**——那是一句關於自己持有什麼的假話 |
 | `#conflict` | **`#caid_mismatch`** | **持有,而位址重算不符——本表上唯一的完整性裁決** |
 | `#conflict` | `#malformed` | 封包不成形(含無 `%op`、空行、`%target` 形狀錯) |
 | `#conflict` | `#missing_field` | op 可辨識,而必填欄缺席 |
 | `#conflict` | `#unparseable_caid` | `%hash` / `%target` 存在但不是 CAID |
-| `#rejected` | `#entropy_unavailable` | **收方取不到隨機性,故不作答**——本表上唯一一列說的是**收方做不到**,而非請求有問題(§4.3.5.1) |
+| `#rejected` | `#entropy_unavailable` | **收方取不到隨機性,故不作答**——說的是**收方做不到**,而非請求有問題(§4.3.5.1)。〔2026-08-16 更正〕原文作「本表上唯一一列」,新增 `#standard_root_unavailable` 後不再為真;兩者的分野見下方附註 |
+
+> **本表現有兩列說的是「收方做不到」**,而它們刻意落在不同的 `%status` 上:
+> `#entropy_unavailable` 是 `#rejected`(**我不作答**),`#standard_root_unavailable` 是
+> `#not_found`(**我交不出來,去問別台**)。其餘各列說的都是「你的請求有問題」或「我沒有」。
+>
+> **`#standard_root_unavailable` 未登記於 [ERROR_CODES](./ERROR_CODES.md),這是刻意的**:
+> 〔量 2026-08-16〕該檔今日只收了本表理由的一個**不一致子集**(`#request_too_large`、
+> `#entropy_unavailable` 在,而 `#unparseable_caid`／`#not_held`／`#missing_field`／`#unknown_op`
+> 不在)。逐筆補會讓下一個新理由再問一次同樣的問題;「`ERROR_CODES` 到底收不收 OODP 的
+> `%reason`」已進 `meta/WORK_QUEUE.md` Inbox 待裁。**在那之前,本表是這些理由唯一的家。**
 
 > **`#caid_mismatch` 是這張表的重點,不是其中一列。** `#conflict` 此前同時表示「你的請求有問題」與「我這裡的位元組壞了」,而只有後者是關於**內容**的裁決。收方據此決定要不要在對方名下記一筆完整性事件——見 §3.2.2。**一個無法被佐證的指控不該寫進聲譽紀錄。**
 

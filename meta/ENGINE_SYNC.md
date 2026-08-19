@@ -4315,3 +4315,124 @@ REAL_02 §3.2 新增 `#not_found` ／ `#standard_root_unavailable` 一列，並�
 *   交付新增**兩個 `unreachable!()`** 到 `universe.rs`（真不可達：外層 arm 先 return，
     內層 match 只為窮盡性）。在剛確立「`oodp.rs` 全檔 panic 形為 0」之後，
     **方向相反**，記一筆。它們在 CLI 的 refine 路徑上，不在節點的 serve 路徑上。
+
+## Q-032 — the half that was never written（2026-08-17，v0.26.0）
+
+**弧**：O58＋O61＋O62，repair 時新增並裁 O63。標準根不再 `⊕` 進每一個根，改為根
+指名一個可定址的標準根物件；引擎傳染算出的有效效果搬入參與 CAID 的 `%effect`；
+`#pure` 以欄位缺席作正準形；拆開前後的位址規則由物件容器編碼閘分辨。
+
+初次交付 `nlang-tools a71a69b`；Repair 1 `d779586`。初次交付的四項結構改動與歷史
+標準根列方向正確，但新讀法套到舊根得到 `#caid_mismatch`，且 workspace 有 21 支紅未分類。
+Repair 1 依 O63 讓 `encoding=3` 保留舊讀寫規則、`encoding=4` 使用新規則，並逐支把紅分成
+授權改變與真回歸；最終無未定類。
+
+### 交付形狀
+
+*   新根物件只保存使用者殘差與一個進入雜湊的標準根 digest；標準根以 packed CAS
+    物件保存、可由 `inspect`／`#fetch` 定址。GC walker 把該 digest 視為真邊。
+*   使用者根先查、標準根後查，故 `/add`、`@list`、`@option`、`@result` 四個原先被
+    標準根閉合值佔住的座標皆可遮蔽；沒有加入任何名字特例。
+*   寫下的 `%effect` 與引擎傳染的效果仍可分開計算，但耐久值只留一個有效欄位。
+    只有 `#pure` 省略；`#cached` 不是豁免，仍須落成欄位。正規化在守衛之後。
+*   標準根 `65f52e2da48baa550d7340c0fdc214fd1f9925577a96ffec59bc34f8b2bcbe72`
+    → `2da5b71371649291cfa5dc5d0cd019464d248e98645b3901938e1c08d2172c2c`。
+
+### 驗收
+
+Repair 1 最終樹：workspace **1964/0/0（201 套件）**，conformance **143/143**，
+genesis **11/11**，Q-032 探針 **8/8、0 ignored**。26 個 genesis seed 中實際移動
+**8 個**（Math／Discovery／Time／Io／Env／Process／Query／Csv），其餘 18 個未動。
+
+主證據由兩個真二進位給出：v0.25.0 建倉並提交後，v0.26.0 可讀、可追加提交，舊根
+位址不動，容器保持 `layout=2`／`encoding=3`；v0.25.0 再回讀兩筆提交亦全綠。新引擎
+自建倉宣告 `encoding=4`。因此本弧是**身分軸破壞**但讀相容雙向成立；規格 changelog
+記為破壞性條目 #16，90 天時鐘重啟。
+
+### 規格側與未完成
+
+REAL_03 §6.8／§6.8.1 補上拆開與格式閘判例；SPEC_08 §4.1 寫入「兩個住處是一個有效
+欄位」及 `#pure` 正準形；STATUS 新增 O63。**未做且不得算作本弧殘欠**：`#23`
+靜態守衛看不穿態射應用、使用者 `%builtin` 偽造。兩者回 WORK_QUEUE 另排。
+
+驗收旁量另入 Inbox：`oo --version` 的 build script 未監看目前分支 ref，可能以舊 commit
+自報身分；`advert_persistence::r5_the_rebuilt_index_matches_an_insertion_replay` 在 workspace
+並行負載下間歇紅，單獨 20 次全綠，尚未完成弧前／弧後同負載歸因。兩者均未因發布而結案。
+
+---
+
+## v0.26.1（2026-08-19）— 一個名字不得有兩種解析
+
+**起因不是新弧，是 Q-033 偵察的複驗。** 偵察由代班代理執行
+（`nlang-tools/docs/a_root_only_one_engine_can_build_recon.md`），驗收方複驗時
+（`…_audit.md`）翻出一則 Q-032 回歸。
+
+### 缺陷
+
+O58 工單 §2.1 已裁查找方向並明文「不得改變這個方向」：使用者的根在標準根之前。
+Q-032 交付 `a71a69b` 新增**兩處**查找，只做對一處：
+
+| 路徑 | 順序 | 位置 |
+| :--- | :--- | :--- |
+| 裸名 | … → `ctx.root` → `ctx.standard_root` | `lib.rs:3673` → `:3700`（正確，且附了寫對的註解） |
+| 投影 | … → `ctx.standard_root` → `ctx.root` | `lib.rs:3813` → `:3840`（**反了**） |
+
+⟹ **同一個名字在裸解析與投影解析下是兩個值**：
+
+```nlang
+/add: { mine: 1 }
+app: { bare: /add,        ;; → { mine: 1 }      使用者的
+       app_: /add(1, 2),  ;; → ⊥ #conflict      使用者的（無 %builtin）
+       proj: /add.mine }  ;; → ⊥ #missing_key   標準根的閉合繭
+```
+
+〔量〕使用者的欄位**確實進了提交後的根物件、確實進了雜湊**，而寫下它的那台引擎
+讀不回來——**不是拒絕，是靜默地回答了別人的值**。與 Q-031「持有但打不開」同形，
+粒度由整倉降到座標。
+
+### 為什麼 Q-032 的 P1 是綠的
+
+`the_half_that_was_never_written_probe_test.rs:174` 只斷言 `evolve` 的輸出不含
+`Error`。`evolve` 確實成功；失敗在**觀測**。而 O58 要的「四個孤兒變成可遮蔽」
+**是觀測性質**。
+
+> **常設教訓（新增）：斷言「沒有報錯」的探針，只見證了沒有那個報錯。**
+> 本弧內第三則同族——另兩則為「綠而無見證」（Q-032 P3）與「斷言訊息子字串
+> ＝釘拼法」（Q-030）。**探針由驗收方寫並校準，這三則都是驗收方的漏。**
+
+### 修正
+
+`crates/interpreter/src/lib.rs` 投影路徑兩區塊對調並補註。**產品碼 diff 僅此一處**
+（15 增 11 刪）。未開 implementation 工單：方向已裁，開單只是把已裁事項再繞一圈。
+但保留「探針先寫、先對未修改的二進位校準成紅」。
+
+### 驗收
+
+探針 `crates/oo/tests/a_name_that_resolves_two_ways_probe_test.rs`：
+**4 綠（控制組）／4 紅 → 8/8**。四支紅**每一支都觀測**。C4 刻意存在：E4
+（12 個保留驗證器名不可遮蔽）管 `&` 那條軸，本次不得碰。
+
+*   workspace **×5 皆 1972/0/0（202 套件）**；基線 1963/1（201 套件）＋8＋1 ⟹ 零回歸。
+    已知的 `advert_persistence` 間歇本次五跑未發作。
+*   conformance **143/143**。
+*   **身分不移動**：標準根 `2da5b713…`、`app: { v: 1 }` 的根 `426d5186…`
+    修前修後逐位元組相同 ⟹ patch 形狀（先例 v0.24.1）。
+*   對 `nlang-baselines/v0.26.0-verify-target` 真二進位並排：四個座標
+    `⊥ #missing_key` → `1`／`2`／`3`／`4`；控制組 `@zzz.mine` 兩版皆 `9`。
+
+### 規格側
+
+`spec/CHANGELOG` v0.26.0-draft.1 的「拆開後四者皆可遮蔽」加更正框（**當時為假，
+自本版起為真**）；SPEC_00 新列並移動「(目前)」；REAL_03 §6.8 自陳缺口第一項
+（使用者無法定義自己的 `/add`）**解除並註明症狀出於順序而非清單**——**清單本身
+的缺口不受影響**，第二項（SPEC_09 §2.1／§2.5 兩表不一致）仍在，屬 Q-033 D2。
+
+### 旁量入 Inbox（不併射程）
+
+*   **去前綴 fallback 使模糊比對贏過精確比對**：`app: { add: 7, use: /add(1,2) }`
+    → `⊥ #conflict`。**對 v0.26.0 並排逐字相同 ⟹ 既有，非本版造成**；但本版
+    使兩路徑同向，危害隨之由裸名擴散到投影。需裁「`add:` 是否本來就該遮蔽 `/add`」。
+*   **SPEC_09 §5.1 六列引擎只兌現兩列**（`~%Logic`／`~%Str`／`~%Option`／`~%Result`
+    皆 `_`）。屬 Q-033 D2 的直接輸入，不獨立升 Ready。
+*   **`~%Official` 現值 `{{ }}` 違反 SPEC_13 §135**（該節已裁，正解為 `⊥ #missing_key`）。
+    **它在標準根裡 ⟹ 移除會移動 digest**，必須搭 D2 的 digest 移動一起做。

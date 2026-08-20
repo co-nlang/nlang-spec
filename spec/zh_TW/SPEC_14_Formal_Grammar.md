@@ -97,9 +97,11 @@ named_key = @{
 
 ;; 引用鍵：包含空格或運算子的鍵
 quoted_key = @{ "\"" ~ (!"\"" ~ ANY)* ~ "\"" }
+;; 多行鍵：名字含 `"` 者的唯一寫法（SYNTAX_03 §5 #12，2026-08-20）
+multiline_key = @{ multiline_str }
 
 ;; 欄位鍵：解析優先序為 匿名集合 > 路徑 > 命名鍵；tag 鍵用於分派表（2026-07-05 自引擎現況收編）
-field_key = { anon_set | path | named_key | quoted_key | tag }
+field_key = { anon_set | path | named_key | quoted_key | multiline_key | tag }
 ;; spread-as-field：{ a: 1, ...~c } 的展開欄位（語義見 SPEC_03 §3.1；2026-07-05 補上位文法）
 field     = { (field_key ~ ":" ~ expr) | spread_expr }
 ```

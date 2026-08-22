@@ -209,9 +209,13 @@ interp_expr = { "${" ~ expr ~ "}" }
 interp_literal = @{ (!("`" | "${") ~ ANY)+ }
 
 ;; 路徑（段可為 tag：Enum 成員存取 Status.#draft——2026-07-05 收編）
-path = { (root_path | parent_path | bare_path) ~ ("." ~ (named_key | tag) | "[" ~ expr ~ "]")* }
+path = { (root_path | parent_path | addr_path | bare_path) ~ ("." ~ (named_key | tag) | "[" ~ expr ~ "]")* }
 root_path = @{ "_." }
 parent_path = @{ "^"+ ~ "." }
+;; 位址錨（2026-08-22 新增，SYNTAX_03 §4.11）：compound-atomic，`_{` 之間不得有空白；
+;; 內文詞法惰性；演算法必須寫出（裸摘要與 blake3 同形，故歧義）。只在 RHS。
+addr_path = ${ "_" ~ "{" ~ addr_body ~ "}" ~ "." }
+addr_body = @{ algo ~ ":" ~ digest_hex }
 bare_path = @{ named_key }
 
 ;; 原子定義

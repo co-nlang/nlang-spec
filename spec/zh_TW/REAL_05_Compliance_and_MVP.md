@@ -106,7 +106,7 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L1-38** | `38-hybrid-math-operand` | 混血算術運算元剝殼 | `2` | SYNTAX_06 §4 #6(統一律) |
 | **L1-39** | `39-hybrid-pipe-arg` | 混血管道引數(體內 math 衍生) | `2` | SYNTAX_06 §4 #6(統一律) |
 
-### 3.2 Level 2 向量(語義演化/裸核閘門,23 條)
+### 3.2 Level 2 向量(語義演化/裸核閘門,104 條)
 
 | ID | 向量(語料檔) | 語義 | 期望 | 出處 |
 | :-- | :-- | :-- | :-- | :-- |
@@ -202,6 +202,18 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L2-90** | `90-union-static-cycle-order-blind` | 靜止環聯集支序盲 | `#true` | SPEC_12 §1.1 + SPEC_01 §2.4.2 |
 | **L2-91** | `91-open-miss-cause` | 開放缺欄帶因 Top(`#no_coordinate`) | `#no_coordinate` | ERROR_CODES §1.1(2026-07-20) |
 | **L2-92** | `92-union-nav-open-miss-survives` | 聯集導航:開放缺欄支存活(不被吸收) | `1 \| _` | SPEC_01 §2.4.2 |
+| **L2-93** | `93-type-super-int-num` | `%super` 反映欄取型別樹直接父 | `#true` | SPEC_05 §3.2(裁定 R1) + SPEC_09 §2.1 |
+| **L2-94** | `94-type-super-fixed-width` | 定寬整數之直接父為 `@int` | `#true` | SPEC_05 §3.2(裁定 R1) + SPEC_09 §2.1 |
+| **L2-95** | `95-type-name-reflection` | 型別名經 `%name` 反映 | `"int"` | SPEC_05 §3.2(裁定 R1) |
+| **L2-96** | `96-type-top-no-super` | 萬有型 `@any`(⊤)無父,誠實開放缺欄 | `_` | SPEC_05 §3.2(裁定 R1) |
+| **L2-97** | `97-effect-compose-union` | 效果組合＝標籤集聯集(兩支) | `#io \| #nondet` | SPEC_08 §4.1 |
+| **L2-98** | `98-effect-compose-three` | 效果組合＝標籤集聯集(三支) | `#io \| #nondet \| #state` | SPEC_08 §4.1 |
+| **L2-99** | `99-effect-compose-unify` | 合一(`&`)亦取效果聯集 | `#io \| #nondet` | SPEC_08 §4.1 + §4.2 |
+| **L2-100** | `100-effect-violation-declared-pure` | 宣告 `#pure` 被實際活動效應反證 | `_\|_` `#effect_violation` | SPEC_08 §4.3(靜態守護,裁定 A) + ERROR_CODES |
+| **L2-101** | `101-effect-pure-honest` | 誠實的 `#pure` 宣告照常成立 | `#pure` | SPEC_08 §4.3 |
+| **L2-102** | `102-effect-pure-cocoon-escape` | 繭 `{{ }}` 屏蔽副作用(非特權逃生門) | `#pure` | SPEC_08 §4.3 |
+| **L2-103** | `103-effect-runpure-unprivileged` | 非特權視界呼叫 `runPure` 遭拒 | `_\|_` `#privileged_required` | SPEC_08 §4.3 + §6.1.2(裁定 P1) |
+| **L2-104** | `104-project-down-named-params` | `project_down` 具名參數與 `#blur` 截面 | `#blur` 截面 | SPEC_08 §3.5 |
 
 ### 3.3 Level 3(銜尾蛇級)
 

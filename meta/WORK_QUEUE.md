@@ -89,7 +89,32 @@
 
 ## 3. 當前焦點
 
-**Active：無。** `TAG_REGISTRY` 改名弧**已驗收，已切 v0.30.0**（零 repair）。
+**Active：無。** Q-035 implementation **已驗收（一輪 repair），待切版**。
+
+<details><summary>Q-035 implementation（已完成，一輪 repair）</summary>
+
+**已驗收。** 交付 `nlang-tools 4d047f4`，repair `1f6c2ec`；規格 `nlang-spec 6da71f7`（交付方）
+＋驗收方補完 `#unprojected_builtin` 一句定義。裁定沿用 **O68 Q3.B／Q4.C**，無新裁定。
+**逐弧細節全文在 `ENGINE_SYNC`。**
+
+**三階段增量各自等於當步解除的探針數**：2018 → **2024** → **2026** ⟹ 零回歸。
+全跑 ×5 逐字全同（209 target、err=0），conformance **143/143**。
+**身分紅線**：同源碼的根物件 CAID `1bf4798a…` 在 PRE 與 repair 後**逐位元組相同**，
+標準根 digest 皆 `7038e250…`。
+
+**repair 的論旨**：`standard_for_root` 對不指名摘要的根回傳空表（既有程式碼，註解寫
+「Formats 1/2 were self-contained」）。閘之後「已安裝的空表」投影零個名字 ⟹ **舊宇宙的
+標準庫自己被判為未投影**。〔量，三個真二進位、超專案自己的 `.oo/` 複本〕
+`~%Math./add (3,4)`：v0.20.0 `7` ／ PRE `7` ／ 交付 **⊥** ／ repair `7`。
+**倒下的是合法呼叫不是偽造**，屬 REAL_03 §6.8.1 可讀性那一半。修法是
+「自足的根，它自己的 `~%`／`rules` 軸就是表」，**不走 `data`**，閘未變弱（實測）。
+
+**兩件要記的**：① **交付方做了規格收尾**，那是驗收方的事——但內容正確，
+且明文寫著本弧不關閉 SPEC_05 §3.3；② 本弧**沒有**滿足 SPEC_05 §3.3，
+七個危險名字全在標準根裡 ⟹ 閘依 Q3.B 放行，`process.exit` 偽造仍 exit 7，
+**探針 C3 逐字釘住**。關它要靠 **Q2a**（仍未裁，在弧 D 下游）。
+
+</details>
 
 <details><summary>TAG_REGISTRY 弧（已完成，v0.30.0；零 repair）</summary>
 
@@ -109,10 +134,6 @@
 patch 位依 VERSIONING §2 裝不下）。`⟵ 更正` 註記留在舊區段不動——那是既定作法。
 
 </details>
-
-<details><summary>弧 D-1（已完成，v0.29.0；一輪 repair）</summary>
-
-**弧 D-1 — ✅ 已驗收。**
 
 <details><summary>弧 D-1（已完成，v0.29.0；一輪 repair）</summary>
 
@@ -162,8 +183,22 @@ patch 位依 VERSIONING §2 裝不下）。`⟵ 更正` 註記留在舊區段不
 ⟹ 依 §9.0「身分只該搬一次」，D-3 不得自己付一次紀元，**須與 D-2 及 Q-035 的 Q1
 （引用式 import，同樣是「使用者根不再存拷貝」）併成一次身分搬遷**。
 
-**D-2 尚缺一項量測**：既有那些存了拷貝的宇宙，在 mount 語義之下會怎樣——
-那份拷貝今天是惰性的，改了之後會不會突然開始做事。這決定 D-2 破不破讀相容。
+**D-2 那項量測已做（2026-08-23，全文 `meta/oo/address_literal.md` §9）。答案分兩半：**
+
+*   **讀相容 ＝ 空集合，這一項不再擋 D-2。**〔量〕超專案 207 個 `.n` 檔中以 `_` 為鍵者 **0**；
+    全機 19,823 個 `.oo/`、7,358 個 CAS 物件（逐一 JSON 解析，0 個解不開），
+    **任意深度**含 `_` 鍵者 **1** ——而那 1 個是量測前 90 秒自己建的。
+    ⟹ 沒有任何既存宇宙會因為改成 mount 而「突然開始做事」，因為**沒有宇宙存過它**。
+*   **換上來的問題比原問題重**：`_:` 今天**已經有一個能用的意思**，而 §8 沒有量到它。
+    〔讀 `lib.rs:3108–3113`〕施用路徑上 `get_field(ks).or(get_field("it")).or(get_field("_"))`；
+    〔量〕`({ a: 1, b: 2, _: 99 }) "zzz"` → **99**（無 `_` 的對照 → `⊥ #conflict`，`it` 贏 `_`）。
+    §8 量的是**名字解析**脈絡，在那裡它確實惰性；**這是第二個脈絡，而且是活的**。
+
+**⟹ D-2 的射程改寫**：擋路的不再是讀相容，是**一個裁定題**——mount 與萬用分支要不要
+共用 `_:`。〔量〕`({ _: ~%Math, v: 1 }) "zzz"` **回傳整個 `~%Math`**（萬用分支把 `_` 的值
+當成答案；mount 要把它當成繼續查找的地方）。**同一拼法、同一運算、兩個答案。**
+多重掛載須同批裁：`_` 重複今天是 **⊥**（兩個 closed cocoon 取 meet），而 linter 明文
+把它命名為「multi-import idiom」並保證 0 提示。
 
 <details><summary>Q-035（偵察已交、五題已裁四題，待開 implementation）</summary>
 
@@ -511,7 +546,7 @@ W8′-b 擱置了。現在沒有仍在燃燒的 P0，應恢復主線，而不是
 | 序 | ID | 狀態 | 一句主張 | 證據／來源 | 依賴 | 完成條件 |
 | :-- | :-- | :-- | :-- | :-- | :-- | :-- |
 | 1 | **Q-034** | Ready（只可開 recon） | **假的 `#pure` 宣告不得靠一層態射應用躲過守衛** | Q-028 與 v0.26.0 現版皆重現；值帶 `#io`，`.%effect` 卻讀回 `#pure`；原列為 `interrupt-candidate` | Q-032 ✅，使有效效果已有耐久形；仍須裁「動態守衛／28 個 callback builtin 保守標註」 | 調和 SPEC_08 §4.3「靜態」與 TAG_REGISTRY「實際傳染」；量完 callback 矩陣；保住 cocoon 與 `/where` 邊界；產出裁定題與 implementation 工單，不含實作碼 |
-| — | **Q-035** | **Active（偵察中，2026-08-21）** | **使用者資料不得只靠 `%builtin` 名字取得宿主內建能力** | SPEC_05 §3.3 MUST NOT。**〔量 2026-08-21，v0.28.0 真二進位，已依 §2.2 第 4 條對現版重現〕**`{{ %builtin: "process.exit", %morphism: #true }} 7` → **exit=7**；`%morphism` 非必要；parse／evolve／commit／apply **四層皆無拒絕**，且使用者的 `%builtin` 以明文成為 CAS 物件的一部分。單括號形的 `⊥ #conflict` 經對照組證實**不是守衛** | 無技術前置；須裁拒絕層 | 分別量 parse／evolve／commit／apply 的可觀測後果，裁定拒絕邊界與既存耐久值處置；射程只含本地路徑；產出 implementation 工單 |
+| — | ~~**Q-035**~~ | **已驗收，待切版（2026-08-23）；詳見 §3 摺疊與 `ENGINE_SYNC`** | **使用者資料不得只靠 `%builtin` 名字取得宿主內建能力** | SPEC_05 §3.3 MUST NOT。偵察已交（`a_name_is_the_only_credential_recon.md`，含驗收方 §4.1）；**O68 已裁四題**。〔量 2026-08-21，v0.28.0 真二進位〕`{{ %builtin: "process.exit", %morphism: #true }} 7` → **exit=7**；四層皆無拒絕。**威脅模型驗收時被更正**：`registry(245) ＼ 標準根(251) = ∅` 且七個危險名全部路徑可達 ⟹ 這是**課責**缺陷不是提權缺陷，真正的洞是**派送從不查根** | **本輪只能做不受 import 語義影響者**：Q3.B 派送閘（憑證＝`ctx.standard_root`，`lib.rs:101` 已有該欄、`:3066` 派送點手上就有 `ctx`）＋ Q4.C 可查詢記號。**Q1（引用式 import）與 Q2a（寫入層）不在本輪**——兩者的乾淨解都在弧 D 下游，且 Q1 須與 D-2／D-3 併成一次身分搬遷 | 兩個前置先做：(i) `ctx.standard_root` 預設為空（`lib.rs:182`）須把「沒有標準根」與「標準根裡沒這個名字」分成兩個具名答覆（Q-031 同族）；(ii) 那 6 個死名走同一個 `⊥` 出口，須補實作或移出標準根（後者移動 digest ⟹ 不在本輪）。**不動身分、不加欄位、不動標準根內容**為本弧紅線 |
 | 3 | **Q-012** | Ready | **CAS 容器由 JSON 改用 n/ 值形編碼，而不改 CAID 身分** | O31／W8′-c；O23 已量定位址由 BN/ 決定、編碼與身分正交 | Q-010、Q-011 ✅；排在前三則誠實性／規格自陳工作之後 | 固定編碼形、解碼器、容器 encoding 遷移與跨版本矩陣；GC 走訪逐項一致；讀相容破壞明文記帳 |
 | 4 | **Q-002** | Ready | **剖析器內部 panic 不得謊報 `#stack_overflow`** | v0.18.0 明確殘留；已有因果分析，但不是輸入可達的已知 abort | 無；長期 parser 替換不是本弧 | 分開 spawn 失敗、join panic 與真正資源界；以可武裝探針證明內部 bug 不被政策錯誤吞掉 |
 
@@ -648,6 +683,14 @@ W8′-b 擱置了。現在沒有仍在燃燒的 P0，應恢復主線，而不是
 | **施用一個「未知」的運算元回 `_`——引擎做對了，規格沒寫，向量沒釘（§2.5 首例）** | 〔量 2026-08-21，v0.28.0〕並置即施用，規則三分：態射 ⟹ 施用；**確定不是**態射 ⟹ `⊥ #conflict`（`1 2`／`{a:1} {b:2}`／`{a:1} 5`／`{a:1} _` 皆是）；**未知 ⟹ `_`**。第三列在格上正確（單調）且是**整張表唯一不是 ⊥ 的一列**，但 `SPEC_07` §244 只寫了 `%fmap` 不存在時回 ⊥，**核心規格無此條文**；conformance **0 個向量**施用 `_`。**已有三處依賴**：`flat_map_test.rs:102`（逐字「This test verifies Top identity behavior」）、`functor_test.rs:425`／`:435`（逐字「Use Top as identity」）——三處皆**用而未斷言** | **與弧 D.1 同批裁，不另開弧**——D.1 若採「`_ {addr}` 維持靜默回 `_`」，其正當性完全靠這一列；第二個實作回 `⊥ #conflict` 會通過全部向量而給出另一個答案（與 Q-033 D1「一個名字兩種解析」同形）。產出＝一條 SPEC 條文（三分表）＋至少一個 L1 向量 |
 | **`fuel_remaining`:一處說它不是身分,另一處把它寫進位元組流** | 〔讀 2026-08-21〕`value.rs:1728` `encode_chs` **排除**它,註解「Identity-relevant bytes (no fuel_remaining)」;`value.rs:791` 亦逐字「NEVER fuel_remaining (**a reading**)」——即 O42「CHS 取條件不取讀數」。**而 `bn_serial.rs:144` 把它寫進位元組流**,註解自稱「Preserve runtime payload for reconstruct (**not identity**)」。〔量 v0.28.0〕**本次未觀察到它造成變異**(blur 形狀與位址為 1:1)⟹ 潛伏 | **先裁「該位元組流參不參與物件位址」**。若參與,則一個**讀數**進了身分,屬 O42 範圍,且與 REAL_03 §6.7「不得存在未進入雜湊的欄位」的**反面**同族(不該進的進了)。**不要先改 `bn_serial`**——先確定那串位元組的用途,兩處註解對此已經不一致 |
 | 非嚴格 union 比較、真格論 `=`、步進 Range 交集等 | `ENGINE_SYNC` 早期附帶事項 | 逐項在 v0.19 重現並連到現行規格條文；不得整包稱「舊帳」升 Ready |
+
+| **`_:` 已被三個測試當成三種東西用，而規格一種都沒寫（§2.5 第二例）** | 〔量 2026-08-23，v0.30.0，D-2 量測旁出，全文 `meta/oo/address_literal.md` §9.3–§9.5〕〔讀 `lib.rs:3108–3113`〕施用路徑上有 `get_field(ks).or(get_field("it")).or(get_field("_"))`，且是活的：`({ a: 1, b: 2, _: 99 }) "zzz"` → **99**。三處依賴各自認定它是別的東西：`dispatch_test.rs:76`（**萬用分派分支**，函式名逐字 `test_dispatch_wildcard_fallback`）／`cocoon_shape_probe_test.rs:182`（**普通使用者資料**，逐字「a USER field named `_` is data, not scaffolding」，標為 Law 3 邊界）／`collision_hint_lint_probe_test.rs:119`（逐字「**`_` merge key repetition ＝ multi-import idiom**」，斷言 R6 提示數 0）。規格側只有 `TAG_REGISTRY` §119 的**提示行**叫使用者「增加 `_` 預設分支」，`SPEC_07` §89 的 `_` 是**值**不是鍵。**conformance 0 個向量**釘任何一種 ⟹ §2.5 判別法滿分命中。 **附帶一個實測矛盾**：linter 祝福的那個 idiom `{ _: ~%Cond, _: ~%Math, v: 1 }` 今天 `_` 槽求值成 **⊥ `#missing_key`**（兩個 closed cocoon 取 meet；對照 `{ q: …, q: … }` 逐字同形），而 `oo lint` 回報 **0 diagnostics** | D-2 量測（本檔 §3）；O69 | **不獨立開弧——併進 D-2 裁定**。要裁的一句話是：**mount 與萬用分支要不要共用 `_:`**。〔量〕`({ _: ~%Math, v: 1 }) "zzz"` **回傳整個 `~%Math`**（萬用分支把 `_` 的值當**答案**，mount 要把它當**繼續查找的地方**）——同一拼法、同一運算、兩個答案。共用則須明文寫出兩個脈絡如何分；分拼法則須處理 `TAG_REGISTRY` §119 那句已經寫給使用者的提示。**多重掛載同批裁**（meet／序列 overlay／明文拒絕）。落地時四種意義都要補條文與向量 |
+
+| **頂層 spread 不展開，落成一個叫 `"..."` 的鍵** | 〔量 2026-08-23，v0.30.0，D-2 裁定簡報旁出〕巢狀正常：`{ ...~%Math, v: 1 }` 有 **50** 個鍵，`.one` → `1`，`./add (1,2)` → **3**。**頂層壞**：源碼第一行寫 `...~%Math`，`oo evolve` 之後 `oo status` 顯示它落在一個叫 `"..."` 的鍵底下、**內容原封未展開**，同一份源碼的 `out: /add (1,2)` 維持**未求值**。⟹ 同一個拼法在頂層與巢狀是兩種行為，而**頂層那種靜默**（不報錯、不展開） | D-2 裁定簡報 §4 B；`address_literal.md` §9 | **先量頂層與 `{ }` 內是不是走同一條 parse 路徑**，再決定是文法漏了頂層還是求值漏了。**不要先改 printer**——`"..."` 顯示成一個鍵可能只是症狀。⚠ **與 D-2 的裁定相關但不阻塞它**：只有選項 B（把匯入掛到 `...`）需要先修好這一格；A 與 C 不碰 spread |
+
+| **往沒有標準根摘要的舊宇宙寫入，會把它變成讀不回來的倉** | 〔量 2026-08-23，Q-035 repair 1 驗收旁量〕對超專案自己的 `.oo/` 複本（HEAD 2026-08-14，根 67,494 B，不指名任何標準根摘要）：`commit` **成功**，緊接著的 `evolve` 得 `Error: refusing root: standard root digest 47dc540c… is unavailable`。**三個引擎同一個 digest、同一句話**：`v0.26.0` ／ PRE `ebc0a5a` ／ repair 後 `1f6c2ec` ⟹ **至少自 v0.26.0 既有，與 Q-035 無關**。⚠ 這比 Q-035 repair 1 修掉的那個更重：那個是**算不出來**，這個是**寫進去之後再也讀不回來** | Q-035 repair 1 驗收；`ENGINE_SYNC` Q-035 節 | **先量該 digest `47dc540c…` 是什麼的雜湊**——是空表的？是 hydrate 後的根的？這決定它是「投影時算錯表」還是「該拒絕寫入」。**不得先加防禦到寫入路徑**：REAL_03 §6.8.1 的可讀性紅線在讀取端，而 O53「引擎永不在讀取路徑上替它寫」限制了可用的修法。同族先例 ＝ Q-011（`.oo/format` 被撥兩次而歷史被一次合法回收清掉） |
+| **三個新 `%cause` 沒有 conformance 向量，而其中兩個不該有** | 〔量 2026-08-23〕`#unprovided_builtin` 取決於各引擎 registry 的缺口（今天是六個位元運算死名）⟹ **不是符合性性質**，第二個實作補上實作就不該再走這個出口；`#no_standard_root` 在 CLI 上不可達（四個生產呼叫點都裝表）。只有 `#unprojected_builtin` 可向量化，**但它與 SPEC_05 §3.3 相牴觸**——§3.3 要求實作**拒絕**使用者資料中的 `%builtin`，而該向量必須讓引擎**求值**一個使用者 `%builtin` 才觀測得到派送理由 | Q-035 驗收；`TAG_REGISTRY` §1.6；SPEC_05 §3.3 | **跟 Q2a 一起處理，不獨立開弧**。Q2a 裁完之後才知道「使用者 `%builtin` 被求值」這件事在規格裡合不合法；若不合法，`#unprojected_builtin` 的向量要改用**標準根投影過但被降版的名字**來觸發（那需要第二個標準根，屬紀元） |
+| **`genesis_test::eval_context_new_has_no_timeout` 的名字比它構造的窄** | 〔量 2026-08-23〕Q-035 交付把它從 `EvalContext::new(oo.root_with_system())` 改成 `…​.with_standard_root(oo.root_with_system())`，函式名仍宣稱測 `new()`。**交付方已自行點名**（§5.1 第 1 項）。覆蓋未失：〔讀〕`with_standard_root` 只設 `projected_builtins`／`standard_root`／`standard_root_installed`，不碰 `timeout_deadline` | Q-035 驗收 | **小到不值得單獨開弧**；下次有人動 `genesis_test` 時順手把名字改成它實際測的東西，或拆成兩支。**不要為它單獨跑一次全跑** |
 
 Inbox 的順序**沒有優先意義**。任何一項升 Ready 時，必須刪除或改寫此列，不能在
 兩處同時維護。

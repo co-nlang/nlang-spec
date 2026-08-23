@@ -182,6 +182,14 @@
 | **`#ffi_panic`** | 原因·⊥ | 外部函數崩潰 | 外部函數執行過程中發生崩潰 (Panic)。請檢查 FFI 實作的穩定性。 |
 | **`#ffi_malformed`** | 原因·⊥ | 外部回傳格式錯誤 | FFI 回傳的數據結構不符合 `n/` 的物理規範。請確保外部映射邏輯正確。 |
 
+### 1.6 標準庫派送 (Standard-library dispatch)
+
+| 標籤 | 軸·載體 | 說明 | 修復建議 |
+| :--- | :--- | :--- | :--- |
+| **`#no_standard_root`** | 原因·⊥ | 求值脈絡未裝標準根 | `%builtin` 派送時，`EvalContext` **沒有**安裝標準根（O68 Q3.B；Q-035 S2，2026-08-23）。**不得**與 `#standard_root_unavailable` 混用——後者是物件**在**、且指名了一份本引擎未運送的標準根。**不得**與「這份表裡沒有這個名字」混用。CLI 生產路徑一律有裝；此碼主要出現在未接 `with_standard_root` 的內部脈絡。請為該求值安裝這個宇宙的標準根。 |
+| **`#unprojected_builtin`** | 原因·⊥ | 本宇宙標準根未投影此名 | `%builtin` 之名不在**這個宇宙的**標準根裡（O68 Q3.B；Q-035 S1）。憑證是**這個宇宙的那份表**，不是行程內的 registry，也不是值上的字串。**那份表有兩種存放方式，兩種都算**：根**指名**一個標準根摘要時，表是被指名的那個物件；根**自足**（不指名任何摘要，舊格式即如此）時，表就是這個根自己的 `~%`／`rules` 軸——**但不含 `data`，使用者欄位不是表**（Q-035 repair 1）。請改走 `~%` 已投影之路徑，或換一個確實投影此名的宇宙。**不得**回報為 `#conflict`。 |
+| **`#unprovided_builtin`** | 原因·⊥ | 根已投影但引擎不能提供 | 標準根**有**投影此 `%builtin` 之名，而本引擎的 registry **沒有**對應實作（O68 前置 (ii)；Q-035 S3）。今天的六個死名（`math.bitAnd`／`bitNot`／`bitOr`／`bitXor`／`shl`／`shr`）走此出口。**不得**與「根裡沒這個名字」共用一個答案。補救是換一個能提供該名的引擎，或等該名從標準根移除（後者移動 digest，屬紀元）。 |
+
 ---
 
 ## 2. 逐載體索引 **[Core Requirement，2026-08-09 新設]**
@@ -190,9 +198,9 @@
 > 二者皆為規範性，內容由 §1 各列的「軸·載體」欄決定。
 > 「一個標籤掛在什麼上」在本版之前**在規格裡不可回答**。
 
-### 2.1 載體：⊥（50 個）
+### 2.1 載體：⊥（53 個）
 
-`#conflict` `#arithmetic_on_anchor` `#numerical_error` `#divergent` `#tropical_approximation_failed` `#order_conflict` `#h1_split` `#h2_split` `#fractional_bitwise` `#fuel_exhausted` `#timeout` `#max_nodes_exceeded` `#max_depth_exceeded` `#max_lifting_exceeded` `#max_branches_exceeded` `#no_matching_branch` `#out_of_horizon` `#routing_budget_exceeded` `#stack_overflow` `#caid_mismatch` `#standard_root_unavailable` `#object_undecodable` `#peer_not_implemented` `#peer_unknown_status` `#peer_refused` `#peer_timeout` `#request_too_large` `#compat_conflict` `#unsupported_ca_algo` `#unsupported_fmt_version` `#ambiguous_refinement` `#refine_authority_missing` `#refine_authority_invalid` `#refine_signer_unknown` `#refine_source_unverifiable` `#refinement_cycle` `#semantic_isolation` `#verification_failed` `#private_access_violation` `#cocoon_isolation_violation` `#missing_key` `#lifting_failed` `#effect_violation` `#type_mismatch` `#projection_conflict` `#no_context` `#privileged_required` `#store_boundary` `#ffi_panic` `#ffi_malformed`
+`#conflict` `#arithmetic_on_anchor` `#numerical_error` `#divergent` `#tropical_approximation_failed` `#order_conflict` `#h1_split` `#h2_split` `#fractional_bitwise` `#fuel_exhausted` `#timeout` `#max_nodes_exceeded` `#max_depth_exceeded` `#max_lifting_exceeded` `#max_branches_exceeded` `#no_matching_branch` `#out_of_horizon` `#routing_budget_exceeded` `#stack_overflow` `#caid_mismatch` `#standard_root_unavailable` `#object_undecodable` `#peer_not_implemented` `#peer_unknown_status` `#peer_refused` `#peer_timeout` `#request_too_large` `#compat_conflict` `#unsupported_ca_algo` `#unsupported_fmt_version` `#ambiguous_refinement` `#refine_authority_missing` `#refine_authority_invalid` `#refine_signer_unknown` `#refine_source_unverifiable` `#refinement_cycle` `#semantic_isolation` `#verification_failed` `#private_access_violation` `#cocoon_isolation_violation` `#missing_key` `#lifting_failed` `#effect_violation` `#type_mismatch` `#projection_conflict` `#no_context` `#privileged_required` `#store_boundary` `#ffi_panic` `#ffi_malformed` `#no_standard_root` `#unprojected_builtin` `#unprovided_builtin`
 
 ### 2.2 載體：#blur（4 個）
 

@@ -4436,3 +4436,104 @@ app: { bare: /add,        ;; → { mine: 1 }      使用者的
     皆 `_`）。屬 Q-033 D2 的直接輸入，不獨立升 Ready。
 *   **`~%Official` 現值 `{{ }}` 違反 SPEC_13 §135**（該節已裁，正解為 `⊥ #missing_key`）。
     **它在標準根裡 ⟹ 移除會移動 digest**，必須搭 D2 的 digest 移動一起做。
+
+---
+
+## Q-035 implementation — 派送去查根（2026-08-23，v0.30.0 之後）
+
+**裁定沿用 O68 Q3.B／Q4.C，無新裁定。** 工單
+`nlang-tools/docs/a_name_is_no_longer_a_credential_handover.md`；
+repair 工單 `…_repair_1.md`。交付 `nlang-tools 4d047f4`，repair `1f6c2ec`；
+規格側 `nlang-spec 6da71f7`（交付方，見下）＋本次驗收方補完一句定義。
+
+### 交付形狀
+
+`lib.rs:3064` 派送點在查 `builtin_registry` **之前**先查表，三個新的具名 `%cause`
+（`BottomCause` 尾端追加，既有 discriminant 未動）：
+
+*   `#no_standard_root` —— 脈絡從未安裝表（`standard_root_installed: bool`）
+*   `#unprojected_builtin` —— 表有裝，不投影這個名字
+*   `#unprovided_builtin` —— 表投影了，而本引擎 registry 沒有（六個死名）
+
+`EvalContext` 另加 `projected_builtins: HashSet<String>`，於安裝時算好。
+**兩個欄位都不進序列化，不動身分。** S4：`oo inspect` 對非標準根物件且帶
+`meta.builtin` 者印 `note: user-authored %builtin`，只顯示、不拒絕、不改寫。
+
+### 驗收
+
+**一輪 repair。** 三階段增量各自等於當步解除的探針數：
+交付前 2018 → 交付 **2024**（＋4 解除 ＋2 新 S2 測試）→ repair **2026**（＋1 解除）
+⟹ **零回歸**。全跑 ×5 逐字全同（209 target、err=0），conformance **143/143**，
+主探針 9/9、repair 探針 2/2、S2 2/2，皆 0 ignored。
+
+**探針完整性**：交付那輪 `cargo fmt` 重排了探針檔，驗收方去空白、去逗號後
+**逐字元比對確認語義未動**（差異僅 5 個 trailing comma），四個 `#[ignore]` 全移除；
+repair 那輪探針檔 **0 insert / 1 delete**。
+
+**身分紅線（兩個真二進位）**：同一份源碼，PRE（`ebc0a5a`）與 repair 後
+**根物件 CAID 逐字元相同**（`1bf4798a…`，497 B，`cmp` 逐位元組相同），
+標準根 digest 兩邊皆 `7038e250…`；交叉讀互通。
+
+### repair 的論旨
+
+`universe.rs:159` `standard_for_root` 對**不指名摘要**的根回傳空表，註解寫著
+「Formats 1/2 were self-contained」。閘之前無害（派送不查表）；閘之後
+「已安裝的空表」投影零個名字 ⟹ **那個宇宙的標準庫自己也被判為未投影**。
+
+〔量，三個真二進位、同一個倉（`/home/gali/nlang/.oo` 的複本，HEAD 2026-08-14，
+根 67,494 B；原倉未寫入，HEAD 前後逐字元相同）〕
+
+| 引擎 | `lib: ~%Math./add (3,4)` |
+| :--- | :--- |
+| v0.20.0（造它的） | `7` |
+| PRE `ebc0a5a` | `7` |
+| 交付 `4d047f4` | **⊥ `#unprojected_builtin`** |
+| repair `1f6c2ec` | `7` |
+
+**倒下的是合法的標準庫呼叫，不是偽造。** 歷史打得開、名字解析得到、`oo status`
+照印——什麼都算不出來，即 REAL_03 §6.8.1 中**可讀性**那一半。
+
+**在野不是空集合**：全機 15 個持有 Combo 物件的倉，10 個的根帶
+`__nlang_system_digest`、5 個沒有；其中 4 個為本次量測所造，**第 5 個是超專案自己的 `.oo/`**。
+
+**修法**：`with_standard_root` 在表為 `is_blank()` 時改由使用者根的
+`system`／`rules` 軸收集投影名，**不走 `data`**。閘不因此變弱——
+〔量〕同一個舊宇宙裡憑空發明的名字仍得 `#unprojected_builtin`；
+使用者寫的 `/evil` 亦然（`projected_builtins` 在安裝當下由 HEAD 的根算好，
+staged 進不去；提交後亦擋）。
+
+### 規格側
+
+*   **交付方做了規格收尾**（`6da71f7`：`TAG_REGISTRY` §1.6 新設三碼、§2.1 計數 50→53、
+    CHANGELOG 增量）。**分工上那是驗收方的事**，已列常設規則。內容經查正確，
+    且**明文寫著本弧不關閉 SPEC_05 §3.3 的 MUST NOT**——沒有去改自己沒滿足的條款。
+*   **驗收方補完一句定義**：`#unprojected_builtin` 原措辭「憑證是脈絡裡那份**被指名的表**」，
+    而自足的根**沒有被指名的表** ⟹ 依原措辭整個舊宇宙的庫都算未投影。
+    已改為「表有兩種存放方式，兩種都算」，並明寫 `data` 不是表。
+
+### 本弧買到什麼、沒買到什麼
+
+**沒買到**：SPEC_05 §3.3 的 MUST NOT 仍未滿足。〔量〕七個危險名字**全在標準根裡**
+⟹ 閘依 Q3.B 放行，`{{ %builtin: "process.exit" }} 7` 仍 exit 7。**探針 C3 逐字釘住這條界線。**
+關它要靠 **Q2a（寫入層）**，仍未裁，乾淨解在弧 D 下游。
+
+**買到**：① 三個今天共用 `#conflict` 的事實分成三個具名答覆（**Q-031 類別第七個呼叫點**）；
+② 把巧合換成機制——〔量〕`registry(245) ＼ 標準根(251) = ∅` 而 `標準根 ＼ registry = 6`；
+③ O55 的版本綁定第一次對 `%builtin` 生效。**③ 今天量不到差異**：四個歷史標準根
+投影的名字集合相同，連 v0.20.0 那個舊根也是 **251 個、與今天完全一致**
+（`今天有、舊根沒有 = 0`）。它買的是**下一次標準根變動時**舊宇宙自動保有舊名字集合。
+
+### 旁量入 Inbox（不併射程）
+
+*   **往沒有標準根摘要的舊宇宙寫入，會把它變成讀不回來的倉**：commit 成功，
+    下一次 evolve 得 `Error: refusing root: standard root digest 47dc540c… is unavailable`。
+    〔量〕**v0.26.0／PRE／repair 後三者同一個 digest、同一句話** ⟹ **至少自 v0.26.0 既有，
+    與本弧無關**。
+*   **`genesis_test::eval_context_new_has_no_timeout` 現在建的不是 `new()`**
+    而是 `new().with_standard_root(…)`，函式名比它實際構造的窄。交付方已自行點名；
+    覆蓋未失（`with_standard_root` 只碰三個欄位，不碰 `timeout_deadline`）。
+*   **三個新碼沒有 conformance 向量，而且其中兩個不該有**：`#unprovided_builtin`
+    取決於各引擎 registry 的缺口，**不是符合性性質**；`#no_standard_root` 在 CLI 上不可達。
+    只有 `#unprojected_builtin` 可向量化，**但它與 SPEC_05 §3.3 相牴觸**——
+    §3.3 要求實作拒絕使用者資料中的 `%builtin`，而該向量必須讓引擎**求值**一個使用者
+    `%builtin` 才能觀測到派送理由。⟹ **本弧不補向量，理由記於此**；Q2a 落地時一併處理。

@@ -638,11 +638,11 @@ nav×⊥ 合成性弧量測後擴為四面(全引擎追法,法源俱在):
 標籤)+SYNTAX_08 §4 #3;修法=補 %val,G6 投影自動歸位;
 **F3** `b: 123` 之 `b.%cause` → ⊥ #invalid_path,違 SYNTAX_08 §4 #2
 (應 `_`;combo 缺欄早回 `_`,只有原子走 catch-all 中毒);
-**F4** `#invalid_path` 身世查清:未立法(REAL_04/ERROR_CODES 皆無,
+**F4** `#invalid_path` 身世查清:未立法(REAL_04/TAG_REGISTRY 皆無,
 G4 裁定文誤沿用引擎拼法)→**廢止**。四鑄點分流:導航 catch-all
 (原子/Top)→ `_`(原子資料軸可 `&` 混血擴欄=開放,用戶原始設計
 「% meta 欄與一般欄同律預設開放」);未坍縮 %cause → `_`(同一刀);
-`^` 溢出 → `#out_of_horizon`(ERROR_CODES §1 正典早備,含修復建議);
+`^` 溢出 → `#out_of_horizon`(TAG_REGISTRY §1 正典早備,含修復建議);
 聯集全 ⊥ 支 → REAL_04 §4 主因果(G4 條款修訂:`({a:1}|7).a` 由 `1`
 改 **`1 | _`** 誠實疊加;G4 三釘/門由驗收方遷移)。CAID parse
 (lib.rs:1543)留待 cause 正典審計。BottomCause **變體只增不刪**
@@ -923,7 +923,7 @@ computing/in_flight 把一切再入鑄 ⊥(靜止互指 `a:b,b:a`、靜止自指
 canon 自洽不動。
 
 三款入法(SPEC_12 §1.1 #2/#3+帶因 Top、SYNTAX_08 §4 #2 例外、
-ERROR_CODES #static_cycle)見 CHANGELOG。帶因 Top 守欄:格律中立
+TAG_REGISTRY #static_cycle)見 CHANGELOG。帶因 Top 守欄:格律中立
 /不傳播/顯示 `_`;fmt=觀測期值,如須序列化新 tag 追加(Blur
 前例)、BottomCause 凍結不動。向量 L2-53~55 三紅=門、L2-56 綠=
 法釘;矩陣 **95**。工單 `docs/static_cycle_handover.md`(tools dev)。
@@ -999,7 +999,7 @@ G2-S 當日(2026-07-12)量測確認「交付前後一致」另議至今,本弧
 stdlib CAID=共享身分基底,單調精化亦違法=所有權判準非內容判
 準;novel 名=冒名同禁)。**Q2** 違法形雙軌:root → evolve 邊界
 帶名報錯(同 G2-S 大聲死機構,同值寫入也擋);combo `~%` 定義
-鍵 → 該欄鑄 ⊥ `#system_reserved`(ERROR_CODES §1.4 登記;節點
+鍵 → 該欄鑄 ⊥ `#system_reserved`(TAG_REGISTRY §1.4 登記;節點
 級、合成傳播、**不自癒**——詞法鏈不跳違法欄,自癒藏罪)。
 **Q3** 豁免=root `~%Config.<裸名欄>`(規範家;實測 fuel=50 真
 生效);combo 內 `~%Config` 不豁免。**Q4** RHS 全面保全(別名/
@@ -1029,7 +1029,7 @@ force 終端值不包 pure-wrapper〔幻影 #io 影蓋面根治〕)、驗收+代
 **1078/0/3**、conformance **101/101**、語料 78/0。
 
 **cause 正典審計裁定(2026-07-17,已批)**:審計盤點=引擎 15
-BottomCause 變體 vs REAL_04 §2 舊表 vs ERROR_CODES 三方對照。
+BottomCause 變體 vs REAL_04 §2 舊表 vs TAG_REGISTRY 三方對照。
 **帳載修正第八次(撤案)**:「`&`×blur CAID 非原樣」為驗收方量測
 誤差自首——blur CAID=hash(cause,fuel,strategy,**salt**),salt 每
 引擎實例一顆,原量測三次獨立行程跨 salt 必異;單行程重測雙序+互
@@ -1042,7 +1042,7 @@ unify 早有 Blur×Bottom=Bottom 雙向臂,spread 之 blur 臂早退跳過
 純);修=拆毯讀實際效果(~%Env 等真 IO 不動)。**廢稅殘餘**:
 `#invalid_path` 末活鑄點(follow_refine CAID parse 失敗)退役→
 `#conflict`+上游誠實訊息(原謊稱 refinement cycle)。**法典側**:
-Q1 ERROR_CODES=正典登記簿唯一維護點,REAL_04 §2 重寫為類別法+
+Q1 TAG_REGISTRY=正典登記簿唯一維護點,REAL_04 §2 重寫為類別法+
 指針(六大類別名實相符:格論/視界資源/存取所有權/來歷/引擎作業
 /登記未鑄);Q2 §4 主因果優先級重立法對齊引擎五階(divergent>
 違規類>格論族>資源族>座標缺失;#effect_violation 屬未鑄類、
@@ -1123,7 +1123,7 @@ workspace **1122/0/3**、conformance **107/107**、語料 78/0。對抗
 
 ⊥-meta 弧(2026-07-14)曝光記帳項。**零新裁定**——法源俱在:
 SPEC_07 L1-32 逐支投影、SPEC_08 §3.2.2 #5「僅 `_|_` 支剔除、
-`#blur` 支存活」、ERROR_CODES 註+REAL_04 §4 全 ⊥ 主因果。
+`#blur` 支存活」、TAG_REGISTRY 註+REAL_04 §4 全 ⊥ 主因果。
 **量測(v0.2.19)**:剔除律無單一居所——只住 unify 分配臂(root
 evolve 路徑,O1 `(1&2)|5`→`5` ✓)與導航臂之**即時** Bottom 比對
 (cocoon miss 面 ✓);三漏:**T1** 導航投影不 force(Stage 2 欄位
@@ -1210,7 +1210,7 @@ unary `-(…)` 文法既有形不吃括號(`0-(2|9)` 覆蓋語義面)。
 `117d5f0`、驗收 `6fb2c2e`。內核三層拆分(expr 短路序保留/值層
 Union 臂/左主序分配 helper 複用 `primary_bottom_from_culled`+unify
 budget 紀律)。**越單變更審核通過=引擎追法**:整除/取餘除零靜默
-`0` → ⊥ `#numerical_error`(ERROR_CODES 明文「發生除以零…」;舊
+`0` → ⊥ `#numerical_error`(TAG_REGISTRY 明文「發生除以零…」;舊
 special_float_test 釘的是謊,改寫附法源;float Inf/`#_` 路徑實測
 不動)。探針 17/17、workspace **1168/0/3**、conformance
 **114/114**、語料 74/0。對抗全正:雙聯集×⊥支混 `11 | 21`/去重
@@ -1234,7 +1234,7 @@ L2-76(拼法無關)/L2-77(型別族階),三紅=門,矩陣 114→116。
 
 **cause cocoon 調和弧開單(2026-07-19)**:裁定 A 案+用戶設計考古。
 REAL_04 §1 重寫=正典核 `%val` 唯一必備+診斷欄可選 %-前綴依
-ERROR_CODES 類別變形;舊表 11 裸名欄(path/line/…)引擎從未鑄造
+TAG_REGISTRY 類別變形;舊表 11 裸名欄(path/line/…)引擎從未鑄造
 =雙帳漂移同病,降級非規範性附註。**%type 廢止**=設計考古:舊代
 節點模型殘欄(型別內容曾放 %type 欄,後由同構原理 SPEC_03 §4
 %kind+%super/%predicate 取代;cause 繭 %type 恆同 %val=化石雙帳);
@@ -1339,11 +1339,11 @@ effect_taint 真綠轉正)。對抗 9/10 正:聯集去重/鏈式/欄值/eq/⊥
 `fuel: "lots"`、`strategy: 5` 收下後消費端回預設),顯示面
 `out: ~%Config` 只見 staged 殘片。裁定:名必屬創世七鈕表、值必
 合型(六 int 鈕非負整數、strategy 三標籤),違者 evolve 邊界
-帶名報錯(新 `#invalid_config` 錯誤類名,ERROR_CODES 登記,不鑄
+帶名報錯(新 `#invalid_config` 錯誤類名,TAG_REGISTRY 登記,不鑄
 節點 ⊥;BottomCause 枚舉尾端追加);旋鈕家封閉=未來走規格書
 演化、第三方走 ~%Engine;觀測本體=有效配置(創世 ∧ 覆寫)。
 健康面釘死:逐鈕讀/透鏡讀/expr RHS 求值後驗型/fuel 真效。
-SPEC_09 豁免收窄+§6 旋鈕表、ERROR_CODES `#invalid_config`。
+SPEC_09 豁免收窄+§6 旋鈕表、TAG_REGISTRY `#invalid_config`。
 **無可向量面**(大聲死+多行顯示),門全在探針,矩陣 123 不動。
 工單 docs/config_validation_handover.md(tools dev `20f8fbe`):
 6 紅+4 釘校準全正。基線 1253/0/9、123/123、語料 75/0;目標
@@ -1499,7 +1499,7 @@ flatten→剔⊥→G1 去重→blur 分離→Top 族捷徑→O(n²) 吸收→接
 與 #blur 同列診斷成員**,三條豁免一體(不被吸收/不吸收/**任何
 深度含診斷成員之值不得作吸收方**——否則 `{v:9} | p` 於組合層被
 `{v:_}` 整支吞掉=以未知抹除已知)。**開放缺欄導航改鑄帶因 Top**
-`#no_coordinate`(ERROR_CODES 登記;顯示仍 `_`,%cause 可溯;繭
+`#no_coordinate`(TAG_REGISTRY 登記;顯示仍 `_`,%cause 可溯;繭
 缺欄仍 ⊥)。此裁**救回**吸收弧的附帶損失:union-nav/染色作用域
 兩弧之可觀測性、L2-72 原面(期望復原 `9 | _`)。矩陣 128→131
 (L2-90 序盲/91 缺欄因/92 導航存活)。工單
@@ -1622,7 +1622,7 @@ genesis 11/11 皆於候選重測;條件閘一次成功;tag 後 touch build.rs �
 坍縮 `_|_ (%cause: #effect_violation)`(說謊即崩潰)。**非**環境預設語境
 (那會砸 L2-83)。**繭壁自動豁免**=逃生門:繭真屏蔽(closed 跳效應累積
 §4.2.1)故實際 effect 就是 #pure,宣告相符無矛盾。交付 `f573426`:
-`BottomCause::EffectViolation`(append-only,ERROR_CODES 既列)+ combo 終化
+`BottomCause::EffectViolation`(append-only,TAG_REGISTRY 既列)+ combo 終化
 單條 ⊥ 早返(`declared_pure_meta ∧ cv.effect.has_active()`);`has_active()`
 抽共用(arc-2 solidify 亦改用)。探針 effect_violation 11/11、workspace
 **1358/0/3**、conformance **141/141**(L2-100 宣告純疊 io→⊥、101 真純宣告
@@ -1722,7 +1722,7 @@ discharge #io but the value observes #io | #nondet」,兩面皆真,守護未誤�
 `--grant`+`--privileged` union)、eval 子命令同通;**CAID 不受能力影響**
 (同程式跨不同授權 `--format` 輸出逐位元相同)。**增量**(`--privileged`
 語義不變,既有程式零影響;新增的是更**窄**的授予)。spec closure:SPEC_08
-§4.3+§6.1.4、ERROR_CODES(`#privileged_required` 兩種拒絕模式)、CHANGELOG 增量。
+§4.3+§6.1.4、TAG_REGISTRY(`#privileged_required` 兩種拒絕模式)、CHANGELOG 增量。
 **本弧無新增合規向量**(runner 不傳能力旗標,CLI 探針為法定測具,同 arc-4)。
 工單 `nlang-tools/docs/selective_discharge_handover.md`。掛帳:`#pin`+其餘 §6
 操作**本體**(能力槽已備)、commit 層審計(§6.1.3)、token 驗證+線程隔離
@@ -1837,7 +1837,7 @@ dev tie-back `fc6d333`。
 **仍在前方的一道更老的牆**:約 **140 層**原生堆疊溢位,行程 abort 而非回報
 (130 ok / 140 abort;`~%Config.timeout` 無效)。**既有缺陷**——同一 fixture 於
 v0.16.0 與 O42 兩支二進位皆 exit 134,只是先前被指數與掛死擋著走不到。
-**違反 ERROR_CODES §2.7.3 第一條 MUST**(實作上限須嚴格小於原生天花板,方能回報)。
+**違反 TAG_REGISTRY §2.7.3 第一條 MUST**(實作上限須嚴格小於原生天花板,方能回報)。
 列為下一弧的正面。
 
 **引擎 v0.17.0 定版(2026-08-10)= O42 弧,破壞性**:top `71cc709`
@@ -1945,7 +1945,7 @@ genesis 11/11。**對抗**:`max_unification_depth` = 401／10000／**4294967295*
 我在同一天量過、寫過,然後在下一張工單裡宣告「不動任何 CAID」。
 **帳本裡有的東西沒有被讀回來——不是量測不足,是量測沒有被使用。**
 
-**規格收尾(驗收方)**:ERROR_CODES **§2.7.3 新設**並**更正 §2.7.2**;
+**規格收尾(驗收方)**:TAG_REGISTRY **§2.7.3 新設**並**更正 §2.7.2**;
 `#stack_overflow` 已登記(§1.2,載體 ⊥,48 個);SPEC_09 §6 旋鈕表新增
 「可設 `#_`？」欄、`timeout` 預設改 `#_`;§6.0.2 增兩條 MUST NOT。
 反向盤點由 3 降為 **2**(只剩兩個刻意廢止的)。
@@ -2112,7 +2112,7 @@ W4′ 的對抗量測抓到,**與本交付無關且早於它至少六個 minor**
 本弧的論旨(名字要指向補救)因此只兌現了一半。
 `~%Config` 的其他旋鈕是否同樣不生效**尚未逐一量測**——W4″ 應先做這件事。
 
-**W4 完成後的殘留(2026-08-09,引擎 v0.13.0)**:規格側已落 ERROR_CODES §0／
+**W4 完成後的殘留(2026-08-09,引擎 v0.13.0)**:規格側已落 TAG_REGISTRY §0／
 「軸·載體」欄／§2 逐載體索引／§2.7 兩則命名裁定,**引擎尚未跟上**。反向盤點
 自 5 降為 **3**,且三者皆為刻意:
 
@@ -2133,7 +2133,7 @@ CAID,**刪 variant 屬 fmt 紀律,不在 W4′ 射程**)。三者皆改變操作
 `handle_resource_exhausted` 只有三支:Strict→`⊥`、Blur→`#blur`、Approximate→`#approximate`。
 ⟹ **規格描述的暫態在跑著的引擎裡不存在**;此為符合性缺口,不改規格。
 
-**ERROR_CODES ↔ 引擎 標籤盤點(2026-08-09,引擎 v0.13.0;W4 偵察)**:
+**TAG_REGISTRY ↔ 引擎 標籤盤點(2026-08-09,引擎 v0.13.0;W4 偵察)**:
 新增 `scripts/error-code-inventory.py`(唯讀,不改語料;自帶雙控制——
 `#conflict` 必須判為 `enum`、一個假標籤必須判為 `absent`,控制失敗即中止)。
 
@@ -2148,11 +2148,11 @@ CAID,**刪 variant 屬 fmt 紀律,不在 W4′ 射程**)。三者皆改變操作
 | `literal` | 5 | 以字串字面值出現在非註解程式行 |
 | `comment` | 1 | 只在註解裡(`#recursive_lazy`) |
 | `absent` | **33** | 四種形狀都找不到 |
-| **合計** | **61** | ERROR_CODES §1 的表格列數 |
+| **合計** | **61** | TAG_REGISTRY §1 的表格列數 |
 
 逐節 `absent`:§1.1 六、§1.2 五、§1.3 十一、§1.4 五、§1.5 六。
 
-**反向(引擎列舉中而 ERROR_CODES 未收錄)= 5**:
+**反向(引擎列舉中而 TAG_REGISTRY 未收錄)= 5**:
 `#h1_split`／`#h2_split`／`#invalid_path`(已廢止,有注記無列)／
 **`#semantic_eclipse`**／**`#stack_overflow`**。
 
@@ -2166,7 +2166,7 @@ CAID,**刪 variant 屬 fmt 紀律,不在 W4′ 射程**)。三者皆改變操作
 (3 固定 + 1 開放 `String`)／帶因 `Top` 為裸 `String`(實得 2 個)。
 **三者交集只有 `fuel_exhausted` 與 `timeout` 兩個。**
 `#stack_overflow` 只活在 `BlurCause`,`#semantic_eclipse` 只活在 `BottomCause`。
-⟹ ERROR_CODES 把它們攤成一張 61 列平表,**表格的形狀宣稱了一種實作沒有、
+⟹ TAG_REGISTRY 把它們攤成一張 61 列平表,**表格的形狀宣稱了一種實作沒有、
 規格也從未陳述的統一性**。
 
 **引擎 v0.13.0 定版(2026-08-09)= W8′-a「印出來的東西要能被讀回去」弧,增量**:
@@ -2331,19 +2331,19 @@ REAL 系列」。**盤點的結果部分推翻了這個假設。**
   `"#caid_mismatch: …"`):**缺 34**。抽驗 5 個確認零出現;其中 `#incomplete`
   與 `#already_exists` 另有 CamelCase 變體,可能以他形實作 ⟹ **實數 32–34。**
 
-**ERROR_CODES 共 73 個,約 45% 在引擎裡沒有對應。** 家族分佈:
+**TAG_REGISTRY 共 73 個,約 45% 在引擎裡沒有對應。** 家族分佈:
 
 | 只出現在 | 個數 |
 | :-- | :-- |
 | SPEC_ 系列 | 11 |
-| **只在 ERROR_CODES 自己**(無任何條文要求) | **10** |
+| **只在 TAG_REGISTRY 自己**(無任何條文要求) | **10** |
 | REAL_ 涉入 | 7 |
 | **APP_ 涉入** | **4** |
 | 其他(ORDER/GUIDE/SYNTAX/COSMOLOGY 混) | 2 |
 
 ⟹ **這不是 APP 系列的問題。** APP 涉入的只有 4 個。而最尖的一格是那 10 個
-**只存在於 ERROR_CODES 自己**的代碼——它們不是「規定了但沒做」,是**取了名字
-但從未被規定**。那一格是規格側工作(補條文,或從 ERROR_CODES 刪),**不是引擎帳**。
+**只存在於 TAG_REGISTRY 自己**的代碼——它們不是「規定了但沒做」,是**取了名字
+但從未被規定**。那一格是規格側工作(補條文,或從 TAG_REGISTRY 刪),**不是引擎帳**。
 
 **兩個 APP_05 實例其實是相反的兩種病**:
 
@@ -2887,7 +2887,7 @@ head=d430493`;tag 後 touch build.rs 重建 `oo --version` = `oo v0.2.48` ✓ �
 **與 #4/#5 同日**,ORDER_00 §5.1.4 時鐘起算日不變(仍 2026-07-27)。前版 v0.2.47=`6848bff`。
 
 **OODP 封包格式弧(2026-07-27,裁定 Q1/Q2,**一件驗收代修 + 一條驗收補述**,
-REAL_02 §3.2 重寫 + ERROR_CODES §1.3 新設 `#peer_timeout`;**破壞性條目 #6**,
+REAL_02 §3.2 重寫 + TAG_REGISTRY §1.3 新設 `#peer_timeout`;**破壞性條目 #6**,
 已切 v0.2.48)**:
 **承重量測**:兩引擎**今天就對接得起來**(先前那次失敗是我自己用具名參數呼叫位置參數的
 builtin,同 v0.2.39 形狀);壞的是對等點交不出位元組時它有什麼可說的——
@@ -2910,7 +2910,7 @@ Layer 1 = 語義/文法/**協定**,REAL 之規範性為引擎互通,本機子命
 Harness 有一處必要讓步並於檔頭聲明:命令名於同弧變更,故啟動器先試 `node serve` 再退回
 `serve`,**只為使線上諸門在改名兩側皆可測**,名字由 R5 單獨決定。
 **一件驗收代修**:**逾時標籤重用**——交付沿用既有 `BottomCause::Timeout`,而該碼自始
-表示**本地運算**超出 `%timeout`,ERROR_CODES 給它的補救是「優化性能、減少嵌套、放寬
+表示**本地運算**超出 `%timeout`,TAG_REGISTRY 給它的補救是「優化性能、減少嵌套、放寬
 時限」,**對「對端握著連線不回話」而言那句話指向讀者自己的程式**。**一個以「四件事必須
 可分」為全部論旨的弧,不能出貨第五件不可分的事**;新設 `#peer_timeout`(§1.3,障礙度數
 與 `#timeout` 同列視界層,append-only 尾端故不動既有 CAID),REAL_02 四向表同步改,補釘 P8。
@@ -3112,7 +3112,7 @@ genesis **11/11**;**位址零位移**:對 v0.2.43 二進位對跑 **25 種值形
 判例;**全樹回歸掃描**(未截斷):僅 4 個 `.n` 用到 fetch/find(皆健康庫,其二在
 `tests/pending/`)、合規向量零使用、無測試依賴 fetch 路徑之 `#conflict`。
 **spec closure**:SPEC_13 **§6.1.1 新設**(來源在度數 0 上對等不得排序/語言表面三結果/
-裁決不因取用成功而消滅/驗證不得為可組態)、ERROR_CODES §1.3 `#caid_mismatch` 補述
+裁決不因取用成功而消滅/驗證不得為可組態)、TAG_REGISTRY §1.3 `#caid_mismatch` 補述
 語言層 `%cause`、CHANGELOG 增量。**本弧無新增合規向量**(需真實 socket 與被竄改之庫,
 非密閉)。工單 `nlang-tools/docs/peer_fetch_verification_handover.md`。
 **本弧量到之掛帳**:**L1 stored 值帶未強制 thunk 與原始碼 span**——committed root 把
@@ -3216,11 +3216,11 @@ root(創世系統模組,即 R-1 上帳的型別層重量,比本弧老),故缺陷
 偵測」;無一如 refine 經實證可利用,而改動 discovery 錯誤語義跨五個呼叫點,另裁。
 **四數**:workspace **1463/0/3**、conformance **143/143**、genesis **11/11**、
 cas 探針 **13/13**、store_boundary **20/20**。
-**過程記錄**:交付自行提交了 ERROR_CODES(spec `8c10bd4`)——內容正確且命名確由我請
+**過程記錄**:交付自行提交了 TAG_REGISTRY(spec `8c10bd4`)——內容正確且命名確由我請
 其提出,但**規格收尾屬驗收方步驟**,我的工單此點含糊;另 `#caid_mismatch` **本就存在
 於規格**,我工單稱其為新增係我方之誤。
 spec closure:REAL_03 **§6.6 新設**(重算義務/驗證範圍/三結果可分/消費端不得丟棄裁決/
-位址不得位移 + 快取不得以被驗證物本身為鍵之非規範註記)、§8 錯誤表補兩碼、ERROR_CODES
+位址不得位移 + 快取不得以被驗證物本身為鍵之非規範註記)、§8 錯誤表補兩碼、TAG_REGISTRY
 §1.3、CHANGELOG 增量。**本弧無新增合規向量**(runner 不涉庫竄改,CLI 探針為法定測具)。
 工單 `nlang-tools/docs/cas_integrity_handover.md`。
 **掛帳**:**型別層急切展開**(evolve 期 260 KB/`next`×3,惰性表示應為數百 bytes;
@@ -3289,7 +3289,7 @@ conformance **143/143**、genesis **11/11**、store_boundary **20/20**、pin **1
 **兩層皆測**:層一(本弧)語言層根本碰不到該檔;層二(v0.2.40)**檔案若仍以他途存在
 則不構成授權**——由測具帶外植入,即 R-A 明言沙箱不及之處。
 spec closure:SPEC_08 §6.3 新設(原 §6.3「設計理由」順延 §6.4;ENGINE_SYNC
-L1822 的舊 `§6.3` 指涉隨之過時,屬編輯性)、ERROR_CODES §1.5 `#store_boundary`、
+L1822 的舊 `§6.3` 指涉隨之過時,屬編輯性)、TAG_REGISTRY §1.5 `#store_boundary`、
 CHANGELOG 增量。**本弧無新增合規向量**(runner 不涉檔案系統邊界,CLI/語言層探針
 為法定測具)。工單 `nlang-tools/docs/store_boundary_handover.md`。
 **掛帳**:CAS 讀取完整性(A3;**經 025 重新定性=不是安全修補,是讓 n/「衝突不是
@@ -3638,7 +3638,7 @@ tie-back 見 dev log。
 tag 後重建 `oo --version` = `oo v0.2.8` ✓)。dev tie-back `ace1dc5`。
 
 **剖析器天花板弧(a_limit_you_cannot_catch,2026-08-11,引擎交付
-`dev def7157`)**:規格側新增 ERROR_CODES §2.7.4(上限住在每一個遞迴
+`dev def7157`)**:規格側新增 TAG_REGISTRY §2.7.4(上限住在每一個遞迴
 階段)、§1.3 登記 `#request_too_large`、REAL_02 §3.2.3(收方必須在
 處理之前先設界)。
 
@@ -4103,7 +4103,7 @@ H1 與 H2 都失去發生條件。
 REAL_02 **§4.3.5.1 新增正面條款**(該節原本只有「不得靜默退回固定序」這條禁令,
 **沒有它的正面對應**,於是實作自己選了一格);**§3.2 共用理由表新增一列**
 ——那是**該表第一列說「收方做不到」**的,先前每一列不是「你的請求有問題」就是「我沒有」;
-`ERROR_CODES` 登記 `#entropy_unavailable`。**狀態集未增長**,符合 §130。
+`TAG_REGISTRY` 登記 `#entropy_unavailable`。**狀態集未增長**,符合 §130。
 
 ### 四輪,而三輪的漏是驗收方造成的
 
@@ -4304,7 +4304,7 @@ REAL_02 §3.2 新增 `#not_found` ／ `#standard_root_unavailable` 一列，並�
 是 `#rejected`（我不作答），本列是 `#not_found`（我交不出來，去問別台）。
 順帶更正 `#entropy_unavailable` 那列的「本表上唯一一列」——加了第二列後不再為真。
 
-**`ERROR_CODES` 刻意未加**，並在規格裡寫明理由：〔量〕該檔今日只收了本表理由的一個
+**`TAG_REGISTRY` 刻意未加**，並在規格裡寫明理由：〔量〕該檔今日只收了本表理由的一個
 不一致子集，逐筆補會讓下一個新理由再問一次同樣的問題；一般性問題已進 Inbox。
 
 ### 兩則記錄（非缺陷，但要有人知道）

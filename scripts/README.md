@@ -6,7 +6,7 @@
 | 工具 | 性質 | 說明 |
 | :--- | :--- | :--- |
 | `spec-lint.py` | **唯讀** | 檔名規範＋斷鏈＋術語表。2026-07-11 補 `SYNTAX_\d{2}`（工具早於該系列）。術語警告（執行/資料…）**噪音偏高**——「執行緒」「執行 AI」等合法用字會被掃到，僅供人工參考，不作 CI 門檻。 |
-| `check-error-codes.py` | **唯讀** | `%cause` 標籤 ↔ ERROR_CODES.md 雙向核對。2026-07-11 復跑抓到 6 個未收錄標籤（已補）。**值得定期跑**；orphan 方向（documented-but-unused）多為誤報（正文以敘述而非 `%cause:` 字面提及）。 |
+| `check-error-codes.py` | **唯讀** | `%cause` 標籤 ↔ TAG_REGISTRY.md 雙向核對。2026-07-11 復跑抓到 6 個未收錄標籤（已補）。**值得定期跑**；orphan 方向（documented-but-unused）多為誤報（正文以敘述而非 `%cause:` 字面提及）。 |
 | `fix-links.py` | ⚠️ **會改寫規格檔** | 裸章節引用 → 連結。2026-07-11 加保險絲：**預設 dry-run，須 `--write` 才落盤**。它不分 code block／表格／引文，落盤前必須人工看 diff。 |
 
 已知盲區（三支共通）：不掃 `COSMOLOGY/` 子目錄與 `spec/CHANGELOG.md`；

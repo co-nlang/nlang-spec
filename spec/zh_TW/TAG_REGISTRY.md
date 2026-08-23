@@ -1,4 +1,4 @@
-# n/ Language Specification - 錯誤代碼與診斷指南 (Error Codes & Diagnostics)
+# n/ Language Specification - 標籤登記簿 (Tag Registry)
 
 ## 0. 三條軸與六個載體 **[Core Requirement，2026-08-09 新設]**
 
@@ -58,9 +58,25 @@
     （參考實作有一個原因只存在於 `#blur` 而不存在於 `⊥`），該分歧的裁定
     留待 `%cause` 詞彙表統一之議題。
 
+### 0.4 本簿不收什麼（2026-08-23，O71）
+
+本簿收**標籤**：一個 `#` 名在某一軸、某一載體上的規範性定義。下列不是
+這個意義下的標籤，故不在表內。
+
+*   **操作名**（`#advertise` `#discover` `#fetch`）：它們是 OODP 的 `%op`，
+    回答「做哪件事」，不是「為什麼是這個樣子」。見 **[REAL_02](./REAL_02_Ouroboros_Protocols.md)** §3.2。
+*   **線上狀態** `#success` `#rejected` `#conflict` `#not_implemented`：狀態集
+    封閉（§0.1 MUST NOT 增長）。表內僅收 `#not_found`（狀態·線上）。其餘四者的
+    規範性定義在 REAL_02 §3.2.1。
+*   **僅線上成立的 `%reason`**：依 O71，收不收看該理由**在不在兩層都成立**，
+    不看它從哪裡來。`#malformed` `#missing_field` `#not_held` `#unknown_op`
+    `#unparseable_caid` 只在封包層可分；語言層各有自己的名字
+    （`#conflict`／`#missing_key`／`#peer_not_implemented`）。它們的家仍是
+    REAL_02 §3.2。`#not_implemented` 是狀態，不是理由。
+
 ---
 
-## 1. 錯誤標籤索引
+## 1. 標籤索引
 
 > 本檔＝因果標籤**正典登記簿**——標籤清單的唯一維護點(REAL_04 §2 只立
 > 類別法並指向本檔;2026-07-17 裁定)。新標籤入法必須在此登記。
@@ -117,6 +133,7 @@
 | :--- | :--- | :--- | :--- |
 | **`#not_found`** | **狀態**·線上 | 發現失敗 | 找不到指定的 CAID 或資源。請確保資源已發佈到宇宙中，並檢查路徑或雜湊值是否正確。 |
 | **`#caid_mismatch`** | 原因·線上／⊥ | 內容與 CAID 不符 | 取得的內容雜湊與請求的不一致（**CAS 讀路徑驗證**，2026-07-26）。本地庫以 digest 定路徑後**重算**位址並與請求 CAID 比對——值須驗證 digest **與** `lattice_sketch` **與** `masa_ref`（REAL_03 §9.2 譜引擎條款）；Commit 為 v1 僅驗 digest。**不得**將此結果報告為「不存在」。**亦為語言層 `%cause`（2026-07-27）**：`~%Discovery./fetch`／`./find` 於「曾有來源持有不可認證之位元組，且無來源通過驗證」時收斂為 `⊥ %cause: #caid_mismatch`（**[SPEC_13](./SPEC_13_Ouroboros_Discovery_Protocol.md)** §6.1.1）；純粹「無人持有」不適用此碼。請檢查位元組是否被篡改或傳輸損壞。 |
+| **`#standard_root_unavailable`** | 原因·線上／⊥ | 標準根不具備 | 物件**在**，而接不回它所指名的標準根（**[REAL_03](./REAL_03_CAID_Protocol.md)** §6.8）。線上為 `#not_found` 之 `%reason`（**[REAL_02](./REAL_02_Ouroboros_Protocols.md)** §3.2；**狀態不變**，補救是換一台問）。**亦為語言層 `%cause`（O71，2026-08-23）**：本地位址解析或讀根時，引擎持有位元組但未運送該標準根。**不得**報告為「不存在」（`#missing_key`／`#not_held`）——那是一句關於自己持有什麼的假話。請向運送該標準根的節點取得，或升級本引擎。 |
 | **`#object_undecodable`** | 原因·⊥ | 物件無法解碼 | 路徑上**有**物件但無法反序列化，完整性**無法裁定**（CAS 讀路徑，2026-07-26）。與 `#caid_mismatch`（已解碼但位址不符）及「不存在」三者必須可分——不可猜測為毀損或缺席。請檢查物件是否截斷、JSON 巢過深（serde 預設深度上限）、或格式毀壞。 |
 | **`#peer_not_implemented`** | 原因·⊥ | 對等點不服務此 op | 對端明說它不辦這個 `%op`(**[REAL_02](./REAL_02_Ouroboros_Protocols.md)** §3.2.1,2026-07-29 新增)。**不是完整性事件**——對端沒有對**內容**下任何裁決,它只是說了它不做這件事。補救是**換一台問**,不是懷疑資料。與 `#conflict`(修你自己的封包)可分,而此前二者皆收斂為 `#caid_mismatch` 並在對方名下記一筆完整性事件。 |
 | **`#entropy_unavailable`** | 原因·⊥ | 收方取不到隨機性,故不作答 | `#discover` 的抽樣需要隨機性(REAL_02 §4.3.5.1);取不到時**必須**回 `#rejected` `%reason: #entropy_unavailable` 且不附樣本。**不得**改用 `#conflict`——那意為「修你自己的封包」,而請求毫無問題;且依 §3.2.2 它會使提問者記下 `#peer_refused`,**一句關於對方意願而無人確立的陳述**。**不是完整性事件**。補救:改向其他來源取得;對端的宿主熵源恢復後即可再問(2026-08-16 新增)。 |
@@ -173,9 +190,9 @@
 > 二者皆為規範性，內容由 §1 各列的「軸·載體」欄決定。
 > 「一個標籤掛在什麼上」在本版之前**在規格裡不可回答**。
 
-### 2.1 載體：⊥（48 個）
+### 2.1 載體：⊥（50 個）
 
-`#conflict` `#arithmetic_on_anchor` `#numerical_error` `#divergent` `#tropical_approximation_failed` `#order_conflict` `#h1_split` `#h2_split` `#fractional_bitwise` `#fuel_exhausted` `#timeout` `#max_nodes_exceeded` `#max_depth_exceeded` `#max_lifting_exceeded` `#max_branches_exceeded` `#no_matching_branch` `#out_of_horizon` `#routing_budget_exceeded` `#stack_overflow` `#caid_mismatch` `#object_undecodable` `#peer_not_implemented` `#peer_unknown_status` `#peer_refused` `#peer_timeout` `#request_too_large` `#compat_conflict` `#unsupported_ca_algo` `#unsupported_fmt_version` `#ambiguous_refinement` `#refine_authority_missing` `#refine_authority_invalid` `#refine_signer_unknown` `#refine_source_unverifiable` `#refinement_cycle` `#semantic_isolation` `#verification_failed` `#private_access_violation` `#cocoon_isolation_violation` `#missing_key` `#lifting_failed` `#effect_violation` `#type_mismatch` `#projection_conflict` `#no_context` `#privileged_required` `#store_boundary` `#ffi_panic` `#ffi_malformed`
+`#conflict` `#arithmetic_on_anchor` `#numerical_error` `#divergent` `#tropical_approximation_failed` `#order_conflict` `#h1_split` `#h2_split` `#fractional_bitwise` `#fuel_exhausted` `#timeout` `#max_nodes_exceeded` `#max_depth_exceeded` `#max_lifting_exceeded` `#max_branches_exceeded` `#no_matching_branch` `#out_of_horizon` `#routing_budget_exceeded` `#stack_overflow` `#caid_mismatch` `#standard_root_unavailable` `#object_undecodable` `#peer_not_implemented` `#peer_unknown_status` `#peer_refused` `#peer_timeout` `#request_too_large` `#compat_conflict` `#unsupported_ca_algo` `#unsupported_fmt_version` `#ambiguous_refinement` `#refine_authority_missing` `#refine_authority_invalid` `#refine_signer_unknown` `#refine_source_unverifiable` `#refinement_cycle` `#semantic_isolation` `#verification_failed` `#private_access_violation` `#cocoon_isolation_violation` `#missing_key` `#lifting_failed` `#effect_violation` `#type_mismatch` `#projection_conflict` `#no_context` `#privileged_required` `#store_boundary` `#ffi_panic` `#ffi_malformed`
 
 ### 2.2 載體：#blur（4 個）
 
@@ -189,17 +206,18 @@
 
 `#partial_geometry` `#recursive_lazy` `#branching` `#cancellation_risk` `#incomplete`
 
-### 2.5 載體：線上（2 個）
+### 2.5 載體：線上（3 個）
 
-`#not_found` `#caid_mismatch`
+`#not_found` `#caid_mismatch` `#standard_root_unavailable`
 
 ### 2.6 載體：邊界（9 個）
 
 `#system_reserved` `#invalid_config` `#blocking` `#invalid_target` `#already_exists` `#nothing_to_undo` `#blocked_by_policy` `#stack_overflow` `#request_too_large`
 
 > **同名跨載體者**：`#fuel_exhausted`、`#timeout` 同時是 ⊥ 與 `#blur` 的原因；
-> `#caid_mismatch` 同時是線上的 `%reason` 與客戶端 ⊥ 的 `%cause`
-> （REAL_02 §3.2.2 之對映）；**`#stack_overflow` 同時是 ⊥ 與邊界的原因**
+> `#caid_mismatch` 與 `#standard_root_unavailable` 同時是線上的 `%reason` 與
+> 客戶端 ⊥ 的 `%cause`（REAL_02 §3.2.2 之對映；後者入冊見 O71）；
+> **`#stack_overflow` 同時是 ⊥ 與邊界的原因**
 > ——求值期有宇宙可鑄節點，剖析期沒有（§2.7.4，2026-08-11）。
 > 依 §0.2，其**軸不因載體而改變**。
 

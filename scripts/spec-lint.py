@@ -16,7 +16,7 @@ def check_file_names(directory):
     print(f"--- Checking File Naming in {directory} ---")
     errors = 0
     # Support SPEC, REAL, ORDER, APP, GUIDE, and utility files
-    pattern = re.compile(r"^(SPEC_\d{2}|REAL_\d{2}|ORDER_\d{2}|APP_\d{2}|GUIDE_\d{2}|SYNTAX_\d{2}|PREFACE|GLOSSARY|QUICK_REFERENCE|ERROR_CODES|README|SPEC_STATUS)(_.*)?\.md$")  # 2026-07-11: +SYNTAX (series postdates this tool)
+    pattern = re.compile(r"^(SPEC_\d{2}|REAL_\d{2}|ORDER_\d{2}|APP_\d{2}|GUIDE_\d{2}|SYNTAX_\d{2}|PREFACE|GLOSSARY|QUICK_REFERENCE|TAG_REGISTRY|README|SPEC_STATUS)(_.*)?\.md$")  # 2026-07-11: +SYNTAX (series postdates this tool)
     
     for filename in os.listdir(directory):
         if filename.endswith(".md"):

@@ -57,7 +57,7 @@ The physics-intuition layer for `n/`'s design (non-normative; the rigorous mathe
 
 ### Standards & Guides
 - **Realization**: [Engineering (REAL_01)](spec/zh_TW/REAL_01_Ouroboros_Engineering.md), [Protocols (REAL_02)](spec/zh_TW/REAL_02_Ouroboros_Protocols.md), [CAID (REAL_03)](spec/zh_TW/REAL_03_CAID_Protocol.md), [Causal Chain (REAL_04)](spec/zh_TW/REAL_04_Causal_Chain_Protocol.md).
-- **Diagnostics**: [Error Codes (ERROR_CODES)](spec/zh_TW/ERROR_CODES.md), [Compliance (REAL_05)](spec/zh_TW/REAL_05_Compliance_and_MVP.md).
+- **Diagnostics**: [Tag Registry (TAG_REGISTRY)](spec/zh_TW/TAG_REGISTRY.md), [Compliance (REAL_05)](spec/zh_TW/REAL_05_Compliance_and_MVP.md).
 - **Guides**: [Style (GUIDE_01)](spec/zh_TW/GUIDE_01_Style_and_Formatting.md), [Optimization (GUIDE_02)](spec/zh_TW/GUIDE_02_Engine_Optimization.md), [Incremental (GUIDE_03)](spec/zh_TW/GUIDE_03_Incremental_Convergence.md), [EML Execution (GUIDE_04)](spec/zh_TW/GUIDE_04_EML_Execution_Strategy.md).
 - **Theory**: [Tropical (APP_01)](spec/zh_TW/APP_01_Tropical_Geometry.md), [Formal Proof (APP_02)](spec/zh_TW/APP_02_Formal_Verification.md), [Paradigms (APP_03)](spec/zh_TW/APP_03_Paradigm_Comparison.md), [Math (APP_04)](spec/zh_TW/APP_04_Mathematical_Foundations.md), [LADD (APP_05)](spec/zh_TW/APP_05_LADD_Global_Logic_Lattice.md), [Unified Field Theory (APP_06)](spec/zh_TW/APP_06_Unified_Field_Theory.md), [Obstruction Ladder Guide (APP_07)](spec/zh_TW/APP_07_The_Obstruction_Ladder.md).
 

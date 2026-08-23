@@ -122,7 +122,7 @@
 
 #### 3.2.1 每一個非成功回應都必須說出為什麼 **[Core Requirement,2026-07-29 新設]**
 
-> **軸的定義已移出本節(2026-08-09)**:「狀態／原因」之分與「狀態集不得增長、原因集得增長」的通則,規範性定義在 **[ERROR_CODES](./ERROR_CODES.md) §0**。本節保留的是該通則在**線上面**的具體形(`%status` 五者與 `%reason` 開放集)。此前本節與 **[SPEC_08](./SPEC_08_Meta_and_Runtime.md) §3.2.1** 各自獨立地定義了同一個二分。
+> **軸的定義已移出本節(2026-08-09)**:「狀態／原因」之分與「狀態集不得增長、原因集得增長」的通則,規範性定義在 **[TAG_REGISTRY](./TAG_REGISTRY.md) §0**。本節保留的是該通則在**線上面**的具體形(`%status` 五者與 `%reason` 開放集)。此前本節與 **[SPEC_08](./SPEC_08_Meta_and_Runtime.md) §3.2.1** 各自獨立地定義了同一個二分。
 
 *   **`%reason` 於 `%status` 非 `#success` 時必須出現(MUST)**,於 `#success` 時**不得**出現。
 *   **`%status` 集合不得為此增長(MUST NOT)**:仍為 `#success` / `#not_found` / `#conflict` / `#not_implemented` / `#rejected` 五者。新增 op 或新增可分情況一律以 `%reason` 承載。
@@ -146,11 +146,17 @@
 > `#entropy_unavailable` 是 `#rejected`(**我不作答**),`#standard_root_unavailable` 是
 > `#not_found`(**我交不出來,去問別台**)。其餘各列說的都是「你的請求有問題」或「我沒有」。
 >
-> **`#standard_root_unavailable` 未登記於 [ERROR_CODES](./ERROR_CODES.md),這是刻意的**:
+> **`#standard_root_unavailable` 未登記於 [TAG_REGISTRY](./TAG_REGISTRY.md),這是刻意的**:
 > 〔量 2026-08-16〕該檔今日只收了本表理由的一個**不一致子集**(`#request_too_large`、
 > `#entropy_unavailable` 在,而 `#unparseable_caid`／`#not_held`／`#missing_field`／`#unknown_op`
-> 不在)。逐筆補會讓下一個新理由再問一次同樣的問題;「`ERROR_CODES` 到底收不收 OODP 的
+> 不在)。逐筆補會讓下一個新理由再問一次同樣的問題;「登記簿到底收不收 OODP 的
 > `%reason`」已進 `meta/WORK_QUEUE.md` Inbox 待裁。**在那之前,本表是這些理由唯一的家。**
+>
+> > **〔2026-08-23 更正，O71〕** 上段兩句都不再為真。`#standard_root_unavailable`
+> > **已登記**於 `TAG_REGISTRY`，標為「原因·**線上／⊥**」（比照 `#caid_mismatch`）。
+> > 判準：收不收一個 `%reason`，看它**在不在兩層都成立**，不看它從哪裡來。
+> > 僅線上成立的理由（`#malformed` `#missing_field` `#not_held` `#unknown_op`
+> > `#unparseable_caid`）家仍在本表；操作名與狀態不入簿（`TAG_REGISTRY` §0.4）。
 
 > **`#caid_mismatch` 是這張表的重點,不是其中一列。** `#conflict` 此前同時表示「你的請求有問題」與「我這裡的位元組壞了」,而只有後者是關於**內容**的裁決。收方據此決定要不要在對方名下記一筆完整性事件——見 §3.2.2。**一個無法被佐證的指控不該寫進聲譽紀錄。**
 
@@ -202,7 +208,7 @@
 
 > **更正**:前一版本節將其列為「已申報且有期限的相容面」,並要求接受者**必須以本節之回應信封作答**。該要求使這個相容面**在構造上不可能相容**——舊客戶端送出裸 CAID 之後期待的是裸值,收到信封則解不開。實測(v0.2.47 客戶端 → v0.2.48 節點)得 `⊥ #caid_mismatch`,**與移除之後完全相同**。**一個以新格式作答的過渡通融,不是過渡通融。** 故其移除不使任何原本可行者失效。
 
-**逾時之標籤【2026-07-27 補】**：對等點逾時收斂為 `⊥ #peer_timeout`，**不得**沿用 §1.2 之 `#timeout`。後者是**本地運算**超出 `%timeout`，其修復建議（優化性能、減少嵌套、放寬時限）對「對端不回話」而言指向錯誤的地方。四向可分之要求若在第五種情況上失守，本節即自我拆台。見 **[ERROR_CODES](./ERROR_CODES.md)** §1.3。
+**逾時之標籤【2026-07-27 補】**：對等點逾時收斂為 `⊥ #peer_timeout`，**不得**沿用 §1.2 之 `#timeout`。後者是**本地運算**超出 `%timeout`，其修復建議（優化性能、減少嵌套、放寬時限）對「對端不回話」而言指向錯誤的地方。四向可分之要求若在第五種情況上失守，本節即自我拆台。見 **[TAG_REGISTRY](./TAG_REGISTRY.md)** §1.3。
 
 #### 3.2.3 收方必須在處理之前先設界 **[Core Requirement，2026-08-11 新設]**
 
@@ -213,10 +219,10 @@
 
 *   **請求必須有位元組上限（MUST）**：收方**必須**在**讀滿**單一請求之前對其設界，
     超限者以 `%status: #rejected` 與 `%reason: #request_too_large` 拒絕
-    （ERROR_CODES §1.3）。**依大小拒絕，不依內容**——此時尚未剖析，
+    （TAG_REGISTRY §1.3）。**依大小拒絕，不依內容**——此時尚未剖析，
     故**不得**記入完整性紀錄（§3.2.2）。
 *   **請求必須有形狀上限，且先於剖析（MUST）**：收方**必須**在剖析器遞迴**之前**
-    拒絕巢狀過深的請求，理由為 `#stack_overflow`（ERROR_CODES §2.7.4）。
+    拒絕巢狀過深的請求，理由為 `#stack_overflow`（TAG_REGISTRY §2.7.4）。
     「先跑再說」在此**不可行**：原生堆疊耗盡是行程中止，不是可攔截的失敗。
 *   **兩者可分（MUST）**：`#request_too_large` 治**太大**，`#stack_overflow`
     治**太深**。一個 69 位元組的請求可以極深，一個 128 KiB 的請求可以極淺；

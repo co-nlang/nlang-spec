@@ -4,10 +4,10 @@ import sys
 
 # --- Configuration ---
 SPEC_DIR = "spec/zh_TW"
-ERROR_CODES_FILE = os.path.join(SPEC_DIR, "ERROR_CODES.md")
+TAG_REGISTRY_FILE = os.path.join(SPEC_DIR, "TAG_REGISTRY.md")
 
 def get_documented_tags(filepath):
-    """Extract tags like #conflict from ERROR_CODES.md tables."""
+    """Extract tags like #conflict from TAG_REGISTRY.md tables."""
     tags = set()
     if not os.path.exists(filepath):
         print(f"[FATAL] {filepath} not found.")
@@ -27,7 +27,7 @@ def get_mentioned_tags(directory):
     cause_re = re.compile(r"%cause:\s*(#\w+)")
     
     for filename in os.listdir(directory):
-        if not filename.endswith(".md") or filename == "ERROR_CODES.md":
+        if not filename.endswith(".md") or filename == "TAG_REGISTRY.md":
             continue
             
         filepath = os.path.join(directory, filename)
@@ -43,12 +43,12 @@ def get_mentioned_tags(directory):
 def main():
     print("--- n/ Error Code Coverage Check ---")
     
-    documented = get_documented_tags(ERROR_CODES_FILE)
+    documented = get_documented_tags(TAG_REGISTRY_FILE)
     mentioned = get_mentioned_tags(SPEC_DIR)
     
     errors = 0
     
-    print(f"\n[1] Checking if mentioned tags are documented in ERROR_CODES.md...")
+    print(f"\n[1] Checking if mentioned tags are documented in TAG_REGISTRY.md...")
     for tag, files in mentioned.items():
         if tag not in documented:
             print(f"[ERR] Undocumented tag '{tag}' mentioned in: {', '.join(set(files))}")

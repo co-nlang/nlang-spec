@@ -73,7 +73,7 @@
 
 ### 診斷與輔助
 - **[GLOSSARY: 術語對照表](./GLOSSARY.md)**
-- **[ERROR_CODES: 錯誤代碼索引](./ERROR_CODES.md)**
+- **[TAG_REGISTRY: 標籤登記簿](./TAG_REGISTRY.md)**
 - **[QUICK_REFERENCE: 語法快速參考](./QUICK_REFERENCE.md)**
 - **[PREFACE: 序言](./PREFACE.md)**
 

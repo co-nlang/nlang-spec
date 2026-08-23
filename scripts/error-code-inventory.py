@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""ERROR_CODES ↔ 引擎 標籤盤點（符合性量測，不是規範）。
+"""TAG_REGISTRY ↔ 引擎 標籤盤點（符合性量測，不是規範）。
 
 用法:
     python3 scripts/error-code-inventory.py --engine-src ../nlang-tools/crates
     python3 scripts/error-code-inventory.py --engine-src ../nlang-tools/crates --md
 
-規格側讀 spec/zh_TW/ERROR_CODES.md 的表格列；引擎側用**四種掃描形狀**，
+規格側讀 spec/zh_TW/TAG_REGISTRY.md 的表格列；引擎側用**四種掃描形狀**，
 因為掃描的形狀決定了它看得見什麼：
 
   enum      — 出現在 cause 列舉的標籤對映裡（`BottomCause::X => "#x"` 之類）
@@ -16,7 +16,7 @@
 `enum` 是最強的證據（引擎有一個名字叫它）；`literal` 次之（某處會印出它）；
 `comment` 表示有人提過但沒有程式路徑；`absent` 表示規格自己在說話。
 
-**本檔輸出的是某一版引擎的事實，不是規範。** 規範在 ERROR_CODES.md；
+**本檔輸出的是某一版引擎的事實，不是規範。** 規範在 TAG_REGISTRY.md；
 本輸出的歸屬是 meta/ENGINE_SYNC.md（用戶裁定 2026-07-28：符合性量測不進規格正文）。
 """
 import argparse
@@ -24,7 +24,7 @@ import os
 import re
 import sys
 
-SPEC_FILE = "spec/zh_TW/ERROR_CODES.md"
+SPEC_FILE = "spec/zh_TW/TAG_REGISTRY.md"
 ROW_RE = re.compile(r"^\|\s*\*\*`(#[a-z_0-9]+)`\*\*\s*\|")
 SEC_RE = re.compile(r"^###\s+(\d+\.\d+)\s+(.+?)\s*$")
 
@@ -133,10 +133,10 @@ def main():
     for _s, _h, _t, v in verdicts:
         counts[v] = counts.get(v, 0) + 1
     print("\n--- Summary ---", file=sys.stderr)
-    print(f"ERROR_CODES 列數 = {len(rows)}", file=sys.stderr)
+    print(f"TAG_REGISTRY 列數 = {len(rows)}", file=sys.stderr)
     for k in ("enum", "literal", "comment", "absent"):
         print(f"  {k:8} {counts.get(k, 0)}", file=sys.stderr)
-    print(f"引擎列舉中而 ERROR_CODES 未收錄 = {len(undocumented)}", file=sys.stderr)
+    print(f"引擎列舉中而 TAG_REGISTRY 未收錄 = {len(undocumented)}", file=sys.stderr)
     for t in undocumented:
         print(f"    {t}", file=sys.stderr)
 

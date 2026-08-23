@@ -140,7 +140,7 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L2-28** | `28-bottom-nav-compositional` | ⊥ 導航合成性(內聯 meta 讀) | `#conflict` | SYNTAX_08 §4 #3 |
 | **L2-29** | `29-cause-collapses-tag` | `%cause` 對偶坍縮為標籤 | `#conflict` | REAL_04 §1 |
 | **L2-30** | `30-no-cause-open` | 未坍縮節點無因可溯 → 開放 | `_` | SYNTAX_08 §4 #2 |
-| **L2-31** | `31-atom-nav-open` | 原子座標缺失 = 開放(#invalid_path 廢止) | `_` | ERROR_CODES 廢止注記 |
+| **L2-31** | `31-atom-nav-open` | 原子座標缺失 = 開放(#invalid_path 廢止) | `_` | TAG_REGISTRY 廢止注記 |
 | **L2-32** | `32-private-outward-blocked` | 外部點路徑 → 違規坍縮 | `#private_access_violation` | SPEC_04 §3.1 #3/#5 |
 | **L2-33** | `33-private-inward-spec-example` | 向內可見(規格 factory 範例) | `43` | SPEC_04 §3.1 #1/§3.2 |
 | **L2-34** | `34-private-morphism-capture` | 態射值捕獲(閉包 scope) | `8` | SPEC_04 §3.3 |
@@ -169,7 +169,7 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L2-57** | `57-blur-spread-absorb` | Blur 展開源吸收(快照傳出) | `#fuel_exhausted` | SPEC_03 §3.1+SPEC_08 §3.2.2 |
 | **L2-58** | `58-blur-spread-nested` | 巢內 Blur 展開逐節點吸收 | `#fuel_exhausted` | SPEC_03 §3.1 |
 | **L2-59** | `59-top-spread-noop` | Top 展開 no-op(分界綠釘) | `1` | SPEC_03 §3.1 |
-| **L2-60** | `60-system-key-reserved` | combo 內 `~%` 定義鍵 ⊥ | `#system_reserved` | SPEC_09 所有權+ERROR_CODES §1.4 |
+| **L2-60** | `60-system-key-reserved` | combo 內 `~%` 定義鍵 ⊥ | `#system_reserved` | SPEC_09 所有權+TAG_REGISTRY §1.4 |
 | **L2-61** | `61-system-novel-reserved` | novel `~%` 名同違法 | `#system_reserved` | SPEC_09 所有權 |
 | **L2-62** | `62-system-rhs-import` | RHS 別名/匯入合法(分界綠釘) | `2` | SPEC_09 所有權+SYNTAX_05 |
 | **L2-63** | `63-two-source-bottom-blur` | 二源展開 ⊥×blur 序盲(摺疊律) | `#conflict` | SPEC_03 §3.1+SPEC_06 |
@@ -200,7 +200,7 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L2-88** | `88-union-coverage-order` | 開放 combo 支覆蓋序(吸收自癒) | `#true` | SPEC_01 §2.4.2 + SYNTAX_06 §2.1 |
 | **L2-89** | `89-union-top-absorb` | **裸** Top 支塌縮 | `_` | SPEC_01 §2.4.2 |
 | **L2-90** | `90-union-static-cycle-order-blind` | 靜止環聯集支序盲 | `#true` | SPEC_12 §1.1 + SPEC_01 §2.4.2 |
-| **L2-91** | `91-open-miss-cause` | 開放缺欄帶因 Top(`#no_coordinate`) | `#no_coordinate` | ERROR_CODES §1.1(2026-07-20) |
+| **L2-91** | `91-open-miss-cause` | 開放缺欄帶因 Top(`#no_coordinate`) | `#no_coordinate` | TAG_REGISTRY §1.1(2026-07-20) |
 | **L2-92** | `92-union-nav-open-miss-survives` | 聯集導航:開放缺欄支存活(不被吸收) | `1 \| _` | SPEC_01 §2.4.2 |
 | **L2-93** | `93-type-super-int-num` | `%super` 反映欄取型別樹直接父 | `#true` | SPEC_05 §3.2(裁定 R1) + SPEC_09 §2.1 |
 | **L2-94** | `94-type-super-fixed-width` | 定寬整數之直接父為 `@int` | `#true` | SPEC_05 §3.2(裁定 R1) + SPEC_09 §2.1 |
@@ -209,7 +209,7 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L2-97** | `97-effect-compose-union` | 效果組合＝標籤集聯集(兩支) | `#io \| #nondet` | SPEC_08 §4.1 |
 | **L2-98** | `98-effect-compose-three` | 效果組合＝標籤集聯集(三支) | `#io \| #nondet \| #state` | SPEC_08 §4.1 |
 | **L2-99** | `99-effect-compose-unify` | 合一(`&`)亦取效果聯集 | `#io \| #nondet` | SPEC_08 §4.1 + §4.2 |
-| **L2-100** | `100-effect-violation-declared-pure` | 宣告 `#pure` 被實際活動效應反證 | `_\|_` `#effect_violation` | SPEC_08 §4.3(靜態守護,裁定 A) + ERROR_CODES |
+| **L2-100** | `100-effect-violation-declared-pure` | 宣告 `#pure` 被實際活動效應反證 | `_\|_` `#effect_violation` | SPEC_08 §4.3(靜態守護,裁定 A) + TAG_REGISTRY |
 | **L2-101** | `101-effect-pure-honest` | 誠實的 `#pure` 宣告照常成立 | `#pure` | SPEC_08 §4.3 |
 | **L2-102** | `102-effect-pure-cocoon-escape` | 繭 `{{ }}` 屏蔽副作用(非特權逃生門) | `#pure` | SPEC_08 §4.3 |
 | **L2-103** | `103-effect-runpure-unprivileged` | 非特權視界呼叫 `runPure` 遭拒 | `_\|_` `#privileged_required` | SPEC_08 §4.3 + §6.1.2(裁定 P1) |
@@ -308,7 +308,7 @@ RHS 匯入=開單即綠法釘;開單時兩紅 = 工單門;root 大聲死面留�
 **引擎 v0.2.17 同日定版**(tag 於實測 commit)。
 cause 正典審計裁定入法後增 L2-63~65(二源摺疊/效果誠實/`&`×blur
 CAID 原樣=開單即綠法釘;開單時兩紅 = 工單門);REAL_04 §2 類別法
-重寫+§4 優先級重立法+ERROR_CODES 正典地位;矩陣 101→**104**。同日
+重寫+§4 優先級重立法+TAG_REGISTRY 正典地位;矩陣 101→**104**。同日
 結案(零代修):**104/104**(workspace 1087/0/3、語料零敗;
 `#invalid_path` 活鑄點歸零=F4 承諾兌現;幻影 #io 根治)。
 **引擎 v0.2.18 同日定版**(tag 於實測 commit)。
@@ -346,7 +346,7 @@ normalize」行話)。增 L2-69~71(**開單時三紅 = 工單門**);矩陣
 決定性);增 L2-74/75(**開單時兩紅 = 工單門**);矩陣 112→**114**。同日
 結案(零代修第二十一例):**114/114**(workspace 1168/0/3、語料
 74/0;越單變更審核通過=整除除零 ⊥ #numerical_error 引擎追法
-ERROR_CODES 明文;全 ⊥ 同位階取最左原樣平手律對抗驗證)。
+TAG_REGISTRY 明文;全 ⊥ 同位階取最左原樣平手律對抗驗證)。
 **引擎 v0.2.21 同日定版**(tag 於實測 commit,條件閘一次成功)。
 2026-07-18 正典顯示序弧開單(裁定 A 案=SPEC_01 §2.4.1 新法:聯集
 顯示為正典排序拼法,型別族階+族內序、穩定、只動顯示層、禁 digest

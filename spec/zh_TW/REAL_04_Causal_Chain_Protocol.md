@@ -26,7 +26,7 @@
                         ;; <<path>> 結構視圖保全整繭。
 
     ;; 診斷欄位 (Diagnostics) —— 全部可選、%-前綴 (meta 軸),
-    ;; 依 ERROR_CODES 類別容許變形 (不同因果類鑄不同欄集)
+    ;; 依 TAG_REGISTRY 類別容許變形 (不同因果類鑄不同欄集)
     %message:   @str    ;; 人類可讀描述
     %expected:  @any    ;; 期望值/形 (衝突類)
     %found:     @any    ;; 實際值/形 (衝突類)
@@ -60,14 +60,14 @@
 
 ## 2. 因果標籤分類 (Cause Tag Taxonomy)
 
-> **正典登記簿 = [ERROR_CODES](./ERROR_CODES.md)**(2026-07-17 裁定):標籤
+> **正典登記簿 = [TAG_REGISTRY](./TAG_REGISTRY.md)**(2026-07-17 裁定):標籤
 > 清單的**唯一維護點**。本節只立**類別法**,不再重複列表——雙帳必漂移,
 > 本節舊表曾落後法典多輪(缺 `#missing_key`/`#private_access_violation`/
 > `#no_context`/`#system_reserved`/`#static_cycle` 等)即為病例。
 
 所有標籤分為**六大類別**:
 
-| 類別 | 定義 | 例(詳見 ERROR_CODES) |
+| 類別 | 定義 | 例(詳見 TAG_REGISTRY) |
 | :--- | :--- | :--- |
 | **格論衝突** | 靜態邏輯不相容、動態非終止 | `#conflict`、`#numerical_error`、`#divergent`、`#order_conflict` |
 | **視界與資源邊界** | 觀測預算耗盡;`#blur` 快照之 `%cause` 同拼此類(視界傳播律=本體地位不可互鑄、runaway 誠實 `#fuel_exhausted`,SPEC_08 §3.2.2) | `#fuel_exhausted`、`#timeout`、`#out_of_horizon` |
@@ -78,7 +78,7 @@
 
 > 註:`#invalid_path` 為未立法之引擎誤鑄,2026-07-14 廢止(座標缺失=開放
 > `_`;`^` 溢出=`#out_of_horizon`;聯集全 `_|_`=§4 主因果);存量宇宙解碼
-> 保留讀取。`#not_found` 屬**發現與內容驗證類**(ERROR_CODES §1.3,LADD
+> 保留讀取。`#not_found` 屬**發現與內容驗證類**(TAG_REGISTRY §1.3,LADD
 > 語境)——不屬值收斂因果,故自 §4 主因果優先級移出(非除籍)。
 
 ---

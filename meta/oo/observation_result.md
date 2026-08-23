@@ -73,7 +73,7 @@ Code   Thunk   Ref   Bottom(BottomDetail)   Blur(BlurDetail)   Range
 `TopCaused` 的註解把 cause 鎖死〔讀 `value.rs:218`〕:
 
 ```rust
-/// `cause`: `"static_cycle"` | `"no_coordinate"` (ERROR_CODES tags).
+/// `cause`: `"static_cycle"` | `"no_coordinate"` (TAG_REGISTRY tags).
 /// lattice-identical to bare Top (solution set = everything) with
 /// observation-only provenance.
 ```
@@ -144,7 +144,7 @@ SPEC_08 §3.2.1「語義邊界:暫態與快照」:
 
 ### 5.1 真正的病:別的文件不用這套詞彙
 
-* **ERROR_CODES** 把 `#incomplete`(狀態)與 `#fuel_exhausted`(原因)並列在同一張表
+* **TAG_REGISTRY** 把 `#incomplete`(狀態)與 `#fuel_exhausted`(原因)並列在同一張表
   的同一欄裡,兩者的「建議修法」都寫「增加 `%fuel`」,讀起來像同義詞。
 * **SPEC_04 §162** 直接跳過中間狀態:「全量觀測掛 fuel 視界,自指結構於視界**誠實
   截斷為 `_|_ #fuel_exhausted`**」——沒有提 `#incomplete`,沒有提 Lift,
@@ -167,14 +167,14 @@ SPEC_08 §3.2.1「語義邊界:暫態與快照」:
 
 * `BottomCause` 裡同時住著 `Conflict`(過度約束)與 `FuelExhausted` / `Timeout`
   (沒算完)——**格上相反的兩端共用一個拼法**。
-* `Blur` 有 `MathSingularity`,而 ERROR_CODES `#log_singularity` 寫「預設策略下回傳
+* `Blur` 有 `MathSingularity`,而 TAG_REGISTRY `#log_singularity` 寫「預設策略下回傳
   `#blur` 並以本標籤標記 `%cause`」——這一格是自洽的,可作為正確用法的樣本。
 
 ---
 
 ## 7. 開放問題
 
-0. **(§5 之後升為首位)把 SPEC_08 §3.2.1 的「原因 / 狀態」二分推廣到 ERROR_CODES
+0. **(§5 之後升為首位)把 SPEC_08 §3.2.1 的「原因 / 狀態」二分推廣到 TAG_REGISTRY
    與 SPEC_04。** 這一件不需要任何裁定——詞彙已經存在且已經是規範性的,只是別處
    沒有用它。成本最低、影響最大。
 1. **兩條軸要不要拆開?**(位置 × 停下來的理由)
@@ -247,6 +247,6 @@ SPEC_08 §4.2.1 結構傳染:任一欄位有效果 ⟹ 容器有效果(join)。
 * `crates/interpreter/src/value.rs` — `Value`(§216)、`BlurDetail`(§1549)、
   `BlurCause`(§1515)、`BottomDetail`(§1119)、`BottomCause`(§1349)。
 * `crates/interpreter/src/observation.rs:56` — `handle_resource_exhausted`。
-* `spec/zh_TW/ERROR_CODES.md` — `#incomplete`、`#fuel_exhausted`、`#log_singularity`。
+* `spec/zh_TW/TAG_REGISTRY.md` — `#incomplete`、`#fuel_exhausted`、`#log_singularity`。
 * `spec/zh_TW/SPEC_04` §162 — force = 觀測原語,fuel 只在 force 點消耗。
 * `spec/zh_TW/SPEC_00` §5 — 五條語義不變性(邊界一致性那條沒有內容)。

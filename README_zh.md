@@ -57,7 +57,7 @@ user: ~payload & @Adult
 
 ### 具現標準與實務指南
 - **具現標準**：[工程實作 (REAL_01)](spec/zh_TW/REAL_01_Ouroboros_Engineering.md)、[通訊協議 (REAL_02)](spec/zh_TW/REAL_02_Ouroboros_Protocols.md)、[CAID 物理協議 (REAL_03)](spec/zh_TW/REAL_03_CAID_Protocol.md)、[因果鏈協議 (REAL_04)](spec/zh_TW/REAL_04_Causal_Chain_Protocol.md)、[合規測試 (REAL_05)](spec/zh_TW/REAL_05_Compliance_and_MVP.md)。
-- **診斷輔助**：[錯誤代碼 (ERROR_CODES)](spec/zh_TW/ERROR_CODES.md)。
+- **診斷輔助**：[標籤登記簿 (TAG_REGISTRY)](spec/zh_TW/TAG_REGISTRY.md)。
 - **實務指南**：[排版風格 (GUIDE_01)](spec/zh_TW/GUIDE_01_Style_and_Formatting.md)、[引擎優化 (GUIDE_02)](spec/zh_TW/GUIDE_02_Engine_Optimization.md)、[增量收斂 (GUIDE_03)](spec/zh_TW/GUIDE_03_Incremental_Convergence.md)、[EML 執行策略 (GUIDE_04)](spec/zh_TW/GUIDE_04_EML_Execution_Strategy.md)。
 - **理論附錄**：[熱帶幾何 (APP_01)](spec/zh_TW/APP_01_Tropical_Geometry.md)、[形式證明 (APP_02)](spec/zh_TW/APP_02_Formal_Verification.md)、[範式比較 (APP_03)](spec/zh_TW/APP_03_Paradigm_Comparison.md)、[數學基礎 (APP_04)](spec/zh_TW/APP_04_Mathematical_Foundations.md)、[LADD 全球格論 (APP_05)](spec/zh_TW/APP_05_LADD_Global_Logic_Lattice.md)、[語義大一統理論 (APP_06)](spec/zh_TW/APP_06_Unified_Field_Theory.md)、[上同調障礙階梯導讀 (APP_07)](spec/zh_TW/APP_07_The_Obstruction_Ladder.md)。
 

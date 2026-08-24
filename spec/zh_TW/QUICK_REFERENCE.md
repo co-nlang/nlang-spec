@@ -141,7 +141,7 @@
 | **[SYNTAX_02](./SYNTAX_02_Literals_and_Atoms.md)** | 字面量 | ⭐ | 負號字面量化（W1-1）、複數、kebab 識別碼 |
 | **[SYNTAX_03](./SYNTAX_03_Paths_and_Assignment.md)** | 路徑與賦值 | ⭐ | 三種 `_` 形、賦值即交集、單行鍵 |
 | **[SYNTAX_04](./SYNTAX_04_Combo_Construction.md)** | 容器 | ⭐ | `{}`/`{{}}`/`@{}`/`[]`/tuple/range、展開 `...` |
-| **[SYNTAX_05](./SYNTAX_05_Prefix_Ontology.md)** | 前綴本體論 | ⭐ | 八種合法前綴、交集即匯入 |
+| **[SYNTAX_05](./SYNTAX_05_Prefix_Ontology.md)** | 前綴本體論 | ⭐ | 八種合法前綴、展開即匯入 |
 | **[SYNTAX_06](./SYNTAX_06_Comparison_and_Subtyping.md)** | 比較與子型別 | ⭐⭐ | 兩家族分離、吸收律、`&` 反 C 優先序 |
 | **[SYNTAX_07](./SYNTAX_07_Observation_Duality.md)** | 觀測對偶 | ⭐⭐ | `x` vs `<<x>>`（坍縮態／結構態） |
 | **[SYNTAX_08](./SYNTAX_08_Metadata.md)** | 元數據 | ⭐ | `%` 宣告 vs 派生、寫入協商 |

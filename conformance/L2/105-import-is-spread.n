@@ -1,0 +1,2 @@
+...~%Cond
+out: /if (#true, (@any -> "yes"), (@any -> "no"))

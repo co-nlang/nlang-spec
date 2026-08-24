@@ -106,7 +106,7 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L1-38** | `38-hybrid-math-operand` | 混血算術運算元剝殼 | `2` | SYNTAX_06 §4 #6(統一律) |
 | **L1-39** | `39-hybrid-pipe-arg` | 混血管道引數(體內 math 衍生) | `2` | SYNTAX_06 §4 #6(統一律) |
 
-### 3.2 Level 2 向量(語義演化/裸核閘門,104 條)
+### 3.2 Level 2 向量(語義演化/裸核閘門,110 條)
 
 | ID | 向量(語料檔) | 語義 | 期望 | 出處 |
 | :-- | :-- | :-- | :-- | :-- |
@@ -214,6 +214,12 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L2-102** | `102-effect-pure-cocoon-escape` | 繭 `{{ }}` 屏蔽副作用(非特權逃生門) | `#pure` | SPEC_08 §4.3 |
 | **L2-103** | `103-effect-runpure-unprivileged` | 非特權視界呼叫 `runPure` 遭拒 | `_\|_` `#privileged_required` | SPEC_08 §4.3 + §6.1.2(裁定 P1) |
 | **L2-104** | `104-project-down-named-params` | `project_down` 具名參數與 `#blur` 截面 | `#blur` 截面 | SPEC_08 §3.5 |
+| **L2-105** | `105-import-is-spread` | 匯入＝頂層展開;展開後裸名解析得到 | `"yes"` | SYNTAX_05 §4 邊界 #6 + SPEC_03 §3.1(O72) |
+| **L2-106** | `106-spread-opens-a-cocoon` | 展開卸下封閉外殼(解封特性) | `#false` | SPEC_03 §3.1(解封特性) |
+| **L2-107** | `107-spread-commutes` | 展開可交換——書寫順序不改變結果 | `#true` | SPEC_03 §3.1(碰撞合併) + §1 重複鍵合併 |
+| **L2-108** | `108-spread-keeps-field-effect` | 展開逐欄位保留效果標籤(非純者) | `#nondet` | SPEC_03 §16.4 + SPEC_08 §4.1 |
+| **L2-109** | `109-underscore-is-the-default-branch` | `_:` 作為鍵＝預設分支(Combo 施用) | `99` | SPEC_07 §1.1.1(O72 ⑥) |
+| **L2-110** | `110-spread-keeps-a-pure-field-pure` | 展開不憑空製造效果(純者仍純) | `#pure` | SPEC_03 §16.4 + SPEC_08 §4.1 |
 
 ### 3.3 Level 3(銜尾蛇級)
 

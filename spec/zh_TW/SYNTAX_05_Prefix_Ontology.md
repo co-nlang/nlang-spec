@@ -47,7 +47,7 @@ prefix_type = "@"   prefix_logic = "/"   prefix_meta = "%"   prefix_system = "~%
 | :--- | :--- | :--- |
 | `a` / `@a` / `/a` | `a.txt` / `a.jpg` / `a.m4a` | 不同「副檔名」＝同名不同面向；可用他者工具開啟（這正是同構） |
 | `~a`（`~@a`／`~/a`） | `.a`（隱藏檔，如 `.git`） | n/ 把 unix 點開頭隱藏檔符號化為前綴 `~`；可疊在三面向上 |
-| 把 `~%Lib` 交集進路徑欄位 | `import` 一個函式庫 | `n/` **無 import 關鍵字**——交集即匯入 |
+| 把 `~%Lib` **展開**進當前容器 | `import` 一個函式庫 | `n/` **無 import 關鍵字**——展開即匯入 |
 
 ```nlang
 a: 1            ;; Data
@@ -56,9 +56,10 @@ a: 1            ;; Data
 ~tmp: "scratch" ;; Local（隱藏資料）
 %kind: #data    ;; Meta
 
-;; 「import」= 把標準庫交集進來（無 import 關鍵字，見 SPEC_09）
-_: ~%Cond
-total: ~%Math./sum xs
+;; 「import」= 把標準庫展開進當前容器（無 import 關鍵字，見 SPEC_09）
+...~%Cond
+grade: /if (#true, (@any -> "pass"), (@any -> "fail"))   ;; 匯入後裸名可用 → "pass"
+total: ~%List./sum ([1, 2, 3])                           ;; 完全限定照常，不需匯入 → 6
 ```
 
 ---
@@ -72,7 +73,17 @@ total: ~%Math./sum xs
 3. **`~%` vs `~`：最長匹配。** `~%` 是**單一 atomic 前綴**（系統），文法**必須**先於 `~` 匹配：`~%Math` 是系統命名空間，`~x` 才是隱藏／局部。（與 `;;`／`;` 同理，SYNTAX_01 邊界 #2。）**所有權**：`~%` 唯引擎鑄造——使用者 LHS 寫入任何 `~%` 座標違法（root＝evolve 邊界報錯、combo 鍵＝⊥ `#system_reserved`；`~%Config` 規範家豁免）；拼法合法、違法在語義層。見 **SPEC_09** 所有權條款（2026-07-16）。
 4. **`/a` 邏輯鍵 vs `/f` 態射應用。** 鍵位 `/a:`（邏輯面向，本章）與表達式中 `/f arg`（態射應用，SYNTAX_09）由**位置**區分。
 5. **`@a` 型別前綴 vs `@{ }` 匿名集合。** `@` 接識別碼是型別前綴；`@` 接 `{` 是匿名集合（SYNTAX_04）。
-6. **沒有 import 關鍵字。** 匯入即「把 `~%` 標準庫物件**交集**進一個路徑欄位」（範例見 **SPEC_09** §5.2）。`n/` **嚴禁**期待 `import`／`use`／`require` 等關鍵字。
+6. **沒有 import 關鍵字。** 匯入即「把 `~%` 標準庫物件以展開運算子 `...` **展開**進當前容器」（範例見 **SPEC_09** §5.2；展開的完整法則見 **[SPEC_03](./SPEC_03_Combo_System.md) §3.1**）。`n/` **嚴禁**期待 `import`／`use`／`require` 等關鍵字。
+
+   **正準拼法是 `...`，不是 `_:`**（2026-08-23 裁定 O72）。理由有三，都是既有法的後果：
+   (a) **`_: X` 只是一個名為 `_` 的普通欄位**，它把模組放在**下一層**，而裸名解析看的是**當前容器**——
+   〔量〕故 `_: ~%Cond` 之後 `/if` 解析不到；
+   (b) **`&` 走不通**：模組是 Cocoon，`SPEC_03` §15.2 使 `~%Cond & ~%Math` 立即為 `_|_`，
+   而 `...` 依 §3.1「解封特性」先卸下封閉外殼再合併，故**兩個模組可同時匯入**；
+   (c) **不引入覆寫**：§3.1「碰撞合併」使同名即交集（不同意即 `_|_`），
+   於是匯入**可交換、無順序**——若引入「近的贏」就必須先定義誰比較近，那是一個全序，而格沒有它。
+
+   ⟹ **匯入不是一個新機制，它就是展開。** 覆寫**不進**值語言。
 
 ---
 
@@ -81,4 +92,4 @@ total: ~%Math./sum xs
 - 上位文法：**[SPEC_14](./SPEC_14_Formal_Grammar.md) §2.2**（結構化前綴）。
 - 語義：**[SPEC_05](./SPEC_05_The_Trinity_Isomorphism.md)**（三位一體同構）、**[SPEC_08](./SPEC_08_Meta_and_Runtime.md) §1**（`%` 元資訊）、**[SPEC_04](./SPEC_04_Navigation_and_Duality.md) §3.1**（`~` 路徑可達性）、**[REAL_03](./REAL_03_CAID_Protocol.md)**（正規前綴序）。
 - 鄰章：**[SYNTAX_03](./SYNTAX_03_Paths_and_Assignment.md)**、**[SYNTAX_04](./SYNTAX_04_Combo_Construction.md)**（`@{}`）、**[SYNTAX_08](./SYNTAX_08_Metadata.md)**（`%` 細則）、**[SYNTAX_09](./SYNTAX_09_Morphism_Application.md)**（`/f`）。
-- 系統庫與「交集即匯入」：**[SPEC_09](./SPEC_09_Standard_Library.md)**。範式：**[APP_03](./APP_03_Paradigm_Comparison.md)**。
+- 系統庫與「展開即匯入」：**[SPEC_09](./SPEC_09_Standard_Library.md)**。範式：**[APP_03](./APP_03_Paradigm_Comparison.md)**。

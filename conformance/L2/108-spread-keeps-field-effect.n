@@ -1,0 +1,2 @@
+m: { ...~%Math }
+out: { r: m./random }.%effect

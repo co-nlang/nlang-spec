@@ -1,0 +1,3 @@
+p: ~%Reflection./keys ({ ...{ a: 1 } } & { ...{ b: 2 } })
+q: ~%Reflection./keys ({ ...{ b: 2 } } & { ...{ a: 1 } })
+out: p = q

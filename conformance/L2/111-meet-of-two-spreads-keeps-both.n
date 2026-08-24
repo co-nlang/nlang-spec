@@ -1,0 +1,1 @@
+out: ~%Reflection./keys ({ ...{ a: 1 } } & { ...{ b: 2 } })

@@ -1,0 +1,1 @@
+out: ({{ %effect: #pure, v: ~%Time.now _ }}).%effect

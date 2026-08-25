@@ -106,7 +106,7 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L1-38** | `38-hybrid-math-operand` | 混血算術運算元剝殼 | `2` | SYNTAX_06 §4 #6(統一律) |
 | **L1-39** | `39-hybrid-pipe-arg` | 混血管道引數(體內 math 衍生) | `2` | SYNTAX_06 §4 #6(統一律) |
 
-### 3.2 Level 2 向量(語義演化/裸核閘門,114 條)
+### 3.2 Level 2 向量(語義演化/裸核閘門,118 條)
 
 | ID | 向量(語料檔) | 語義 | 期望 | 出處 |
 | :-- | :-- | :-- | :-- | :-- |
@@ -224,6 +224,10 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L2-112** | `112-meet-of-two-spreads-commutes` | 該 meet 可交換——換邊不換答案 | `#true` | REAL_03 §6.9 + SPEC_03 §1(欄位同時性/交換律) |
 | **L2-113** | `113-meet-of-two-spreads-keeps-a-conflict` | 被丟掉的運算元不得把「不同意」一起帶走 | `_\|_` `#conflict` | REAL_03 §6.9 + SPEC_03 §3.1(碰撞合併) |
 | **L2-114** | `114-meet-of-two-modules-keeps-both-names` | 兩個標準模組相 meet,兩邊的名字都解析得到 | `3` | REAL_03 §6.9 + SPEC_09 §3(`~%Math`) + §5.2(`~%Cond`) |
+| **L2-115** | `115-declared-pure-survives-no-application` | 一層態射應用不得洗白 `#pure` 宣告 | `_\|_` `#effect_violation` | SPEC_08 §4.3(宣告守護,O74 ①) |
+| **L2-116** | `116-a-discarded-boolean-keeps-its-obstruction` | 謂詞的布林被丟掉,障礙仍在 | `_\|_` `#effect_violation` | SPEC_08 §4.3(施用即觀測,O74 ①) |
+| **L2-117** | `117-an-honest-pure-predicate-is-writable` | 誠實的純謂詞必須寫得出來(保守宣告不是替代品) | `1` | SPEC_08 §4.3(O74 ④) |
+| **L2-118** | `118-a-cocoon-discharges-the-obstruction` | 繭 discharge 障礙——**綠圍籬向量,兩版皆通**,收錄以防日後把逃生門當漏洞關掉 | `#pure` | SPEC_08 §4.3(繭是 discharge) + TAG_REGISTRY |
 
 ### 3.3 Level 3(銜尾蛇級)
 

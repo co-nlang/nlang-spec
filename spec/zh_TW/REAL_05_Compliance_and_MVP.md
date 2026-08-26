@@ -106,7 +106,7 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L1-38** | `38-hybrid-math-operand` | 混血算術運算元剝殼 | `2` | SYNTAX_06 §4 #6(統一律) |
 | **L1-39** | `39-hybrid-pipe-arg` | 混血管道引數(體內 math 衍生) | `2` | SYNTAX_06 §4 #6(統一律) |
 
-### 3.2 Level 2 向量(語義演化/裸核閘門,119 條)
+### 3.2 Level 2 向量(語義演化/裸核閘門,123 條)
 
 | ID | 向量(語料檔) | 語義 | 期望 | 出處 |
 | :-- | :-- | :-- | :-- | :-- |
@@ -229,6 +229,10 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L2-117** | `117-an-honest-pure-predicate-is-writable` | 誠實的純謂詞必須寫得出來(保守宣告不是替代品) | `1` | SPEC_08 §4.3(O74 ④) |
 | **L2-118** | `118-a-cocoon-discharges-the-obstruction` | 繭 discharge 障礙——**綠圍籬向量,兩版皆通**,收錄以防日後把逃生門當漏洞關掉 | `#pure` | SPEC_08 §4.3(繭是 discharge) + TAG_REGISTRY |
 | **L2-119** | `119-durable-keys-are-not-a-backdoor` | **耐久形自己的鍵不是後門**——`~%__nlang_effect` 作為 combo 定義鍵仍 ⊥。L2-61 釘的是任意新名(`~%Mine`);本條釘的是**引擎在耐久形裡自己用的那些鍵**,若有實作為了讓耐久形能被一般源碼寫出而開放它們,L2-61 不會抓到 | `#system_reserved` | REAL_03 §6.8.3(字面僅於耐久形內合法,表層不得改變) + SPEC_09 所有權 |
+| **L2-120** | `120-a-declared-list-shape-answers` | `~%List./count` 宣告的形（謂詞在前、資料在後）答對 | `3` | SPEC_09 §5.1.1 + SYNTAX_09 §2 #1(O76／O78) |
+| **L2-121** | `121-an-undeclared-list-shape-does-not-silently-answer` | 未宣告的鍵形不得給出一個像是在數三個元素的答案（繭仍帶 `%builtin`，不是 `0`／`3`） | `"list.count"` | SPEC_09 §5.1.1 + SYNTAX_09 §2 #1(O76) |
+| **L2-122** | `122-a-collapsed-predicate-is-not-a-false-one` | 塌陷的謂詞與誠實的 `#false` 必須可分辨（塌陷交 `_|_`，不是 `0`） | `_\|_` `#conflict` | SPEC_08 §4.3(O77) + SPEC_09 §5.1.1 |
+| **L2-123** | `123-truth-is-the-atom-not-anything-not-false` | **真＝原子 `#true`，不是「非 `#false`」**——本弧之前 `~%Query./where`／`/take_while`／`/drop_while` 走寬鬆判準，謂詞回 `#none` 會**保留**該元素；三個真值判準統一後為 `0`。規格此前從未定義「謂詞為真」 | `0` | SPEC_09 §5.1.1(2026-08-26 補) |
 
 ### 3.3 Level 3(銜尾蛇級)
 

@@ -1,1 +1,1 @@
-out: { %effect: #pure, v: ~%List./filter ([1,2,3], (x -> ((~%Time.now _) = (~%Time.now _)))) }
+out: { %effect: #pure, v: ~%List./filter ((x -> ((~%Time.now _) = (~%Time.now _))), [1,2,3]) }

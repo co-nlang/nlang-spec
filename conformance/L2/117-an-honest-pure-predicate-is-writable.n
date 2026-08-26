@@ -1,1 +1,1 @@
-out: ~%List./len (({ %effect: #pure, v: ~%Query./where ([{ a: 1 }], (r -> #true)) }).v)
+out: ~%List./len (({ %effect: #pure, v: ~%Query./where ((r -> #true), [{ a: 1 }]) }).v)

@@ -93,7 +93,8 @@ All SPEC documents should use these translations consistently.
 | English | Traditional Chinese | Japanese | Meaning |
 | :--- | :--- | :--- | :--- |
 | **Commit** | **Commit** | **コミット** | 宇宙狀態的離散固化快照。 |
-| **Staged** | **暫存** | **ステージング** | 尚未固化的投影定義。 |
+| **Staged** | **暫存** | **ステージング** | 尚未提交的投影定義。工作集，**不是** Savepoint（SPEC_10 §3.1）。 |
+| **Savepoint** | **存檔點** | **セーブポイント** | 「看了多深」的持久記錄，身分為本地識別碼**而非 CAID**；永不旅行。Commit 記錄「它是什麼」，Savepoint 記錄「看了多深」（SPEC_10 §3.1；D43／D47）。 |
 | **HEAD** | **HEAD** | **HEAD** | 當前活躍的因果錨點。 |
 | **Format** | **格式化** | **フォーマット** | `oo fmt` 正規化工具。 |
 | **Canonical** | **規範化** | **標準化 (ひょうじゅんか)** | 產生決定論位元流的唯一標準形式。 |

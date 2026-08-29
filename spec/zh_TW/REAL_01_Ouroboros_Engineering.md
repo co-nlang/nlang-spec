@@ -483,7 +483,7 @@ async fn handle_request(req: ObservationRequest) -> ObservationResult {
 ├── refs/           ← 分支指標 (heads/HEAD)
 │   ├── heads/main
 │   └── HEAD
-├── staged          ← 暫存的投影定義
+├── injections/     ← 未提交的注入（工作集＝其 fold；SPEC_10 §3 第 2 款「定義集合」）
 ├── config.n        ← 局部環境配置
 ├── audit.log       ← 特權操作審計日誌
 └── wal/            ← 寫前日誌 (Write-Ahead Log)

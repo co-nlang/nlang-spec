@@ -163,17 +163,65 @@ All SPEC documents should use these translations consistently.
 
 ---
 
-## 11. Translation Principles (翻譯原則)
+## 11. Abbreviations (縮寫)
+
+> **規則：一個縮寫在整個規格書中只得有一個意思。**
+> §12 原則 4 治的是**同一個英文術語的中譯必須一致**；本節治的是**反方向**——
+> **同一個縮寫指向兩個不同的概念**。兩者的失敗形不同：前者使讀者以為看到了兩個東西，
+> **後者使讀者以為看到了同一個東西**，而後者不會在校對時被看見。
+>
+> 需要第二個概念時，**寫全稱，不要另造一個意思**。
+
+| 縮寫 | 全稱 | 中文 | 規範定義處 |
+| :--- | :--- | :--- | :--- |
+| **CAID** | Content-Addressed Identifier | 內容定址標識符 | REAL_03 全篇（見 §3 詞條） |
+| **CAS** | **Content-Addressed Storage** | **內容定址儲存** | **REAL_01 §4.3 [Core Requirement]** |
+| **MBU** | Minimum Billing Unit | 最小計費單位 | SPEC_08 §3.1.1 [Core Requirement]；REAL_01 §9.1 |
+| **CHS** | Canonical Horizon Snapshot | 正準視界快照 | REAL_03 §7.3 |
+| **BN/** | Binary-n/ | 二進位 n/ 序列化格式 | REAL_03 §6 |
+| **MASA** | Maximal Abelian Subalgebra | 極大交換子代數（＝觀測視角） | APP_04 §2.1 |
+| **KS** | Kochen–Specker | Kochen–Specker 定理 | APP_04 §2；SPEC_08 §3 |
+
+### 11.1 `CAS` **不得**用於 compare-and-swap **[裁定 2026-08-29]**
+
+〔量 2026-08-29，逐行分類非抽樣，`spec/` ＋ `meta/` ＋ `nlang-tools/crates/`〕
+`CAS` 共 **161 次**：**內容定址儲存 ≈148**（含上表的規範章節）、
+**compare-and-swap 13**（12 個在 `meta/` 設計帳、1 個在參考實作的探針註解，
+**規格層零命中**——本節除外，而本節是**禁止**它的那一條；其中 11 個帶「＋重試」／`-and-retry` 搭配，該搭配即消歧器）。
+
+*   **多數義取得這個縮寫**：它有規範章節、有 MUST NOT 條文、進了 `CHANGELOG` 與實作。
+*   **少數義一律寫全稱 `compare-and-swap`**，**不得**縮寫為 `CAS`。
+    需要它的地方（併發控制）在規格層目前為零，全在設計帳。
+
+> **為什麼要有這一條**：2026-08-29 一次真實誤讀——`meta` 的「多檔 CAS 不可能」
+> 被讀成內容定址，差一步得出相反結論。**基準比 148:13 時，猜錯的那一邊機率大得多**，
+> 而縮寫不會提示你正在猜。
+
+### 11.2 先例：`GPP`（2026-07-28 已裁）
+
+同一個病的第一例。`GPP` 曾同時指向兩個東西——`REAL_02` §7 的**身分**（是誰）
+與 `APP_02` §6 的**持有**（持有什麼）。裁定的產出**不是改一個名字，是一條通則**：
+`APP_02` §0「**執行軌之物不得以證明命名**」，該電路遂以其**見證**更名為
+**ω/q 指紋知識證明**。
+
+⟹ **本節即該通則在縮寫上的推廣。** 遇到第三例時，先問它是不是又一個
+「兩條軌共用一個名字」，再決定要改名字還是補一條規則。
+
+---
+
+## 12. Translation Principles (翻譯原則)
 
 1. **保留英文**：對於已廣泛使用的技術術語（如 Combo, CAID, Commit），保留英文不翻譯。
 2. **數學術語**：遵循台灣數學界標準翻譯（如 幺半群 Monoid、格論 Lattice）。
 3. **哲學概念**：使用哲學領域標準譯名（如 本體論 Ontology、認識論 Epistemology）。
 4. **一致性**：同一英文術語在整個規格書中應使用相同的中文翻譯。
 5. **雙語並列**：首次出現時，使用「中文 (English)」格式，後續可直接使用中文。
+6. **縮寫唯一**：一個縮寫只得有一個意思（§11）。原則 4 管同一術語的中譯一致，
+   本條管**反方向**——同一個縮寫不得指向兩個概念。需要第二個概念時寫全稱。
 
 ---
 
-## 12. Revision History
+## 13. Revision History
 
 | Date | Change | Author |
 | :--- | :--- | :--- |
@@ -184,3 +232,4 @@ All SPEC documents should use these translations consistently.
 | 2026-04-19 | Restored §10 Philosophical Concepts | Ouroboros Architect |
 | 2026-04-20 | Added KS Theorem, Projection Operator, Unitary Transformation | Ouroboros Architect |
 | 2026-04-20 | Added Spectral Feature, Geometric Mass, Tropical Geometry | Ouroboros Architect |
+| 2026-08-29 | 新增 §11 縮寫（規則：一個縮寫一個意思）；裁定 `CAS` ＝ 內容定址儲存，compare-and-swap 一律寫全稱；記入 `GPP` 先例。§11→§12、§12→§13，翻譯原則新增第 6 條 | Gali |

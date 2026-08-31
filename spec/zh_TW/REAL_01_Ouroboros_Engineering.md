@@ -485,7 +485,8 @@ async fn handle_request(req: ObservationRequest) -> ObservationResult {
 │   └── HEAD
 ├── injections/     ← 未提交的注入（工作集＝其 fold；SPEC_10 §3 第 2 款「定義集合」）
 ├── savepoints/     ← Savepoint（○）；本地鑄造的識別碼、非 CAID，故不在 objects/ 之下
-│   └── <local-id>       ← 框帶 `parents:` 一行（SPEC_10 §3.1 前驅款，D50）
+│   └── <local-id>       ← 框帶 `parents:`（前驅，D50）；提交所鑄者另記所提交的
+│                          Commit 與其祖先（SPEC_10 §3.1，D52／D55）
 ├── config.n        ← 局部環境配置
 ├── audit.log       ← 特權操作審計日誌
 └── wal/            ← 寫前日誌 (Write-Ahead Log)

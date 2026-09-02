@@ -5808,3 +5808,28 @@ A2.6 的祖先邊漏掉「本弧之前的 commit 沒有 ○」）。**四次都�
 作為**不**重啟的依據；而本條之後，`v0.41.0` 對一個**已遷移**的儲存**在閘上拒絕開啟**
 〔量〕`store layout declaration "layout=3" is not supported; refusing to open`。
 **驗收方提出，用戶 2026-08-31 已裁「按建議」＝重啟。**
+
+### 標籤建置複驗（v0.42.0，切版末步）
+
+二進位 `/home/gali/nlang-baselines/v0.42.0-verify/target/release/oo`，
+`oo --version` → **`oo v0.42.0`（無後綴）**；known-answer `~%Math./add (1,2)` → **`3`**，
+對照 `add (1,"x")` → **`_|_`**。
+
+*   全跑：**exit 0、222 target、2132 passed、0 failed、`^error` 0、失敗測試名為空**
+    ——**與 `dev` 建置逐項相同**。
+*   conformance **162／162**。
+*   身分：`x: 0` 根 `31745ef0e8bfde3d…`、物件數 **3**、標準根 `7038e2504b8ef4d4…`；
+    新倉宣告 **`layout=3`**。
+*   **主張**：`c: c + 1` → **`#divergent at c`** ＋ `Commit successful`、**rc=0**。
+*   **舊倉未遷移**：帶 ⊥ 的提交 → **rc=1、HEAD 未動**，訊息逐字指名
+    `Run \`oo migrate --grant migrate\``；**遷移後同一筆提交 rc=0 落地**。
+*   **`v0.41.0` 對已遷移的儲存**：`store layout declaration "layout=3" is not supported;
+    refusing to open` ⟹ **誠實的那一句，不是 `#caid_mismatch`。**
+
+**切版四項清單複驗**：`VERSION` ＝ `0.42.0-draft.1`；`CHANGELOG` 新節 1 個；
+`SPEC_00` §4.4 新列 1 個且 **`(目前)` 計數 == 1**；tie-back 兩邊
+`merge-base --is-ancestor` 皆 YES 且**樹逐位元組相同**。
+外加 `crates/oo/Cargo.toml` ＝ `0.42.0`。
+
+**標籤**：super `v0.42.0`（`d2eb589`）／spec `v0.42.0-draft.1`（`46e150e`）／
+tools `v0.42.0`（`e0abd0f`）。

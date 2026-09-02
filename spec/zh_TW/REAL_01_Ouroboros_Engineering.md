@@ -484,6 +484,9 @@ async fn handle_request(req: ObservationRequest) -> ObservationResult {
 │   ├── heads/main
 │   └── HEAD
 ├── injections/     ← 未提交的注入（工作集＝其 fold；SPEC_10 §3 第 2 款「定義集合」）
+│   └── <local-key>      ← 框帶成員自己的 `id`、其宣告的特權座標，與逐座標的
+│                          吸收關係（SPEC_10 §2.2.3，D58）。**檔名只是本地儲存
+│                          鍵**——身分在框裡，故改名不得改變工作集的值
 ├── savepoints/     ← Savepoint（○）；本地鑄造的識別碼、非 CAID，故不在 objects/ 之下
 │   └── <local-id>       ← 框帶 `parents:`（前驅，D50）；提交所鑄者另記所提交的
 │                          Commit 與其祖先（SPEC_10 §3.1，D52／D55）

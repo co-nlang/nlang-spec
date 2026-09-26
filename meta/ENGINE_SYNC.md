@@ -7231,3 +7231,15 @@ v0.58.0 讀寫新引擎續寫的 `layout=5` 儲存 rc=0。40 筆 `log` 1.9×（�
 **驗收數字**：探針 9／9；全樹 ×3 **242 target／2301／0／exit 0**；conformance 162／162；值位址未動。
 **值得記住的**：**擬裁定選項之前沒有去規格 grep 那個概念**——`SPEC_10` §2.5 同節早有「可區分」與「簽署對象是 Commit 的 CAID」兩條 MUST；
 前者衝突以 D75 ② 調和，後者（引擎只簽來源／目標，簽章可被抄進另一筆提交）入 Inbox。
+
+## Q-059 — 簽的是這筆提交（2026-09-27，**一個修補回合；兩項，一項在交付、一項在驗收方**）
+
+**缺陷**：`SPEC_10` §2.5 規定簽署對象是提交本身，引擎只簽 `refine:` ＋ 來源與目標〔量，v0.60.0：翻寫者的字、改訊息、搬進另一倉——`log` 都照舊點名簽署者〕。
+**D76**（用戶三題皆「甲」）：舊式簽章照它簽了什麼呈現／拿掉 `authority.timestamp`／推進 `layout=7`（`REAL_02` §5.1.1）。
+**互通定義**：`payload = "refine-commit:v1:" ++ CAID(提交之值去掉 refine.authority)`，探針以 `ring` 直接驗、不經引擎。
+**交付**（6da0e09 → R-1 8444173）：`authority::sign_commit`／`signature_coverage`（整筆 → 舊式 → 驗不過）；`Universe::refine` 多一個 `signer`，
+`layout=7` 在 V 定案後簽；`log` 印 `(commit)`／`(sources and targets)`；`migrate_cost` 的代價表延到 v0.60.0；`STORE_LAYOUT_VERSION=7`；`AuthorityInfo.timestamp` 移除。
+**驗收數字**：探針 16＋1 全綠、Q-058 9、Q-057 13、Q-055 17；全樹 ×3 **244 target／2318／0／exit 0**；conformance 162／162；值位址未動；
+真 v0.60.0 對 `layout=7` 具名拒絕（rc=1），新引擎讀 v0.60.0 的倉 rc=0。
+**值得記住的**：R-1 兩項同一形——**不變式寫對了，探針比它窄**。I1 寫「成員資格＋密碼學」，探針全走 CLI，而漏洞只在函式庫 API 上（帶進來的亂碼簽章被記成 `verified`）；
+I4 寫「每一個被點名的引擎」，r8 只用兩個 `contains`。寫完探針要逐條問：「只滿足探針而違反不變式的實作長什麼樣？」

@@ -6,6 +6,30 @@
 
 ## [Unreleased]
 
+## [0.63.0-draft.1] — 2026-09-27
+
+引擎對應版本 **v0.63.0**。**丟了的 context 不是空的 context（Q-061，D79）。** 〔量，v0.61.0／v0.62.0〕兩筆提交的倉移走 `.oo/HEAD` 之後：`gc` 判「0 reachable」、rc=0、**刪光全部物件**；
+`commit` **從無到有長出一條新的創世鏈**，下一次 `gc` 從新 `HEAD` 起算，**完全合規地刪掉舊歷史**；`status` 說「no committed root yet」，`log` 空答 rc=0。
+依據是 `meta/oo/commit.md` §1.12（候選）：HEAD 是 context 的「點」那一層、`.oo/` 裡唯一不單調的暫存器，而且算不回來。
+
+### 破壞性 (Layer 1)
+
+（無）——磁碟表示、位址、宣告皆不動〔量〕`x: 0` 根 `31745ef0…`、`v: 1 + 1` 根 `f4f32e7b…`、標準根 `7038e250…`、`layout=7`／`encoding=5`；conformance 162／162。
+
+### 可觀察的行為變更
+
+*   **`HEAD` 缺席而 ○ 記著提交時**，`status`／`log`／`evolve`／`commit`／`gc`／`refine`／`squash`／`repl` 具名拒絕（`lost context: …; restore it with rollback <commit> --grant rollback`），**不寫、不刪**；
+    `rollback <commit> --grant rollback` 照常可用，是唯一的回頭路。與 context 無關的操作（`run`、`eval`、`inspect`、`identity`、`migrate`、`node *` 等）照常。從未提交的工作區不受影響。
+
+### 增量
+
+*   **`SPEC_08` §6.2.1**：根的第 2 條由已退役的 `parent` 改為 D55 的**祖先邊**（本條先前無聲地退化成只剩 `HEAD`）；新增「根從 `HEAD` 起算，所以 `HEAD` 丟了就沒有根」（MUST）與其四款，並自陳盲區（D52 之前的儲存沒有提交註記）。
+*   **`meta/oo/commit.md` §1.12（候選）**：context 的三層（框架／點／提議）、無全域 HEAD ↔ 無全域截面、舊紀元隔離的是真值不是位元組、換紀元是高一層的 HEAD。
+
+### 編輯性
+
+*   **更正 [0.62.0-draft.1] 編輯性一句**：「規格沒有規範 `gc` 的根集合（`REAL_01` §4.7 只有 Reference Recommendation）」**為假**——`SPEC_08` §6.2.1 自 2026-07-29 即以 Core Requirement 規定根（`HEAD`、`parent` 遞移、`root` 值樹）並明文「放棄邊不是根」。真正的缺口是第 2 條所靠的 `parent` 已由 D18／D52 退役，規格上的根因而只剩 `HEAD`。驗收方寫下前只 grep 了三份文件。
+
 ## [0.62.0-draft.1] — 2026-09-27
 
 引擎對應版本 **v0.62.0**。**說出來的就是發生的事（Q-060，D77／D78）。** Q-042、Q-044、Q-055 各修了一族「回報不是真的、或不是用引擎的話說」，三次都比種子寬。

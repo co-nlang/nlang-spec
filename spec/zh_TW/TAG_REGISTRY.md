@@ -164,6 +164,8 @@
 | **`#peer_unknown_status`** | 原因·⊥ | 對等點說了本引擎不認得的話 | 回應之 `%status` 不在本引擎所知的集合內(§3.2.2,2026-07-29 新增)。**必然意謂對端較新**,故**不得**記入完整性紀錄:**一個比你新的節點不是一個被弄壞的節點**。若違反,協定的每一次未來擴充都會使舊實作指控新實作損壞,而完整性紀錄正是操作者用來判斷誰在供應壞資料者——污染它即使其失去用途(REAL_03 §6.6「裁決必須為真」之網路面)。補救:升級,或改向其他來源取得。 |
 | **`#peer_refused`** | 原因·⊥ | 對等點拒絕受理 | 對端回 `#rejected`,或回 `#conflict` 而其 `%reason` 非 `#caid_mismatch`、或未攜帶理由(§3.2.2,2026-07-29 新增)。**不是完整性事件**:**一個無法被佐證的指控不該寫進聲譽紀錄**。無理由之 `#conflict` 來自不攜帶 `%reason` 的舊實作,其代價已於 §3.2.2 明列並接受——失去的是對方的**報告**,不是你自己的**檢查**。 |
 | **`#peer_timeout`** | 原因·⊥ | 對等點逾時 | 對等點接受了連線,但在讀取期限內未回答(**[REAL_02](./REAL_02_Ouroboros_Protocols.md)** §3.2,2026-07-27 新增)。**與 §1.2 `#timeout` 必須可分**——後者是**本地運算**超出 `%timeout`,其補救(優化性能、減少嵌套、放寬時限)在此**指向錯誤的地方**:你的程式沒有問題,是對端沒有回話。亦與 `#not_found`(對端明說沒有)、`#caid_mismatch`(對端給了但位址不符)可分:沉默不得再表示這四件事的任何一件。請檢查對等點是否存活、網路是否可達,或改向其他來源取得。 |
+| **`#peer_unreachable`** | 原因·⊥ | 對等點連不上 | 連線**根本沒有建立**（拒絕連線、位址解析失敗；**[REAL_02](./REAL_02_Ouroboros_Protocols.md)** §3.2.2，2026-09-27 新增，D77）。**不是完整性事件**。與 `#peer_timeout`、`#peer_closed` 三者必須可分——修法不同：這一格是位址錯或對端沒在聽。**不得**用 `#conflict`（那是「修你自己的封包」／完整性裁決）。 |
+| **`#peer_closed`** | 原因·⊥ | 對等點在回答前掛斷 | 對等點**接受了連線**，在回答之前關閉（讀到 0 位元組、連線重置、寫入時被切斷；§3.2.2，2026-09-27 新增，D78）。**不是完整性事件**。與 `#peer_timeout`（期限到了）的分界是**有沒有碰到期限**，不是 FIN 或 RST——**同一事件一個名字，不隨時序變**。 |
 | **`#compat_conflict`** | 原因·⊥ | 版本相容性失敗 | `%compat` 宣告與當前環境不符。請更新版本宣告，或更換相容的庫版本。 |
 | **`#unsupported_ca_algo`** | 原因·⊥ | 雜湊演算法不支援 | 引擎無法解析該 CAID 使用的雜湊演算法。請升級引擎或使用相容的雜湊標準。 |
 | **`#unsupported_fmt_version`** | 原因·⊥ | 規格版本不支援 | CAID 所使用的 `v<fmt_version>` 超出當前引擎的解析能力。請升級 Ouroboros 引擎或將該內容遷移至新版本格式。 |
@@ -222,9 +224,9 @@
 > 二者皆為規範性，內容由 §1 各列的「軸·載體」欄決定。
 > 「一個標籤掛在什麼上」在本版之前**在規格裡不可回答**。
 
-### 2.1 載體：⊥（53 個）
+### 2.1 載體：⊥（55 個）
 
-`#conflict` `#arithmetic_on_anchor` `#numerical_error` `#divergent` `#tropical_approximation_failed` `#order_conflict` `#h1_split` `#h2_split` `#fractional_bitwise` `#fuel_exhausted` `#timeout` `#max_nodes_exceeded` `#max_depth_exceeded` `#max_lifting_exceeded` `#max_branches_exceeded` `#no_matching_branch` `#out_of_horizon` `#routing_budget_exceeded` `#stack_overflow` `#caid_mismatch` `#standard_root_unavailable` `#object_undecodable` `#peer_not_implemented` `#peer_unknown_status` `#peer_refused` `#peer_timeout` `#request_too_large` `#compat_conflict` `#unsupported_ca_algo` `#unsupported_fmt_version` `#ambiguous_refinement` `#refine_authority_missing` `#refine_authority_invalid` `#refine_signer_unknown` `#refine_source_unverifiable` `#refinement_cycle` `#semantic_isolation` `#verification_failed` `#private_access_violation` `#cocoon_isolation_violation` `#missing_key` `#lifting_failed` `#effect_violation` `#type_mismatch` `#projection_conflict` `#no_context` `#privileged_required` `#store_boundary` `#ffi_panic` `#ffi_malformed` `#no_standard_root` `#unprojected_builtin` `#unprovided_builtin`
+`#conflict` `#arithmetic_on_anchor` `#numerical_error` `#divergent` `#tropical_approximation_failed` `#order_conflict` `#h1_split` `#h2_split` `#fractional_bitwise` `#fuel_exhausted` `#timeout` `#max_nodes_exceeded` `#max_depth_exceeded` `#max_lifting_exceeded` `#max_branches_exceeded` `#no_matching_branch` `#out_of_horizon` `#routing_budget_exceeded` `#stack_overflow` `#caid_mismatch` `#standard_root_unavailable` `#object_undecodable` `#peer_not_implemented` `#peer_unknown_status` `#peer_refused` `#peer_timeout` `#peer_unreachable` `#peer_closed` `#request_too_large` `#compat_conflict` `#unsupported_ca_algo` `#unsupported_fmt_version` `#ambiguous_refinement` `#refine_authority_missing` `#refine_authority_invalid` `#refine_signer_unknown` `#refine_source_unverifiable` `#refinement_cycle` `#semantic_isolation` `#verification_failed` `#private_access_violation` `#cocoon_isolation_violation` `#missing_key` `#lifting_failed` `#effect_violation` `#type_mismatch` `#projection_conflict` `#no_context` `#privileged_required` `#store_boundary` `#ffi_panic` `#ffi_malformed` `#no_standard_root` `#unprojected_builtin` `#unprovided_builtin`
 
 ### 2.2 載體：#blur（4 個）
 

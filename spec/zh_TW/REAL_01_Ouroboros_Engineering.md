@@ -34,8 +34,9 @@ oo run --observe <path> [--commit] [--format json|n] [--load <file>]
     *   **它不注入、不提交**：`HEAD` 與工作集不變。程式明示的 `~%Engine./save` 是它自己的效果，寫進它所在宇宙的物件儲存；
         沒有宇宙可寫時答 ⊥ `#no_universe`。
         〔2026-10-04 更正〕本款初稿寫「`HEAD`、工作集、Savepoint 皆不變」——**Savepoint 不在 D88 的射程裡**：
-        一次性求值就是觀測，而 **[SPEC_10](./SPEC_10_Evolution_and_Commit.md)** §3.1 判準 (b) 與 `_|_` 那一款要求觀測產生 Savepoint（自陳缺口，參考實作未兌現，內容未裁）。
-        本款不就此表態；初稿那三個字把一個開放的缺口寫成了兩條互相矛盾的條文。
+        一次性求值就是觀測，而 **[SPEC_10](./SPEC_10_Evolution_and_Commit.md)** §3.1 判準 (b) 與 `_|_` 那一款要求觀測產生 Savepoint。
+        〔同日，D91〕**它留下觀測 Savepoint**：化約了 thunk、答 `_|_`、或觸及視界的每一次作答，產生一個掛在當下 context 上的葉（[SPEC_10](./SPEC_10_Evolution_and_Commit.md) §3.1「觀測 Savepoint」款）——
+        不移動主線，故「`HEAD` 與工作集不變」照舊成立。
     *   **丟了的 context 不是空的宇宙**：`HEAD` 缺席而儲存宣告過提交時，一次性求值依 **[SPEC_08](./SPEC_08_Meta_and_Runtime.md)** §6.2.1 具名拒絕；
         與 context 無關的求值走下一款的匿名臨時宇宙。
 *   **選擇宇宙（MUST，D88）**：實作**必須**能讓操作者 (i) 指定另一個目錄的宇宙，對所有需要宇宙的指令與一次性求值皆然，

@@ -59,7 +59,7 @@
 | `%branches` | `@int` | 聯集分支的數量（分歧度） |
 | `%kind` | `#Tag` | 本體論角色 (`#data`, `#type`, `#logic` 等) |
 | `%rank` | `@int` | Poset 序位（引擎衍生屬性；使用者應經 `<=`/`<=>` 讀取，SYNTAX_10 §2.4） |
-| `%rules` | `@combo` | 態射的分支規則集，Key 是輸入 Pattern（排序見 REAL_03 §5.2；語義見 SPEC_05 §3.3） |
+| `%rules` | `@combo` | 態射的分支規則集；模式以值存於分支的 `%pattern`，Key 是模式的位址（排序見 REAL_03 §5.2；語義見 SPEC_05 §3.3） |
 | `%closure` | `@combo` | 態射捕獲的外部作用域快照（閉包）——承重，不得省略（SPEC_05 §3.3） |
 | `%code` | `@any` | 某一分支的被引述本體；引述不是求值（SPEC_05 §3.3） |
 | `%builtin` | `@str` | 引擎本地的原生實作名；**使用者資料不得含之**（SPEC_05 §3.3） |
@@ -186,7 +186,8 @@
 ### 型別安全除法（分派表約束第二參數；分支值的 `$` ＝ 被匹配輸入）
 ```nlang
 @NonZero: @int & !0
-/safe_div: a -> { @NonZero: a / $ }
+/safe_div: a -> { @{ @NonZero }: a / $ }
+;; ⚠ 2026-10-09：參考引擎上 `@int & !0` 是 _|_（整數原子的正交補未定義），故今天對任何輸入答 #no_matching_branch；已列佇列
 ```
 
 ### 帶有轉換器 Combo 的管道

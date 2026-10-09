@@ -472,7 +472,7 @@ grade: /cond [
 status: /match @http_code {
     200: (@any -> "OK")
     404: (@any -> "Not Found")
-    @int: (@any -> "Other Error")
+    @{ @int }: (@any -> "Other Error")
 }
 ```
 

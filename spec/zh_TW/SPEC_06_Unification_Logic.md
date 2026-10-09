@@ -133,7 +133,7 @@
 ```nlang
 /func: {
     1: "exact"
-    @int: "generic"
+    @{ @int }: "generic"
 }
 ;; 觀測 /func 1
 ;; 1 ⊂ @int（因為 1 & @int = 1），所以 1 是極小元素

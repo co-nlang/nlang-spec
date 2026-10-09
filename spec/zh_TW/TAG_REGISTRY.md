@@ -136,7 +136,8 @@
 | **`#max_depth_exceeded`** | 原因·⊥ | 統一化深度超標 | 結構嵌套過深。請嘗試扁平化數據結構，或增加 `%max_unification_depth`。 |
 | **`#max_lifting_exceeded`** | 原因·⊥ | 態射升寫深度超標 | 管道 `\|>` 遞迴升寫層數過深。建議手動展開部分結構，或增加 `%max_lifting_depth`。 |
 | **`#max_branches_exceeded`** | 原因·⊥ | 聯集分支數超標 | 聯集產生的可能性過多。建議減少不確定的聯集路徑，或增加 `%max_branches`。 |
-| **`#no_matching_branch`** | 原因·⊥ | 模式匹配無匹配分支 | 在態射分派或條件收斂中，輸入值不符合任何定義的分支條件。請檢查 `@Type` 約束或增加 `_` 預設分支。 |
+| **`#no_matching_branch`** | 原因·⊥ | 模式匹配無匹配分支 | 在態射分派或條件收斂中，輸入值不符合任何定義的分支條件；**依鍵查找**（沒有模式鍵的 Combo 被施用，[SPEC_07](./SPEC_07_Logic_and_Pipe.md) §1.1.2）落空且無 `_:` 時亦同。請檢查 `@{ @Type }` 約束或增加 `_` 預設分支。（2026-10-09，D97：此前已登記而**零次發出**——參考引擎把無匹配報成 `#conflict`。） |
+| **`#pattern_not_kept`** | 原因·⊥ | 這張分派表沒有留下它的模式 | 一張由舊引擎寫下的分派表被施用：它帶 `%morphism`、沒有 `%rules`／`%builtin`，而鍵是模式的**印出字串**而不是模式（2026-10-09 新增，D99）。字串猜不回模式（`@{ @int }` 與 `@{ @str }` 同印成 `"{...}"`），故引擎**不猜**，不論該表是字面寫出的還是從倉讀回的。修復：在本引擎上重寫該表（[SPEC_07](./SPEC_07_Logic_and_Pipe.md) §1.1.2）。**只有數字鍵**的 `%morphism` Combo 是內建的部分施用，不是舊表。 |
 | **`#out_of_horizon`** | 原因·⊥ | 視界過度穿透 | 路徑導航符號 `^` 超出了實際的嵌套層級。請檢查 `details.requested_depth` 與 `details.actual_depth` 以對齊結構。 |
 | **`#routing_budget_exceeded`** | 原因·⊥ | 多跳路由預算用盡 | 多跳取物／發現耗盡跳數預算（§2.7.1，2026-08-09 新設）。**這是資源邊界，不是攻擊**——請檢查對端是否可達、拉近路由距離，或提高跳數上限。**不得**與 `#semantic_isolation` 混用。 |
 | **`#stack_overflow`** | 原因·⊥／**邊界** | 實作遞迴上限 | 實作自身的遞迴天花板（§2.7.3 登記於 2026-08-09；§2.7.4 於 2026-08-11 擴及**每一個**遞迴階段）。**載體隨階段而異**：求值期為節點級 `_\|_`；**剖析期**尚無宇宙可言，故為**邊界**錯誤——軸不變，仍是原因（§0.2）。**這不是你設的上限**——`max_unification_depth` 調再高也不會過。請攤平結構、改寫遞迴，或換一個能走更深的實作。**實作不得以此名回報操作者設定的上限**，亦**不得**以 `#blur` 鑄之。 |
@@ -227,9 +228,9 @@
 > 二者皆為規範性，內容由 §1 各列的「軸·載體」欄決定。
 > 「一個標籤掛在什麼上」在本版之前**在規格裡不可回答**。
 
-### 2.1 載體：⊥（58 個）
+### 2.1 載體：⊥（59 個）
 
-`#conflict` `#arithmetic_on_anchor` `#numerical_error` `#divergent` `#tropical_approximation_failed` `#order_conflict` `#h1_split` `#h2_split` `#fractional_bitwise` `#fuel_exhausted` `#timeout` `#max_nodes_exceeded` `#max_depth_exceeded` `#max_lifting_exceeded` `#max_branches_exceeded` `#no_matching_branch` `#out_of_horizon` `#routing_budget_exceeded` `#stack_overflow` `#caid_mismatch` `#standard_root_unavailable` `#object_undecodable` `#peer_not_implemented` `#peer_unknown_status` `#peer_refused` `#peer_timeout` `#peer_unreachable` `#peer_closed` `#request_too_large` `#compat_conflict` `#unsupported_ca_algo` `#unsupported_fmt_version` `#ambiguous_refinement` `#refine_authority_missing` `#refine_authority_invalid` `#refine_signer_unknown` `#refine_source_unverifiable` `#refinement_cycle` `#semantic_isolation` `#verification_failed` `#private_access_violation` `#cocoon_isolation_violation` `#missing_key` `#lifting_failed` `#effect_violation` `#type_mismatch` `#projection_conflict` `#no_context` `#privileged_required` `#store_boundary` `#ffi_panic` `#ffi_malformed` `#no_standard_root` `#unprojected_builtin` `#unprovided_builtin` `#no_universe` `#unwritable` `#unrecognized_cause`
+`#conflict` `#arithmetic_on_anchor` `#numerical_error` `#divergent` `#tropical_approximation_failed` `#order_conflict` `#h1_split` `#h2_split` `#fractional_bitwise` `#fuel_exhausted` `#timeout` `#max_nodes_exceeded` `#max_depth_exceeded` `#max_lifting_exceeded` `#max_branches_exceeded` `#no_matching_branch` `#pattern_not_kept` `#out_of_horizon` `#routing_budget_exceeded` `#stack_overflow` `#caid_mismatch` `#standard_root_unavailable` `#object_undecodable` `#peer_not_implemented` `#peer_unknown_status` `#peer_refused` `#peer_timeout` `#peer_unreachable` `#peer_closed` `#request_too_large` `#compat_conflict` `#unsupported_ca_algo` `#unsupported_fmt_version` `#ambiguous_refinement` `#refine_authority_missing` `#refine_authority_invalid` `#refine_signer_unknown` `#refine_source_unverifiable` `#refinement_cycle` `#semantic_isolation` `#verification_failed` `#private_access_violation` `#cocoon_isolation_violation` `#missing_key` `#lifting_failed` `#effect_violation` `#type_mismatch` `#projection_conflict` `#no_context` `#privileged_required` `#store_boundary` `#ffi_panic` `#ffi_malformed` `#no_standard_root` `#unprojected_builtin` `#unprovided_builtin` `#no_universe` `#unwritable` `#unrecognized_cause`
 
 ### 2.2 載體：#blur（4 個）
 

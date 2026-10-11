@@ -31,6 +31,8 @@ oo run --observe <path> [--commit] [--format json|n] [--load <file>]
     以這個宇宙 **`HEAD` 的根**為起點——`_.` 就是 **[SYNTAX_03](./SYNTAX_03_Paths_and_Assignment.md)** §4.11 所說的「這個宇宙的根」；
     **工作集不算**（它是提議不是事實，**[SPEC_10](./SPEC_10_Evolution_and_Commit.md)** §3.1、D84）；沒有宇宙時根為空且不建宇宙
     （**[REAL_02](./REAL_02_Ouroboros_Protocols.md)** §5.1.1，D82）。
+    *   **它站在根的內部（2026-10-11，D103）**：根就是它的工作目錄——裸名 `h` 讀得到根上的 `~h`，`_.~h` 是從外面指名，照舊
+        `#private_access_violation`（**[SPEC_04](./SPEC_04_Navigation_and_Duality.md)** §3.1 #5）。
     *   **它不注入、不提交**：`HEAD` 與工作集不變。程式明示的 `~%Engine./save` 是它自己的效果，寫進它所在宇宙的物件儲存；
         沒有宇宙可寫時答 ⊥ `#no_universe`。
         〔2026-10-04 更正〕本款初稿寫「`HEAD`、工作集、Savepoint 皆不變」——**Savepoint 不在 D88 的射程裡**：

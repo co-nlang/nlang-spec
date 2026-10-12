@@ -182,6 +182,7 @@
 | **`#semantic_isolation`** | 原因·⊥ | 語義隔離警告 | 檢測到不同信任路徑下的觀測結果存在幾何不連續性，疑似遭受語義日蝕攻擊。 |
 | **`#verification_failed`** | 原因·⊥ | 證明/測試驗證失敗 | 邏輯節點不滿足指定的 `%termination_proof` 或 `%contract` 約束。請修正邏輯或更新證明。 |
 | **`#request_too_large`** | 原因·**邊界** | 請求超出位元組上限 | 單一請求行超出收方所設之位元組上限，於**讀滿之前**即被拒（**[REAL_02](./REAL_02_Ouroboros_Protocols.md)** §3.2.3，2026-08-11 新增）。**依大小拒絕，不依內容**：收方尚未剖析、亦未對內容下任何裁決，故**不得**記入完整性紀錄，客戶端側收斂為 `#peer_refused`（§3.2.2）。與 `#stack_overflow`（形狀太深）可分：此條治**太大**，該條治**太深**，兩者皆須先於處理成立。請縮小請求，或分次取得。 |
+| **`#identity_collision`** | 原因·**邊界** | 這個倉的位址分不開這兩個值 | 宣告 `encoding≤5` 的倉以身分紀元一定址（**[REAL_03](./REAL_03_CAID_Protocol.md)** §2.3），而紀元一分不開只差一個軸的兩個值（`{ int: 1 }`／`{ @int: 1 }`）。要寫的值的紀元一位址上已放著另一個 `=` 分得開的值時，寫入在**寫下任何東西之前**被拒絕（2026-10-13 新增，D106）。**不是完整性事件**——倉是好的，是它的編碼表達不了這個差別。補救：宣告能推進者，`oo migrate --grant migrate` 推進到 `encoding=6` 後再寫；`encoding=3` 的倉 `migrate` 不推進其編碼（其根沿用 v0.26.0 以前的位址規則，O63），訊息**不得**指它去做那件無用的事。**已揭露的限制**：`~%Engine./save` 把這個拒絕報成 `#conflict`（該原語對其他寫入失敗一律如此，另列 Inbox）。 |
 
 ### 1.4 幾何與存取違規 (Geometric & Access Violations)
 
@@ -250,9 +251,9 @@
 
 `#not_found` `#caid_mismatch` `#standard_root_unavailable` `#host_resource_denied` `#internal_error`
 
-### 2.6 載體：邊界（11 個）
+### 2.6 載體：邊界（12 個）
 
-`#system_reserved` `#invalid_config` `#blocking` `#invalid_target` `#already_exists` `#nothing_to_undo` `#blocked_by_policy` `#stack_overflow` `#request_too_large` `#host_resource_denied` `#internal_error`
+`#system_reserved` `#invalid_config` `#blocking` `#invalid_target` `#already_exists` `#nothing_to_undo` `#blocked_by_policy` `#stack_overflow` `#request_too_large` `#host_resource_denied` `#internal_error` `#identity_collision`
 
 > **同名跨載體者**：`#fuel_exhausted`、`#timeout` 同時是 ⊥ 與 `#blur` 的原因；
 > `#caid_mismatch` 與 `#standard_root_unavailable` 同時是線上的 `%reason` 與

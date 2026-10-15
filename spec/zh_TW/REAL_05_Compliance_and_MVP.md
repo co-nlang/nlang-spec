@@ -106,7 +106,7 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L1-38** | `38-hybrid-math-operand` | 混血算術運算元剝殼 | `2` | SYNTAX_06 §4 #6(統一律) |
 | **L1-39** | `39-hybrid-pipe-arg` | 混血管道引數(體內 math 衍生) | `2` | SYNTAX_06 §4 #6(統一律) |
 
-### 3.2 Level 2 向量(語義演化/裸核閘門,123 條)
+### 3.2 Level 2 向量(語義演化/裸核閘門,132 條)
 
 | ID | 向量(語料檔) | 語義 | 期望 | 出處 |
 | :-- | :-- | :-- | :-- | :-- |
@@ -233,6 +233,15 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L2-121** | `121-an-undeclared-list-shape-does-not-silently-answer` | 未宣告的鍵形不得給出一個像是在數三個元素的答案（繭仍帶 `%builtin`，不是 `0`／`3`） | `"list.count"` | SPEC_09 §5.1.1 + SYNTAX_09 §2 #1(O76) |
 | **L2-122** | `122-a-collapsed-predicate-is-not-a-false-one` | 塌陷的謂詞與誠實的 `#false` 必須可分辨（塌陷交 `_|_`，不是 `0`） | `_\|_` `#conflict` | SPEC_08 §4.3(O77) + SPEC_09 §5.1.1 |
 | **L2-123** | `123-truth-is-the-atom-not-anything-not-false` | **真＝原子 `#true`，不是「非 `#false`」**——本弧之前 `~%Query./where`／`/take_while`／`/drop_while` 走寬鬆判準，謂詞回 `#none` 會**保留**該元素；三個真值判準統一後為 `0`。規格此前從未定義「謂詞為真」 | `0` | SPEC_09 §5.1.1(2026-08-26 補) |
+| **L2-124** | `124-the-canonical-vector` | 正典向量:根宇宙以自身為轉換器,路徑導向觀測有限步——**綠圍籬,v0.90.0 起皆通**(收錄的是規格自己的例子,此前沒有任何向量) | `"Logic"` | SPEC_07 §4.2.2 + SYNTAX_07 §2 #4 |
+| **L2-125** | `125-the-canonical-vector-read-from-the-root` | 同一條路徑從根讀——同一個值不得因觀測面而換答案(v0.90.0 為 `_\|_`:管道被存成光禿引用,只有解參照綁 `$` 的那一面對) | `"Logic"` | SPEC_07 §4.2.2 + SYNTAX_07 §2 #4 判例(Q-089) |
+| **L2-126** | `126-a-pipe-through-a-reference-binds-its-input` | 管道穿過引用:施用當下讀它,其開放項取管道的輸入(P1) | `{   a: 2   b: 1 }` | SPEC_07 §4.2.1 P1 + SYNTAX_07 §2 #4 判例(Q-089) |
+| **L2-127** | `127-a-reference-not-piped-binds-nothing` | 沒經過管道的引用不綁 `$`——`r.w.x` 與 `w.x` 同答 | `_\|_` `#no_context` | SPEC_07 §4.2.1 P3 + SYNTAX_07 §2 #4 判例(Q-089) |
+| **L2-128** | `128-an-arrow-through-a-reference` | 管道穿過指向箭頭的引用＝施用該箭頭 | `6` | SPEC_07 §4.2.1 P1 + SYNTAX_07 §2 #4 判例(Q-089) |
+| **L2-129** | `129-a-reference-held-in-a-field-reads-the-coordinate` | 引用拿在欄位裡,導航穿過它讀的是座標(`c.r.a ≡ (c.r).a`) | `1` | SYNTAX_07 §2 #4 + 導航合成性(Q-090) |
+| **L2-130** | `130-a-reference-does-not-carry-the-frame` | 活引用不帶框架:被帶出管道後才觀測,無包圍演化 | `_\|_` `#no_context` | SYNTAX_07 §2 #4 判例 + SPEC_07 §4.2.1 P3(Q-089/Q-090) |
+| **L2-131** | `131-a-reference-is-read-where-it-is-observed` | 同一個拿著的引用在轉換器裡被觀測,取那個管道的 `$`(L2-130 的另一半) | `{   b: 1   z: 2 }` | SYNTAX_07 §2 #4 判例 + SPEC_07 §4.2.1 P3(Q-089/Q-090) |
+| **L2-132** | `132-a-reference-held-in-a-field-is-a-value-to-its-user` | 拿在欄位裡的引用對使用者是一個值——與頂層引用 `r + 1` 一致(Q-090 第一輪交付仍為 `_\|_` `#conflict`) | `2` | SYNTAX_07 §2 #4(Q-090 R-1) |
 
 ### 3.3 Level 3(銜尾蛇級)
 

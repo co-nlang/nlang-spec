@@ -106,7 +106,7 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L1-38** | `38-hybrid-math-operand` | 混血算術運算元剝殼 | `2` | SYNTAX_06 §4 #6(統一律) |
 | **L1-39** | `39-hybrid-pipe-arg` | 混血管道引數(體內 math 衍生) | `2` | SYNTAX_06 §4 #6(統一律) |
 
-### 3.2 Level 2 向量(語義演化/裸核閘門,132 條)
+### 3.2 Level 2 向量(語義演化/裸核閘門,136 條)
 
 | ID | 向量(語料檔) | 語義 | 期望 | 出處 |
 | :-- | :-- | :-- | :-- | :-- |
@@ -242,6 +242,10 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L2-130** | `130-a-reference-does-not-carry-the-frame` | 活引用不帶框架:被帶出管道後才觀測,無包圍演化 | `_\|_` `#no_context` | SYNTAX_07 §2 #4 判例 + SPEC_07 §4.2.1 P3(Q-089/Q-090) |
 | **L2-131** | `131-a-reference-is-read-where-it-is-observed` | 同一個拿著的引用在轉換器裡被觀測,取那個管道的 `$`(L2-130 的另一半) | `{   b: 1   z: 2 }` | SYNTAX_07 §2 #4 判例 + SPEC_07 §4.2.1 P3(Q-089/Q-090) |
 | **L2-132** | `132-a-reference-held-in-a-field-is-a-value-to-its-user` | 拿在欄位裡的引用對使用者是一個值——與頂層引用 `r + 1` 一致(Q-090 第一輪交付仍為 `_\|_` `#conflict`) | `2` | SYNTAX_07 §2 #4(Q-090 R-1) |
+| **L2-133** | `133-a-comparison-written-before-its-name` | 讀了宇宙的定義存配方:比較寫在它讀的名字之前,答案與寫在之後相同(v0.92.0 `#false`) | `#true` | D110 + `SPEC_10` §2.3.1(D46 ①)(Q-091) |
+| **L2-134** | `134-a-list-written-before-its-name` | 同 L2-133,清單:不凍成定義當下讀到的 `_`(v0.92.0 `[_]`) | `[5]` | D110 + `SPEC_10` §2.3.1(D46 ①)(Q-091) |
+| **L2-135** | `135-an-open-term-through-a-name-binds-in-the-frame` | 經名字讀到的開放項就是它的定義,在讀它的框架裡綁——與直接以名字讀 `t` 相同(v0.92.0 `#no_context`) | `{   a: 2 }` | `SPEC_07` §4.2.1 P3 判例(Q-091) |
+| **L2-136** | `136-a-loop-cause-is-the-loops` | 環的成因屬於環:讀者自己的變換不在環上,純引用環仍是 `#static_cycle`(v0.92.0 `#divergent`) | `#static_cycle` | `SPEC_12` §1.1(Q-091) |
 
 ### 3.3 Level 3(銜尾蛇級)
 

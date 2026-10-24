@@ -1,2 +1,3 @@
+;; D117（2026-10-23，Q-101）：開放記錄的型別不合，衝突留在那個欄位（SPEC_06 §2）——讀 `age` 是 ⊥；此前本向量問整個記錄。
 @Adult: { age: 18.. }
-out: { name: "Bob", age: 15 } & @Adult
+out: ({ name: "Bob", age: 15 } & @Adult).age

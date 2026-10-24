@@ -67,7 +67,7 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | ID | 向量(語料檔) | 語義 | 期望 | 出處 |
 | :-- | :-- | :-- | :-- | :-- |
 | **L1-01** | `01-int-refine` | 內建型別精化 | `1` | SPEC_01/SYNTAX_05 |
-| **L1-02** | `02-open-conflict` | 同欄位原子衝突 | `_\|_` `#conflict` | SPEC_03 |
+| **L1-02** | `02-open-conflict` | 同欄位原子衝突:讀那個欄位(D117:衝突留在欄位,2026-10-23 改問 `.a`) | `_\|_` `#conflict` | SPEC_03/SPEC_06 §2 |
 | **L1-03** | `03-sealed-no-grow` | 密封不得增欄 | `_\|_` | SPEC_03 §2 |
 | **L1-04** | `04-union-select` | 聯集分配選擇 | `1` | SPEC_01/SPEC_07 §4 |
 | **L1-05** | `05-marker-range-member` | 型別精化區間成員 | `10` | SYNTAX_04/SPEC_02 §3 |
@@ -106,7 +106,7 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L1-38** | `38-hybrid-math-operand` | 混血算術運算元剝殼 | `2` | SYNTAX_06 §4 #6(統一律) |
 | **L1-39** | `39-hybrid-pipe-arg` | 混血管道引數(體內 math 衍生) | `2` | SYNTAX_06 §4 #6(統一律) |
 
-### 3.2 Level 2 向量(語義演化/裸核閘門,144 條)
+### 3.2 Level 2 向量(語義演化/裸核閘門,145 條)
 
 | ID | 向量(語料檔) | 語義 | 期望 | 出處 |
 | :-- | :-- | :-- | :-- | :-- |
@@ -122,7 +122,7 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L2-10** | `10-ternary` | 三元條件(條件改拼 `~%Math./gt`,序波 W2) | `"big"` | SYNTAX_12 |
 | **L2-11** | `11-union-evolves-equally` | 疊加態平等演化 | `2 \| 3` | SPEC_07(Kleisli) |
 | **L2-12** | `12-nominal-enforce` | nominal 型別執法(通過) | `{   age: 25   name: "…` | SPEC_05/SPEC_03 |
-| **L2-13** | `13-nominal-violate` | nominal 型別執法(違規) | `_\|_` | SPEC_05/SPEC_03 |
+| **L2-13** | `13-nominal-violate` | nominal 型別執法(違規):讀不合的欄位(D117:開放記錄的型別不合是欄位 ⊥,2026-10-23 改問 `.age`) | `_\|_` | SPEC_05/SPEC_03/SPEC_06 §2 |
 | **L2-14** | `14-sealed-exhaustive` | 密封窮盡 schema | `_\|_` | SPEC_03 §2 |
 | **L2-15** | `15-builtin-reserved` | 內建型別名保留 | `10` | SYNTAX_05 |
 | **L2-16** | `16-free-context-bottom` | 自由 $ 觀測 → ⊥ | `_\|_` `#no_context` | SYNTAX_12 §4($ P3) |
@@ -254,6 +254,7 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L2-142** | `142-a-spread-atom-keeps-its-siblings` | 展開一個原子,兄弟欄位還在:`{ a: 1, ...5 }` 是混血節點 `{ %val: 5, a: 1 }`,坍縮態印 `5`,`.a` 仍讀 `1`(守衛;v0.36.0 起皆綠;擋得住「留下 `%val`、丟掉兄弟」的變異,L2-41 擋不住) | `1` | `SPEC_03` §3.1 異質展開、`SYNTAX_06` §4 #6(Q-096) |
 | **L2-143** | `143-facets-of-one-name-read-their-own` | 同名的面向各讀各的:`{ ~a: 2, ~@a: 3, @b: @int, ~b: 4, k: [a, @a, b] }` 的 `k` 是 `[2, 3, 4]`——`a` 不落到隱藏型別 `~@a`,`b` 不被公開型別 `@b` 遮住(v0.99.0 得 `[3, 2, @int]`) | `[2, 3, 4]` | `SYNTAX_05` §4 #1 判例(Q-099) |
 | **L2-144** | `144-a-complement-is-taken-in-the-universe` | 補對全域取:表鍵 `@{ !(..0) }` 對 `12` 選中、對 `(0 - 3)` 落 `_`;`5 & !#true` 是 `5`(`#true` 沒有預設型別);`@bool & !#true` 是 `#false`;`5 & (@int & !0)` 是 `5`;`#a \| !#a` 是 `_`(v0.100.0 得 `["no", "no", ⊥, #false, ⊥, #a]`) | `["pos", "no", 5, #false, 5, _]` | `SPEC_01` §2.5 判例(Q-100,D116) |
+| **L2-145** | `145-a-conflict-stays-in-its-field` | 開放記錄的衝突留在欄位:`({ a: 1, b: 2 } & { a: 2 }).b` 是 `2`;`({ x: 3 } & { x: 4 }) & 表` 對 `5` 選那一支;`{ x: 1 & 2 } = ({ x: 3 } & { x: 4 })` 是 `#true`(不看成因);`_\|_` 欄位落在同一欄位的值之下;`!A & !B` 與 `!(A \| B)` 同值(v0.101.0 得 `[⊥, ⊥, #false, #true, #true, #true]`) | `[2, 0, #true, #true, #true, #true]` | `SPEC_06` §2、`SYNTAX_06` §4 #11(Q-101,D117) |
 
 ### 3.3 Level 3(銜尾蛇級)
 

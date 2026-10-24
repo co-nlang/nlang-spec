@@ -187,7 +187,7 @@
 ```nlang
 @NonZero: @int & !0
 /safe_div: a -> { @{ @NonZero }: a / $ }
-;; ⚠ 2026-10-22：`@int & !0` 自 v0.101.0 起是非零整數（D116）；但箭頭本體裡建的表，模式鍵今天解不到外層的型別名 `@NonZero`、匹配一切，故 `/safe_div 6 0` 仍走到除以零；已列佇列
+;; `/safe_div 6 0` ⟹ ⊥ #no_matching_branch、`/safe_div 6 3` ⟹ 2（`@int & !0` 是非零整數，D116；箭頭本體裡的表鍵解到寫下處的 `@NonZero`，D118／Q-102）
 ```
 
 ### 帶有轉換器 Combo 的管道

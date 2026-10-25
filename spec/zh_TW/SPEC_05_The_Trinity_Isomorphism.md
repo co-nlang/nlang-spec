@@ -172,7 +172,7 @@ instance: { value: 42 }
 result: instance & @IntBox  ;; 成功，收斂為具備特定譜特徵的子空間
 
 invalid: { value: "hi" }
-error: invalid & @IntBox    ;; 正交衝突，收斂為 _|_
+error: invalid & @IntBox    ;; 正交衝突：{ value: _|_ }（衝突留在欄位上，SPEC_06 §2）
 ```
 
 **語義昇華**：泛型參數被視為**子空間特徵值**。這些維度雖然隱藏在主視角之外，但其投影特徵值（CAID）依然參與整體的引力計算（見 **[COSMOLOGY/04：語義引力](./COSMOLOGY/04_PHYSICS_Semantic_Gravity.md)**）。

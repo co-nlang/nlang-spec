@@ -1,0 +1,2 @@
+x: "ab" & { lang: "en" }
+out: ~%Str./len (x)

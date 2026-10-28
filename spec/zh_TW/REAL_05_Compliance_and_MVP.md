@@ -62,7 +62,7 @@
 依 `meta/VERSIONING.md` §3:**引擎裸核版號(無 pre-release 標)= 通過
 Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 
-### 3.1 Level 1 向量(靜態格論,39 條)
+### 3.1 Level 1 向量(靜態格論,44 條)
 
 | ID | 向量(語料檔) | 語義 | 期望 | 出處 |
 | :-- | :-- | :-- | :-- | :-- |
@@ -100,11 +100,16 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L1-32** | `32-union-navigation` | Union 路徑導航(逐支投影) | `1 \| 2` | SPEC_07(平等演化) |
 | **L1-33** | `33-combo-literal-equality` | combo `=` 外延結構等值(字面量) | `#true` | SYNTAX_06 §4 #11 |
 | **L1-34** | `34-combo-bound-equality` | combo `=` span 盲測(綁定名) | `#true` | SYNTAX_06 §4 #11/#13 |
-| **L1-35** | `35-combo-eqeq-conflict` | combo 遇 `==` 家族誤用大聲失敗 | `_\|_ #conflict` | SYNTAX_06 §4 #12 |
+| **L1-35** | `35-combo-eqeq-conflict` | 沒有 `%val` 的記錄遇 `==`：還不是值（2026-10-28 D121 改，原為 `_\|_ #conflict`） | `_` | SYNTAX_06 §4 #12、D121 |
 | **L1-36** | `36-hybrid-collapse-eqeq` | 混血塌縮後照原子家族比 | `#true` | SYNTAX_06 §4 #6/#12 |
 | **L1-37** | `37-hybrid-observe-val` | 混血坍縮態觀測讀 `%val` | `1` | SYNTAX_06 §4 #6(統一律) |
 | **L1-38** | `38-hybrid-math-operand` | 混血算術運算元剝殼 | `2` | SYNTAX_06 §4 #6(統一律) |
 | **L1-39** | `39-hybrid-pipe-arg` | 混血管道引數(體內 math 衍生) | `2` | SYNTAX_06 §4 #6(統一律) |
+| **L1-40** | `40-hybrid-meet-associative` | 原子型別與記錄交會進 `%val`，交會結合（2026-10-28，Q-109） | `6` | SYNTAX_06 §4 #6 |
+| **L1-41** | `41-hybrid-written-val` | 字面 `{ %val: … }` 是混血節點，`%val` 被強制 | `6` | SYNTAX_06 §4 #6 |
+| **L1-42** | `42-hybrid-builtin-operand` | 內建讀成值的運算元讀 `%val` | `2` | SYNTAX_06 §4 #6（統一律） |
+| **L1-43** | `43-record-not-yet-a-value` | 沒有 `%val` 的記錄在值語境答 `_` | `_` | SYNTAX_06 §4 #6、D121 |
+| **L1-44** | `44-hybrid-lookup-key` | 查找鍵讀 `%val`（D97） | `"hit"` | SYNTAX_06 §4 #6、SPEC_07 §1.1.2 |
 
 ### 3.2 Level 2 向量(語義演化/裸核閘門,150 條)
 

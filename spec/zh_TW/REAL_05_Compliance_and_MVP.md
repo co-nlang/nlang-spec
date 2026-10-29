@@ -62,7 +62,7 @@
 依 `meta/VERSIONING.md` §3:**引擎裸核版號(無 pre-release 標)= 通過
 Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 
-### 3.1 Level 1 向量(靜態格論,44 條)
+### 3.1 Level 1 向量(靜態格論,46 條)
 
 | ID | 向量(語料檔) | 語義 | 期望 | 出處 |
 | :-- | :-- | :-- | :-- | :-- |
@@ -110,6 +110,8 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L1-42** | `42-hybrid-builtin-operand` | 內建讀成值的運算元讀 `%val` | `2` | SYNTAX_06 §4 #6（統一律） |
 | **L1-43** | `43-record-not-yet-a-value` | 沒有 `%val` 的記錄在值語境答 `_` | `_` | SYNTAX_06 §4 #6、D121 |
 | **L1-44** | `44-hybrid-lookup-key` | 查找鍵讀 `%val`（D97） | `"hit"` | SYNTAX_06 §4 #6、SPEC_07 §1.1.2 |
+| **L1-45** | `45-builtin-meet-applies-both` | 兩個內建交會，施用答兩者回答的交會（2026-10-29，Q-110） | `_\|_` `#conflict` | SPEC_07 §5.3 定義 1、§1.1 D117 |
+| **L1-46** | `46-builtin-meet-agrees` | 兩個內建交會，兩者同答者答那個值 | `4` | SPEC_07 §5.3 定義 1 |
 
 ### 3.2 Level 2 向量(語義演化/裸核閘門,150 條)
 

@@ -1,0 +1,1 @@
+out: ((~%Math./add) & (~%Math./mul)) (2, 2)

@@ -62,7 +62,7 @@
 依 `meta/VERSIONING.md` §3:**引擎裸核版號(無 pre-release 標)= 通過
 Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 
-### 3.1 Level 1 向量(靜態格論,47 條)
+### 3.1 Level 1 向量(靜態格論,51 條)
 
 | ID | 向量(語料檔) | 語義 | 期望 | 出處 |
 | :-- | :-- | :-- | :-- | :-- |
@@ -113,8 +113,12 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L1-45** | `45-builtin-meet-applies-both` | 兩個內建交會，施用答兩者回答的交會（2026-10-29，Q-110） | `_\|_` `#conflict` | SPEC_07 §5.3 定義 1、§1.1 D117 |
 | **L1-46** | `46-builtin-meet-agrees` | 兩個內建交會，兩者同答者答那個值 | `4` | SPEC_07 §5.3 定義 1 |
 | **L1-47** | `47-clamp-empty-interval` | 夾進空區間沒有值（2026-10-29，Q-111） | `_\|_` `#conflict` | `(3 .. 1) & 2` 同；TAG_REGISTRY §2.7.5 |
+| **L1-48** | `48-a-builtin-reads-a-union-branchwise` | 內建讀成值的運算元與元素是聯集時逐支分配，讀到的那一支就是留下的那一支（2026-10-30，Q-112） | `[11 \| 12, 11 \| 12, [1, 2, 3] \| [2, 3, 9]]` | SPEC_08 §3.2.2 #7；SYNTAX_06 §4 #6 |
+| **L1-49** | `49-equality-over-a-union-distributes` | `==` 遇聯集逐支分配；型別支照 D119 答 `_` | `[#false \| #true, #false, _]` | D123；SYNTAX_06 §2 #2 |
+| **L1-50** | `50-a-condition-and-a-shown-value-distribute` | 三元條件、內插、`~%Str./format` 的聯集逐支分配 | `[1 \| 2, "v=1" \| "v=2", "1-3" \| "2-3"]` | SYNTAX_12 §3；SYNTAX_06 §4 #6 |
+| **L1-51** | `51-a-predicate-answering-a-union-is-read-branchwise` | 述詞的回答是聯集時，每一種回答組合都算到 | `0 \| 1 \| 2` | SYNTAX_06 §4 #6 |
 
-### 3.2 Level 2 向量(語義演化/裸核閘門,152 條)
+### 3.2 Level 2 向量(語義演化/裸核閘門,153 條)
 
 | ID | 向量(語料檔) | 語義 | 期望 | 出處 |
 | :-- | :-- | :-- | :-- | :-- |
@@ -270,6 +274,7 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L2-150** | `150-a-value-context-over-a-type-is-not-a-contradiction` | 值語境遇到還不是值的運算元(型別、區間、補)答 `_`,`~%Math` 的算術內建對 `_` 也是;精煉之後讀到值,聯集照舊分配(v0.106.0 得 `[⊥, ⊥, #false, ⊥, ⊥, 2 \| 3]`) | `[_, _, _, _, 6, 2 \| 3]` | `SPEC_08` §3.2.2 第 7 款(Q-106,D119) |
 | **L2-151** | `151-a-count-is-billed-before-the-work` | 數字設定的工作先計費：產出超過燃料即視界，不是行程中止（2026-10-29，D122，Q-111） | `#fuel_exhausted` | SPEC_08 §3.1.1 |
 | **L2-152** | `152-an-exponent-is-not-read-as-zero` | 超過機器字長的指數就是那個數，不讀成 0 | `#fuel_exhausted` | SPEC_08 §3.1.1、D122 |
+| **L2-153** | `153-a-horizon-in-a-builtin-is-the-answer` | 內建讀到的視界就是答案，不改鑄成 ⊥（2026-10-30，Q-112） | `#fuel_exhausted` | SPEC_08 §3.2.2 #1（G3） |
 
 ### 3.3 Level 3(銜尾蛇級)
 

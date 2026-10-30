@@ -1,0 +1,1 @@
+out: ~%List./count ((x -> #true | #false), [1, 2])

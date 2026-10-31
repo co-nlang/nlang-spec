@@ -6,6 +6,18 @@
 
 ## [Unreleased]
 
+## [0.115.0-draft.1] — 2026-10-31
+
+引擎對應版本 **v0.115.0**。**一段讀回來變短的文字（Q-114）。** 〔量，v0.114.0〕`~%Json./parse` 128 層起答 `#none`（與不合法的 JSON 同一個答案），`~%Toml./parse` 80 層起答 ⊥ `#conflict`「TOML parse error」——`stringify` 寫得出的 128～250 層 JSON、80～240 層 TOML 讀不回來（`SPEC_09` §5.1.2 第 1 款不成立）；上限是解析器 crate 的常數，不是引擎的旋鈕；降低 `max_unification_depth` 時 `parse` 不理會它。
+
+### 破壞性
+
+*   **深的文字讀得出值**（`SPEC_09` §5.1.2 第 5 款補「讀回來也一樣」）：128 層以上的 JSON 由 `#none`、80 層以上的 TOML 由 ⊥ 變成值，直到 `max_unification_depth`；比它深的文字由 `#none`／⊥ 變成視界 `#max_depth_exceeded`（`#strict` 下 ⊥ `#max_depth_exceeded`），一百萬層也不崩潰。降低的 `max_unification_depth` 對 `parse` 生效。
+
+### 增量
+
+*   conformance **L1-55、L2-155**（`REAL_05` §3.1 54 → 55、§3.2 154 → 155）。
+
 ## [0.114.0-draft.1] — 2026-10-31
 
 引擎對應版本 **v0.114.0**。**一個被寫成 null 的欄位（Q-113，D124）。** 〔量，v0.113.0〕`~%Json./stringify ({ a: 1 })` ⟹ `"{\"a\":null}"`，而同一個記錄經 `~%Json./parse` 讀回再寫是 `{"a":1}`；`~%Toml./stringify ({ a: 1 })` ⟹ ⊥；`~%Csv./stringify` 不論列是什麼都印出 Rust 的內部結構；聯集、視界、`_` 欄位寫成 `null`；抱著自己的記錄寫成一筆全是 `null` 的記錄。

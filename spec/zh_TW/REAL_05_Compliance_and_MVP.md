@@ -62,7 +62,7 @@
 依 `meta/VERSIONING.md` §3:**引擎裸核版號(無 pre-release 標)= 通過
 Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 
-### 3.1 Level 1 向量(靜態格論,51 條)
+### 3.1 Level 1 向量(靜態格論,54 條)
 
 | ID | 向量(語料檔) | 語義 | 期望 | 出處 |
 | :-- | :-- | :-- | :-- | :-- |
@@ -117,8 +117,11 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L1-49** | `49-equality-over-a-union-distributes` | `==` 遇聯集逐支分配；型別支照 D119 答 `_` | `[#false \| #true, #false, _]` | D123；SYNTAX_06 §2 #2 |
 | **L1-50** | `50-a-condition-and-a-shown-value-distribute` | 三元條件、內插、`~%Str./format` 的聯集逐支分配 | `[1 \| 2, "v=1" \| "v=2", "1-3" \| "2-3"]` | SYNTAX_12 §3；SYNTAX_06 §4 #6 |
 | **L1-51** | `51-a-predicate-answering-a-union-is-read-branchwise` | 述詞的回答是聯集時，每一種回答組合都算到 | `0 \| 1 \| 2` | SYNTAX_06 §4 #6 |
+| **L1-52** | `52-a-record-written-out-is-its-value` | 字面記錄寫出去，與同一個記錄經 `parse` 讀回再寫出的文字相同（2026-10-31，Q-113） | `[#true, 19, #true]` | SPEC_09 §5.1.2；SYNTAX_06 §4 #11 |
+| **L1-53** | `53-csv-records-write-a-header` | CSV 記錄列以第一列的鍵（位元組序）寫首行，缺的鍵是空格 | `["a,b", "2,1", "3,"]` | D124；REAL_03 §6.7 |
+| **L1-54** | `54-a-union-field-is-written-branchwise` | 聯集欄位逐支寫出，答各支文字的聯集 | `7 \| 8` | SPEC_09 §5.1.2；SYNTAX_06 §4 #6 |
 
-### 3.2 Level 2 向量(語義演化/裸核閘門,153 條)
+### 3.2 Level 2 向量(語義演化/裸核閘門,154 條)
 
 | ID | 向量(語料檔) | 語義 | 期望 | 出處 |
 | :-- | :-- | :-- | :-- | :-- |
@@ -275,6 +278,7 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L2-151** | `151-a-count-is-billed-before-the-work` | 數字設定的工作先計費：產出超過燃料即視界，不是行程中止（2026-10-29，D122，Q-111） | `#fuel_exhausted` | SPEC_08 §3.1.1 |
 | **L2-152** | `152-an-exponent-is-not-read-as-zero` | 超過機器字長的指數就是那個數，不讀成 0 | `#fuel_exhausted` | SPEC_08 §3.1.1、D122 |
 | **L2-153** | `153-a-horizon-in-a-builtin-is-the-answer` | 內建讀到的視界就是答案，不改鑄成 ⊥（2026-10-30，Q-112） | `#fuel_exhausted` | SPEC_08 §3.2.2 #1（G3） |
+| **L2-154** | `154-a-horizon-field-is-the-answer` | 序列化讀到的視界欄位就是答案，不寫成 `null`（2026-10-31，Q-113） | `#fuel_exhausted` | SPEC_08 §3.2.2 #1（G3） |
 
 ### 3.3 Level 3(銜尾蛇級)
 

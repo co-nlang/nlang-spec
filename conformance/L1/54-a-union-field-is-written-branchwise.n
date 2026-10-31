@@ -1,0 +1,1 @@
+out: ~%Str./len (~%Json./stringify ({ a: 1 | 22 }))

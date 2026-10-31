@@ -1,0 +1,1 @@
+out: [~%Json./stringify ({ a: 1, b: [1, "x"] }) == ~%Json./stringify (~%Json./parse ("""{"b": [1, "x"], "a": 1}""")), ~%Str./len (~%Json./stringify ({ a: 1, b: [1, "x"] })), ~%Toml./stringify ({ a: 1 }) == ~%Toml./stringify (~%Toml./parse ("""a = 1"""))]

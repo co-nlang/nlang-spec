@@ -62,7 +62,7 @@
 依 `meta/VERSIONING.md` §3:**引擎裸核版號(無 pre-release 標)= 通過
 Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 
-### 3.1 Level 1 向量(靜態格論,55 條)
+### 3.1 Level 1 向量(靜態格論,57 條)
 
 | ID | 向量(語料檔) | 語義 | 期望 | 出處 |
 | :-- | :-- | :-- | :-- | :-- |
@@ -121,8 +121,10 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L1-53** | `53-csv-records-write-a-header` | CSV 記錄列以第一列的鍵（位元組序）寫首行，缺的鍵是空格 | `["a,b", "2,1", "3,"]` | D124；REAL_03 §6.7 |
 | **L1-54** | `54-a-union-field-is-written-branchwise` | 聯集欄位逐支寫出，答各支文字的聯集 | `7 \| 8` | SPEC_09 §5.1.2；SYNTAX_06 §4 #6 |
 | **L1-55** | `55-a-deep-text-reads-back` | 兩百層的 JSON 讀得出值；一百層的 TOML 陣列寫出去讀回來是它自己——深度由引擎的旋鈕決定，不由解析器（2026-10-31，Q-114） | `[1, #true]` | SPEC_09 §5.1.2 #1、#5 |
+| **L1-56** | `56-a-number-compares-by-its-value` | 數字依值比較，整數不先捨入成浮點：2⁵³+1 與 2⁵³、與 `9007199254740992.0`、2⁶⁴+1 與 2⁶⁴ 是不同的數；`/clamp` 答它越過的界（2026-11-01，Q-115，D125） | `[#false, #true, #gt, #false, #false, #true]` | SYNTAX_02 §2 #1；SPEC_09 數值大小 |
+| **L1-57** | `57-a-union-keeps-two-numbers` | 聯集留下兩個不同的數，先寫哪一支同一個值；`/clamp` 全整數越界答整數、浮點界答浮點（2026-11-01，Q-115，D125） | `[#true, #true, #true, #true]` | SYNTAX_02 §2 #1；REAL_03 §6.7；SPEC_09 |
 
-### 3.2 Level 2 向量(語義演化/裸核閘門,155 條)
+### 3.2 Level 2 向量(語義演化/裸核閘門,156 條)
 
 | ID | 向量(語料檔) | 語義 | 期望 | 出處 |
 | :-- | :-- | :-- | :-- | :-- |
@@ -281,6 +283,7 @@ Level 2 全數向量**;Level 3 義務自 v1.0.0 起。
 | **L2-153** | `153-a-horizon-in-a-builtin-is-the-answer` | 內建讀到的視界就是答案，不改鑄成 ⊥（2026-10-30，Q-112） | `#fuel_exhausted` | SPEC_08 §3.2.2 #1（G3） |
 | **L2-154** | `154-a-horizon-field-is-the-answer` | 序列化讀到的視界欄位就是答案，不寫成 `null`（2026-10-31，Q-113） | `#fuel_exhausted` | SPEC_08 §3.2.2 #1（G3） |
 | **L2-155** | `155-a-text-too-deep-is-the-horizon` | 比一個值能有的深度還深的文字是視界 `#max_depth_exceeded`，不是 `#none`、不是衝突（2026-10-31，Q-114） | `[#max_depth_exceeded, #max_depth_exceeded]` | SPEC_09 §5.1.2 #5；SPEC_08 §3.2.2 #3 |
+| **L2-156** | `156-a-range-holds-by-value` | 區間依值裝數：2⁵³+1 不在 `0..2⁵³` 裡，`0..2⁵³` 與 `2⁵³+1..` 交會是空的，交會留下的界是寫的值（2026-11-01，Q-115） | `[#conflict, #conflict, #true]` | SYNTAX_02 §2 #1 |
 
 ### 3.3 Level 3(銜尾蛇級)
 
